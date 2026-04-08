@@ -2,6 +2,7 @@ import { getDb } from "@/lib/mongodb";
 import { getSession } from "@/lib/auth";
 import Link from "next/link";
 import { logoutAction } from "@/app/login/actions";
+import { LayoutDashboard, BookOpen, LogOut } from "lucide-react";
 
 export default async function Sidebar() {
     const session = await getSession();
@@ -24,17 +25,19 @@ export default async function Sidebar() {
                 <div className="flex flex-col gap-1">
                     <Link 
                         href="/dashboard"
-                        className="p-3 rounded-xl hover:bg-base-300 transition-colors text-sm font-medium"
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-300 transition-colors text-sm font-medium"
                     >
-                        🏠 Dashboard
+                        <LayoutDashboard size={18} className="opacity-70" />
+                        Dashboard
                     </Link>
                     {subjects.map((sub) => (
                         <Link 
                             key={sub._id.toString()} 
                             href={`/${encodeURIComponent(sub.name)}`}
-                            className="p-3 rounded-xl hover:bg-base-300 transition-colors text-sm font-medium truncate"
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-300 transition-colors text-sm font-medium truncate"
                         >
-                            📚 {sub.name}
+                            <BookOpen size={18} className="opacity-70" />
+                            {sub.name}
                         </Link>
                     ))}
                 </div>
@@ -47,7 +50,8 @@ export default async function Sidebar() {
                         <p className="text-sm font-bold truncate">{session.email}</p>
                     </div>
                     <form action={logoutAction} className="w-full">
-                        <button type="submit" className="btn btn-error btn-outline btn-sm w-full rounded-xl">
+                        <button type="submit" className="btn btn-error btn-outline btn-sm w-full rounded-xl flex items-center justify-center gap-2">
+                            <LogOut size={14} />
                             Logout
                         </button>
                     </form>

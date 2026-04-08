@@ -94,3 +94,39 @@ export async function saveNotes(subjectId: string, notes: string) {
     return { error: "Failed to save notes" };
   }
 }
+
+export async function deleteSubject(subjectId: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const db = await getDb();
+    await db.collection("subjects").deleteOne({
+      _id: new ObjectId(subjectId),
+      userId: session.userId,
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to delete subject" };
+  }
+}
+
+export async function deleteTodoAction(subjectId: string, todoId: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const db = await getDb();
+    await db.collection("subjects").updateOne(
+      { _id: new ObjectId(subjectId), userId: session.userId },
+      { $pull: { todos: { id: todoId } } as any }
+    );
+
+    revalidatePath("/[subject]");
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to delete todo" };
+  }
+}

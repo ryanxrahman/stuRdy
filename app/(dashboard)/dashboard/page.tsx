@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { logoutAction } from "@/app/login/actions";
 import AddSubjectForm from "./AddSubjectForm";
 import Link from "next/link";
+import { Trash2 } from "lucide-react";
+import { deleteSubject } from "./subject-actions";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -34,16 +36,33 @@ export default async function Dashboard() {
           </p>
         ) : (
           subjects.map((sub) => (
-            <Link 
-              key={sub._id.toString()} 
-              href={`/${encodeURIComponent(sub.name)}`}
-              className="group p-6 bg-base-200 border border-base-300 rounded-3xl hover:border-primary transition-all active:scale-95 shadow-sm hover:shadow-md"
-            >
-              <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
-              <p className="text-xs opacity-50 mt-2">
-                {sub.todos?.length || 0} tasks • Click to open
-              </p>
-            </Link>
+            <div key={sub._id.toString()} className="group relative">
+                <Link 
+                href={`/${encodeURIComponent(sub.name)}`}
+                className="block p-6 bg-base-200 border border-base-300 rounded-3xl hover:border-primary transition-all active:scale-95 shadow-sm hover:shadow-md"
+                >
+                    <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
+                    <p className="text-xs opacity-50 mt-2">
+                        {sub.todos?.length || 0} tasks • Click to open
+                    </p>
+                </Link>
+                
+                <form 
+                    action={async () => {
+                        "use server";
+                        await deleteSubject(sub._id.toString());
+                    }} 
+                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                    <button 
+                        type="submit" 
+                        className="btn btn-ghost btn-circle btn-xs text-error hover:bg-error/10"
+                        title="Delete Subject"
+                    >
+                        <Trash2 size={16} />
+                    </button>
+                </form>
+            </div>
           ))
         )}
       </div>

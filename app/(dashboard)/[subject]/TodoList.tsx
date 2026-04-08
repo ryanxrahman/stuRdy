@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { addTodo, toggleTodo } from "@/app/(dashboard)/dashboard/subject-actions";
+import { addTodo, toggleTodo, deleteTodoAction } from "@/app/(dashboard)/dashboard/subject-actions";
+import { Trash2, Plus } from "lucide-react";
 
 type Todo = {
     id: string;
@@ -38,18 +39,29 @@ export default function TodoList({ subjectId, initialTodos }: { subjectId: strin
         });
     }
 
+    const handleDelete = (todoId: string) => {
+        if (!confirm("Are you sure you want to delete this task?")) return;
+        startTransition(async () => {
+            await deleteTodoAction(subjectId, todoId);
+            setTodos(todos.filter(t => t.id !== todoId));
+        });
+    }
+
     return (
         <div className="flex flex-col gap-4">
             <form onSubmit={handleAddTodo} className="flex gap-2">
-                <input 
-                    type="text" 
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="What needs to be done?" 
-                    className="input input-sm w-full"
-                />
+                <div className="relative flex-1">
+                    <input 
+                        type="text" 
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="What needs to be done?" 
+                        className="input input-sm w-full pl-8"
+                    />
+                    <Plus size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 opacity-30" />
+                </div>
                 <button type="submit" className="btn btn-sm btn-primary" disabled={isPending}>
-                    Add
+                    {isPending ? "..." : "Add"}
                 </button>
             </form>
 
@@ -58,16 +70,22 @@ export default function TodoList({ subjectId, initialTodos }: { subjectId: strin
                     <li className="text-center opacity-40 text-sm py-4 italic">No tasks yet</li>
                 )}
                 {todos.map((todo) => (
-                    <li key={todo.id} className="flex items-center gap-3 p-3 bg-base-100 rounded-xl">
+                    <li key={todo.id} className="flex items-center gap-3 p-3 bg-base-100 rounded-xl group/item">
                         <input 
                             type="checkbox" 
                             checked={todo.completed} 
                             onChange={() => handleToggle(todo.id, todo.completed)}
                             className="checkbox checkbox-primary checkbox-sm" 
                         />
-                        <span className={`text-sm ${todo.completed ? 'line-through opacity-50' : ''}`}>
+                        <span className={`text-sm flex-1 ${todo.completed ? 'line-through opacity-50' : ''}`}>
                             {todo.text}
                         </span>
+                        <button 
+                            onClick={() => handleDelete(todo.id)}
+                            className="btn btn-ghost btn-circle btn-xs text-error opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        >
+                            <Trash2 size={14} />
+                        </button>
                     </li>
                 ))}
             </ul>

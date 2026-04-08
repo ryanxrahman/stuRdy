@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { saveNotes } from "@/app/(dashboard)/dashboard/subject-actions";
+import { Save } from "lucide-react";
 
 export default function NotesSection({ subjectId, initialNotes }: { subjectId: string, initialNotes: string }) {
     const [notes, setNotes] = useState(initialNotes);
@@ -42,9 +43,10 @@ export default function NotesSection({ subjectId, initialNotes }: { subjectId: s
                 </span>
                 <button 
                     onClick={handleSave} 
-                    className="btn btn-primary" 
+                    className="btn btn-primary btn-sm flex items-center gap-2" 
                     disabled={isPending || notes === initialNotes}
                 >
+                    <Save size={16} />
                     {isPending ? "Saving..." : "Save Notes"}
                 </button>
             </div>
