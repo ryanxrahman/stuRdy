@@ -153,3 +153,45 @@ export async function saveStudySession(subjectId: string, durationInSeconds: num
     return { error: "Failed to save study session" };
   }
 }
+
+export async function addExamRecord(subjectId: string, name: string, score: number) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  if (!name || isNaN(score)) return { error: "Name and valid score are required" };
+
+  try {
+    const db = await getDb();
+    const examId = new ObjectId().toString();
+
+    await db.collection("subjects").updateOne(
+      { _id: new ObjectId(subjectId), userId: session.userId },
+      { $push: { exams: { id: examId, name, score: Number(score), date: new Date() } } as any }
+    );
+
+    revalidatePath("/[subject]");
+    return { success: true };
+  } catch (error) {
+    console.error("Add exam error:", error);
+    return { error: "Failed to add exam record" };
+  }
+}
+
+export async function deleteExamRecord(subjectId: string, examId: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const db = await getDb();
+    await db.collection("subjects").updateOne(
+      { _id: new ObjectId(subjectId), userId: session.userId },
+      { $pull: { exams: { id: examId } } as any }
+    );
+
+    revalidatePath("/[subject]");
+    return { success: true };
+  } catch (error) {
+    console.error("Delete exam error:", error);
+    return { error: "Failed to delete exam record" };
+  }
+}
