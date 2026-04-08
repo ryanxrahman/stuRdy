@@ -1,7 +1,6 @@
 import { getDb } from "@/lib/mongodb";
 import { getSession } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
-import Link from "next/link";
 import TodoList from "./TodoList";
 import NotesSection from "./NotesSection";
 
@@ -25,11 +24,8 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-8 max-w-5xl mx-auto">
+    <div className="flex flex-col">
       <header className="mb-8">
-        <Link href="/dashboard" className="btn btn-ghost btn-sm mb-4">
-          ← Back to Dashboard
-        </Link>
         <h1 className="text-5xl font-black">{subject.name}</h1>
       </header>
 

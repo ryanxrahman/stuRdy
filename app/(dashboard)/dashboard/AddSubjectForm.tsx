@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { createSubject } from "./subject-actions";
+import { createSubject } from "@/app/(dashboard)/dashboard/subject-actions";
 import BtnPrimary from "@/components/btn/BtnPrimary";
 
 export default function AddSubjectForm() {

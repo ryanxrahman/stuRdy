@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { saveNotes } from "../dashboard/subject-actions";
+import { saveNotes } from "@/app/(dashboard)/dashboard/subject-actions";
 
 export default function NotesSection({ subjectId, initialNotes }: { subjectId: string, initialNotes: string }) {
     const [notes, setNotes] = useState(initialNotes);

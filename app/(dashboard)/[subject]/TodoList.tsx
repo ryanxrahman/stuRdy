@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { addTodo, toggleTodo } from "../dashboard/subject-actions";
+import { addTodo, toggleTodo } from "@/app/(dashboard)/dashboard/subject-actions";
 
 type Todo = {
     id: string;

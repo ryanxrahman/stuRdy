@@ -1,7 +1,7 @@
 import { getDb } from "@/lib/mongodb";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { logoutAction } from "../login/actions";
+import { logoutAction } from "@/app/login/actions";
 import AddSubjectForm from "./AddSubjectForm";
 import Link from "next/link";
 
@@ -19,22 +19,15 @@ export default async function Dashboard() {
     .toArray();
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-8">
-      <header className="flex justify-between items-center w-full max-w-4xl mb-12">
-        <div>
-          <h1 className="text-4xl font-bold">Dashboard</h1>
-          <p className="opacity-70 text-lg">Logged in as {session.email}</p>
-        </div>
-        <form action={logoutAction}>
-          <button type="submit" className="btn btn-outline btn-error btn-sm">
-            Logout
-          </button>
-        </form>
-      </header>
+    <div className="flex flex-col">
+      <div className="mb-12">
+        <h1 className="text-4xl font-bold">Subjects</h1>
+        <p className="opacity-70 text-lg">Manage your study subjects and tasks.</p>
+      </div>
       
       <AddSubjectForm />
 
-      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {subjects.length === 0 ? (
           <p className="col-span-full text-center opacity-50 py-12 border-2 border-dashed border-base-300 rounded-3xl">
             No subjects yet. Add one above to get started!
@@ -44,7 +37,7 @@ export default async function Dashboard() {
             <Link 
               key={sub._id.toString()} 
               href={`/${encodeURIComponent(sub.name)}`}
-              className="group p-6 bg-base-200 border border-base-300 rounded-2xl hover:border-primary transition-all active:scale-95"
+              className="group p-6 bg-base-200 border border-base-300 rounded-3xl hover:border-primary transition-all active:scale-95 shadow-sm hover:shadow-md"
             >
               <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
               <p className="text-xs opacity-50 mt-2">
