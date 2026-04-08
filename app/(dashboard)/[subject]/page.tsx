@@ -19,20 +19,24 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
   }
 
   const db = await getDb();
-  const subject = await db.collection("subjects").findOne({
+  const rawSubject = await db.collection("subjects").findOne({
     userId: session.userId,
     name: { $regex: new RegExp(`^${subjectName}$`, "i") }
   });
 
-  if (!subject) {
+  if (!rawSubject) {
     notFound();
   }
 
+  const subject = JSON.parse(JSON.stringify(rawSubject));
+
   // Fetch session data for analytics
   const rawSessions = await db.collection("sessions")
-    .find({ subjectId: subject._id, userId: session.userId })
+    .find({ subjectId: new ObjectId(subject._id), userId: session.userId })
     .sort({ date: 1 })
     .toArray();
+
+  const sessions = JSON.parse(JSON.stringify(rawSessions));
 
   // Aggregate sessions by date for study chart
   const studyChartDataMap: Record<string, number> = {};
