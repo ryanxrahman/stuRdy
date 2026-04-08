@@ -6,6 +6,7 @@ import AddSubjectForm from "./AddSubjectForm";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { deleteSubject } from "./subject-actions";
+import ContributionMap from "@/components/ContributionMap";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -20,14 +21,32 @@ export default async function Dashboard() {
     .sort({ createdAt: -1 })
     .toArray();
 
+  // Fetch all sessions for contribution map and serialize for Client Component
+  const rawSessions = await db.collection("sessions")
+    .find({ userId: session.userId })
+    .sort({ date: 1 })
+    .toArray();
+
+  const sessions = rawSessions.map(s => ({
+    date: s.date.toISOString(),
+    duration: s.duration
+  }));
+
   return (
-    <div className="flex flex-col">
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold">Subjects</h1>
-        <p className="opacity-70 text-lg">Manage your study subjects and tasks.</p>
+    <div className="flex flex-col gap-10 p-8 max-w-6xl mx-auto">
+      <header>
+        <h1 className="text-6xl font-black italic tracking-tighter">Command Center</h1>
+        <p className="opacity-50 text-sm mt-2">Track. Execute. Dominate.</p>
+      </header>
+
+      <section>
+        <ContributionMap sessions={sessions} />
+      </section>
+
+      <div className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300">
+        <h2 className="text-2xl font-bold mb-6">New Subject</h2>
+        <AddSubjectForm />
       </div>
-      
-      <AddSubjectForm />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {subjects.length === 0 ? (

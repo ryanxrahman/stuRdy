@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import Link from "next/link";
 import { logoutAction } from "@/app/login/actions";
 import { LayoutDashboard, BookOpen, LogOut } from "lucide-react";
+import SidebarLink from "./SidebarLink";
 
 export default async function Sidebar() {
     const session = await getSession();
@@ -23,22 +24,22 @@ export default async function Sidebar() {
             <nav className="flex-1 overflow-y-auto px-4 py-2">
                 <div className="text-xs font-bold opacity-30 uppercase tracking-widest mb-4 px-2">Subjects</div>
                 <div className="flex flex-col gap-1">
-                    <Link 
+                    <SidebarLink 
                         href="/dashboard"
                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-300 transition-colors text-sm font-medium"
                     >
                         <LayoutDashboard size={18} className="opacity-70" />
                         Dashboard
-                    </Link>
+                    </SidebarLink>
                     {subjects.map((sub) => (
-                        <Link 
+                        <SidebarLink 
                             key={sub._id.toString()} 
                             href={`/${encodeURIComponent(sub.name)}`}
                             className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-300 transition-colors text-sm font-medium truncate"
                         >
                             <BookOpen size={18} className="opacity-70" />
                             {sub.name}
-                        </Link>
+                        </SidebarLink>
                     ))}
                 </div>
             </nav>

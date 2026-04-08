@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { addExamRecord, deleteExamRecord } from "@/app/(dashboard)/dashboard/subject-actions";
 import { Trash2, Trophy } from "lucide-react";
 
@@ -12,10 +12,15 @@ type Exam = {
 }
 
 export default function ExamsList({ subjectId, initialExams }: { subjectId: string, initialExams: Exam[] }) {
+    const [mounted, setMounted] = useState(false);
     const [exams, setExams] = useState(initialExams);
     const [name, setName] = useState("");
     const [score, setScore] = useState("");
     const [isPending, startTransition] = useTransition();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,10 +74,12 @@ export default function ExamsList({ subjectId, initialExams }: { subjectId: stri
             </form>
 
             <div className="grid grid-cols-1 gap-2">
-                {exams.length === 0 && (
-                    <p className="text-center opacity-30 text-sm italic py-4">No exam records yet</p>
+                {(!mounted || exams.length === 0) && (
+                    <p className="text-center opacity-30 text-sm italic py-4">
+                        {(!mounted ? "Loading records..." : "No exam records yet")}
+                    </p>
                 )}
-                {exams.map((exam) => (
+                {mounted && exams.map((exam) => (
                     <div key={exam.id} className="flex items-center gap-4 bg-base-100 p-3 rounded-xl border border-base-300 group/exam">
                         <div className="bg-primary/10 p-2 rounded-lg text-primary">
                             <Trophy size={16} />
