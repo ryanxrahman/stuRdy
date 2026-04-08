@@ -130,3 +130,26 @@ export async function deleteTodoAction(subjectId: string, todoId: string) {
     return { error: "Failed to delete todo" };
   }
 }
+
+export async function saveStudySession(subjectId: string, durationInSeconds: number) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  if (durationInSeconds <= 0) return { error: "Invalid duration" };
+
+  try {
+    const db = await getDb();
+    await db.collection("sessions").insertOne({
+      subjectId: new ObjectId(subjectId),
+      userId: session.userId,
+      duration: durationInSeconds,
+      date: new Date(),
+    });
+
+    revalidatePath("/[subject]");
+    return { success: true };
+  } catch (error) {
+    console.error("Save session error:", error);
+    return { error: "Failed to save study session" };
+  }
+}
