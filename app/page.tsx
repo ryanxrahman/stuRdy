@@ -1,4 +1,6 @@
-"use client";
+
+import { getSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 import Link from "next/link";
 import { 
@@ -16,7 +18,13 @@ import {
   ArrowRight
 } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="bg-white text-[#1a1a1a] selection:bg-orange-100 selection:text-orange-900">
       {/* 
