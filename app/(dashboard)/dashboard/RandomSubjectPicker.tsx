@@ -56,7 +56,6 @@ export default function RandomSubjectPicker({ subjects }: RandomSubjectPickerPro
     <div className="bg-base-200 p-8 rounded-4xl border border-base-300 shadow-sm flex flex-col h-full">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Shuffle className="w-6 h-6 text-primary" />
           Study Roulette
         </h2>
       </div>
@@ -90,7 +89,6 @@ export default function RandomSubjectPicker({ subjects }: RandomSubjectPickerPro
             </>
           ) : (
             <>
-              <Shuffle className="w-5 h-5" />
               What should I study?
             </>
           )}

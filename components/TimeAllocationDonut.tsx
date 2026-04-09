@@ -63,8 +63,8 @@ export default function TimeAllocationDonut({ data }: { data: SubjectData[] }) {
 
     return (
         <div className="flex flex-col items-center gap-4">
-            <div className="w-full h-[260px] relative">
-                <ResponsiveContainer width="100%" height="100%">
+            <div className="w-full h-[260px] min-h-65 relative">
+                <ResponsiveContainer width="99%" height="100%">
                     <PieChart>
                         <defs>
                             {enrichedData.map((_, i) => (

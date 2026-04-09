@@ -24,8 +24,8 @@ export default function SubjectMasteryRadar({ data }: { data: MasteryData[] }) {
     }
 
     return (
-        <div className="w-full h-[300px] flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full h-[300px] min-h-75 flex items-center justify-center">
+            <ResponsiveContainer width="99%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
                     <PolarGrid stroke="#374151" strokeOpacity={0.2} />
                     <PolarAngleAxis 
