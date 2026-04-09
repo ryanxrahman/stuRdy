@@ -11,204 +11,211 @@ import {
   Calendar, 
   Zap,
   ShieldCheck,
-  LayoutDashboard
+  LayoutDashboard,
+  Sparkles,
+  ArrowRight
 } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-base-100 selection:bg-primary selection:text-primary-content">
-      {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-base-100/80 backdrop-blur-md border-b border-base-200">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-primary-content" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">StudyTracker</span>
-          </div>
-          <div className="hidden md:flex gap-8 text-sm font-medium opacity-70">
-            <a href="#features" className="hover:text-primary transition-colors">Features</a>
-            <a href="#analytics" className="hover:text-primary transition-colors">Analytics</a>
-            <a href="#workflow" className="hover:text-primary transition-colors">Workflow</a>
-          </div>
-          <div className="flex gap-4">
-            <Link href="/login" className="btn btn-ghost btn-sm">Login</Link>
-            <Link href="/register" className="btn btn-primary btn-sm px-6">Join Now</Link>
-          </div>
+    <div className="bg-white text-[#1a1a1a] selection:bg-orange-100 selection:text-orange-900">
+      {/* 
+        A more "human-designed" layout:
+        - Less rigid geometry, more whitespace.
+        - Warmer color palette (slight off-whites, oranges, and deep grays).
+        - Elegant typography-first approach.
+      */}
+
+      {/* Modern, Floating Header */}
+      <nav className="fixed top-6 inset-x-0 z-50 mx-auto max-w-fit flex items-center bg-white/70 backdrop-blur-xl border border-black/5 px-6 py-3 rounded-full shadow-lg shadow-black/5 space-x-8">
+        <div className="flex items-center gap-2 pr-4 border-r border-black/10">
+          <BookOpen className="w-5 h-5 text-orange-600" />
+          <span className="font-semibold tracking-tight text-sm">StudyTracker</span>
+        </div>
+        <div className="flex gap-6 text-sm font-medium text-black/60">
+          <a href="#vision" className="hover:text-black transition-colors">Vision</a>
+          <a href="#features" className="hover:text-black transition-colors">Product</a>
+          <a href="#start" className="hover:text-black transition-colors">Start</a>
+        </div>
+        <div className="flex gap-3 pl-4 border-l border-black/10">
+          <Link href="/login" className="text-sm font-semibold hover:opacity-70 transition-opacity px-2 py-1">Login</Link>
+          <Link href="/register" className="bg-black text-white px-5 py-2 rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition-all">Sign Up</Link>
         </div>
       </nav>
 
-      {/* Hero Section - Slide 1: The Promise */}
-      <section className="min-h-screen flex flex-col items-center justify-center relative pt-16 overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-700" />
-        </div>
+      {/* Slide 1: Human-Centric Hero */}
+      <section className="min-h-screen flex flex-col items-center justify-center px-6 text-center relative pt-20 overflow-hidden">
+        {/* Organic shapes for a more human feel */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[120px] -z-10 opacity-40" />
 
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 text-primary text-sm font-medium mb-8 border border-primary/10">
-            <Zap className="w-4 h-4" />
-            <span>Redefining academic productivity</span>
+        <div className="max-w-4xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-[10px] font-bold uppercase tracking-widest mb-10 border border-orange-100 animate-fade-in">
+            <Sparkles className="w-3 h-3" />
+            <span>Built for the high-performance student</span>
           </div>
-          <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter leading-none mt-4">
-            Study <span className="text-primary italic">Smarter</span>, <br />
-            Not Harder.
+          
+          <h1 className="text-6xl md:text-9xl font-extrabold tracking-tighter leading-[0.85] mb-12">
+            The study <br />
+            habit <span className="text-orange-500 font-serif italic font-normal tracking-normal pr-4">that</span> sticks.
           </h1>
-          <p className="text-xl md:text-2xl text-base-content/70 max-w-2xl mx-auto mb-12 leading-relaxed">
-            The all-in-one ecosystem designed for high-performance students. 
-            Track mastery, visualize progress, and conquer your exams.
+          
+          <p className="text-xl md:text-2xl text-black/50 max-w-xl mx-auto mb-16 font-medium leading-tight">
+            An intentionally designed ecosystem for those who value deep focus, mastery, and organized progress.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/register" className="btn btn-primary btn-lg px-12 text-lg shadow-xl shadow-primary/20">
-              Start Your Journey
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <Link href="/register" className="group bg-[#1a1a1a] text-white px-10 py-5 rounded-3xl text-lg font-bold hover:bg-orange-600 transition-all flex items-center gap-3">
+              Get Started Free <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link href="#features" className="btn btn-ghost btn-lg gap-2">
-              See how it works <ChevronDown className="w-5 h-5 animate-bounce" />
-            </Link>
+            <a href="#vision" className="text-sm font-extrabold border-b-2 border-black/10 hover:border-black transition-all py-1">
+              Read Our Vision
+            </a>
           </div>
+        </div>
+
+        <div className="absolute bottom-12 flex flex-col items-center gap-2 opacity-30">
+          <span className="text-[10px] font-bold uppercase tracking-widest">Keep Reading</span>
+          <ChevronDown className="w-4 h-4 animate-bounce" />
         </div>
       </section>
 
-      {/* Section 2: Advanced Analytics & Mastery - The "Long" content */}
-      <section id="features" className="py-32 bg-base-200/50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Visualizing Your <span className="text-primary underline decoration-primary/30">Knowledge</span>.
-              </h2>
-              <p className="text-lg text-base-content/70 leading-relaxed">
-                Stop guessing where you stand. Our advanced mastery algorithm tracks your performance across every subject, giving you a real-time heatmap of your academic strengths and weaknesses.
-              </p>
-              
-              <div className="space-y-6">
-                {[
-                  { icon: <BarChart3 />, title: "Precision Analytics", desc: "Detailed breakdown of exam performance and preparation levels." },
-                  { icon: <Trophy />, title: "Mastery Radar", desc: "Intuitive charts showing subject proficiency at a glance." },
-                  { icon: <LayoutDashboard />, title: "Centralized Hub", desc: "One dashboard for all your subjects, notes, and schedules." }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="w-12 h-12 shrink-0 rounded-xl bg-white flex items-center justify-center shadow-sm text-primary">
-                      {item.icon}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-lg">{item.title}</h4>
-                      <p className="text-base-content/60">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="relative group">
-              <div className="absolute -inset-4 bg-primary/20 rounded-3xl blur-2xl group-hover:bg-primary/30 transition-all duration-500 opacity-50" />
-              <div className="relative bg-base-100 border border-base-300 rounded-4xl shadow-2xl p-8 overflow-hidden">
-                <div className="flex justify-between items-center mb-10">
-                  <div className="h-2 w-24 bg-base-200 rounded" />
-                  <div className="h-8 w-8 bg-primary/10 rounded-full animate-ping" />
+      {/* Slide 2: The "Vision" - Elegant Content Layout */}
+      <section id="vision" className="py-40 bg-white">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-24 items-center">
+          <div className="relative">
+            <div className="aspect-4/5 bg-gray-50 rounded-7xl overflow-hidden border border-black/5 flex items-center justify-center p-12 group">
+              <div className="bg-white w-full h-full rounded-[2.5rem] shadow-2xl p-8 space-y-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-out">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400/20" />
+                  <div className="w-3 h-3 rounded-full bg-orange-400/20" />
+                  <div className="w-3 h-3 rounded-full bg-green-400/20" />
                 </div>
-                <div className="space-y-4">
-                  <div className="h-8 w-full bg-base-200 rounded-lg animate-pulse" />
-                  <div className="h-32 w-full bg-primary/5 rounded-2xl flex items-center justify-center">
-                    <BarChart3 className="w-12 h-12 text-primary/20" />
-                  </div>
+                <div className="space-y-3">
+                  <div className="h-6 w-1/3 bg-gray-100 rounded-full" />
+                  <div className="h-24 w-full bg-orange-50/50 rounded-3xl" />
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="h-24 bg-success/5 rounded-2xl border border-success/10 flex flex-col p-4 justify-between">
-                      <span className="text-xs font-bold text-success uppercase">Mastery</span>
-                      <span className="text-2xl font-black">94%</span>
-                    </div>
-                    <div className="h-24 bg-warning/5 rounded-2xl border border-warning/10 flex flex-col p-4 justify-between">
-                      <span className="text-xs font-bold text-warning uppercase">Focus</span>
-                      <span className="text-2xl font-black">2.4h</span>
-                    </div>
+                    <div className="h-20 bg-gray-50 rounded-3xl" />
+                    <div className="h-20 bg-gray-50 rounded-3xl" />
                   </div>
                 </div>
               </div>
+            </div>
+            {/* Hand-drawn type element vibe */}
+            <div className="absolute -bottom-8 -left-8 bg-orange-100 text-orange-900 border-2 border-orange-200 px-6 py-4 rounded-3xl font-serif italic text-lg shadow-xl -rotate-6">
+              "Finally, a focused tool."
+            </div>
+          </div>
+
+          <div className="space-y-10">
+            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tighter leading-none">
+              Not just a tool, <br />
+              <span className="text-black/30">but Your companion.</span>
+            </h2>
+            <p className="text-lg text-black/60 font-medium leading-relaxed">
+              We ditched the complex spreadsheets for a human-first experience. Our philosophy is simple: clarity leads to confidence. Every interaction is designed to get you in the zone, not keep you in the app.
+            </p>
+            <div className="grid grid-cols-1 gap-6">
+              {[
+                { title: "Mastery, redefined", desc: "Our 'Mastery Radar' visualizes knowledge like a skill tree in your favorite RPG." },
+                { title: "Flow state first", desc: "No notifications. No distractions. Just pure focus with our minimal timers." }
+              ].map((item, i) => (
+                <div key={i} className="flex gap-4 items-start border-l-2 border-orange-500/20 pl-6 py-2">
+                  <div>
+                    <h4 className="font-bold text-xl mb-1 italic">{item.title}</h4>
+                    <p className="text-black/50 text-sm font-medium">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 3: The Workflow - Optimized for Results */}
-      <section id="workflow" className="py-32">
+      {/* Slide 3: Practical Tools - Grid but soft */}
+      <section id="features" className="py-40 bg-[#fbfbfb]">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Built for the <span className="opacity-40">Modern Student</span>.</h2>
-            <p className="text-xl text-base-content/60">A streamlined workflow that removes friction and lets you focus on what actually matters: learning.</p>
+          <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-24">
+            <div className="max-w-xl">
+              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tighter leading-none mb-8 italic">Product over Hype.</h2>
+              <p className="text-lg text-black/50 font-medium">Functional features that actually improve your grades, not just your screen time.</p>
+            </div>
+            <Link href="/register" className="text-sm font-bold bg-white px-8 py-4 rounded-full border border-black/10 hover:bg-black hover:text-white transition-all">Explore the OS</Link>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-12">
             {[
               { 
+                label: "Focus",
                 title: "Deep Work Sessions", 
-                desc: "Integrated pomodoro timers designed to induce flow state and maximize retention.",
+                desc: "Integrated timers designed to keep you in the flow longer.",
                 icon: <Clock />,
-                color: "text-blue-500",
-                bg: "bg-blue-50"
+                theme: "bg-blue-50 text-blue-700"
               },
               { 
-                title: "Smart Scheduling", 
-                desc: "Never miss a deadline. Automated reminders for upcoming exams and review sessions.",
+                label: "Planning",
+                title: "Smart Calendar", 
+                desc: "Automatic exam countdowns that prioritize your review sessions.",
                 icon: <Calendar />,
-                color: "text-emerald-500",
-                bg: "bg-emerald-50"
+                theme: "bg-orange-50 text-orange-700"
               },
               { 
-                title: "Progress Shield", 
-                desc: "Our daily contribution maps keep you accountable and consistent in your efforts.",
+                label: "Growth",
+                title: "Progress Map", 
+                desc: "A daily contribution graph showing your consistency through the years.",
                 icon: <ShieldCheck />,
-                color: "text-purple-500",
-                bg: "bg-purple-50"
+                theme: "bg-indigo-50 text-indigo-700"
               }
             ].map((feature, i) => (
-              <div key={i} className="group p-8 rounded-5xl bg-base-100 hover:bg-base-200 border border-base-200 transition-all duration-300">
-                <div className={`w-14 h-14 rounded-2xl ${feature.bg} ${feature.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
+              <div key={i} className="group p-10 rounded-[3rem] bg-white border border-black/5 hover:shadow-2xl hover:shadow-black/5 transition-all duration-500">
+                <div className={`w-12 h-12 rounded-2xl ${feature.theme} flex items-center justify-center mb-8 border border-black/5`}>
                   {feature.icon}
                 </div>
-                <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
-                <p className="text-base-content/60 leading-relaxed">{feature.desc}</p>
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-2 block">{feature.label}</span>
+                <h3 className="text-2xl font-bold mb-4 tracking-tight">{feature.title}</h3>
+                <p className="text-black/50 font-medium text-sm leading-relaxed">{feature.desc}</p>
               </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-24 p-12 rounded-6xl bg-neutral text-neutral-content text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px]" />
-            <h2 className="text-4xl md:text-5xl font-bold mb-8 relative z-10">Ready to transform your study habits?</h2>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-              <Link href="/register" className="btn btn-primary btn-lg px-12 hover:scale-105 transition-transform">
-                Get Started Now
-              </Link>
-              <Link href="/login" className="btn btn-outline btn-lg px-12 hover:bg-white hover:text-black">
-                Existing Account
-              </Link>
-            </div>
-            <div className="mt-8 flex justify-center gap-6 opacity-50 relative z-10">
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Free to use</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> No Credit Card</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Secure Data</div>
-            </div>
+      {/* Final Call - Very Minimal */}
+      <section id="start" className="py-60 min-h-screen flex items-center justify-center px-6">
+        <div className="text-center max-w-4xl space-y-16">
+          <h2 className="text-6xl md:text-10xl font-extrabold tracking-tighter leading-[0.8] mb-12">
+            Start <br />
+            <span className="text-orange-500 italic font-serif font-normal">studying</span> <br />
+            today.
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center">
+            <Link href="/register" className="bg-black text-white px-16 py-8 rounded-5xl text-xl font-bold hover:scale-110 active:scale-95 transition-all shadow-2xl">
+              Create My Space
+            </Link>
+          </div>
+          <div className="flex justify-center gap-12 opacity-30 text-[10px] font-bold uppercase tracking-widest mt-12">
+            <span>Free Forever</span>
+            <span>|</span>
+            <span>No Ads</span>
+            <span>|</span>
+            <span>Open Source</span>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-20 border-t border-base-200 text-center">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-                <BookOpen className="w-3 h-3 text-primary-content" />
-              </div>
-              <span className="text-lg font-bold">StudyTracker</span>
-            </div>
-            <p className="opacity-50 text-sm max-w-sm">
-              Empowering students to achieve academic excellence through data-driven insights and focused study workflows.
-            </p>
-            <div className="h-px w-20 bg-base-300 mt-8" />
-            <p className="text-xs opacity-40 mt-8">
-              &copy; 2026 StudyTracker. Developed by rahscripts. Built with Next.js & Tailwind.
-            </p>
-          </div>
+      {/* Footer: Human-Sized */}
+      <footer className="py-20 bg-white border-t border-black/5">
+        <div className="max-w-7xl mx-auto px-6 h-full flex flex-col md:flex-row justify-between items-center gap-12 text-sm font-bold opacity-30 uppercase tracking-widest">
+           <div className="flex items-center gap-4">
+              <span>&copy; 2026</span>
+              <div className="w-1 h-1 bg-black rounded-full" />
+              <span>StudyTracker</span>
+           </div>
+           <div className="flex gap-8">
+              <a href="#" className="hover:opacity-100 transition-opacity">Twitter</a>
+              <a href="#" className="hover:opacity-100 transition-opacity">Email</a>
+              <a href="#" className="hover:opacity-100 transition-opacity">Github</a>
+           </div>
         </div>
       </footer>
     </div>
