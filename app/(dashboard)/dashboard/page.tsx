@@ -2,6 +2,7 @@ import { getDb } from "@/lib/mongodb";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AddSubjectForm from "./AddSubjectForm";
+import RandomSubjectPicker from "./RandomSubjectPicker";
 import Link from "next/link";
 import { Trash2, Flame, Clock, BookMarked, Trophy } from "lucide-react";
 import { deleteSubject } from "./subject-actions";
@@ -33,14 +34,28 @@ export default async function Dashboard() {
   // Advanced metrics
   const subjectStats = subjects.map((sub: any) => {
     const subSessions = sessions.filter((s: any) => s.subjectId === sub._id);
-    const totalMinutes = subSessions.reduce((acc: number, s: any) => acc + (s.duration / 60), 0);
+    const totalSeconds = subSessions.reduce((acc: number, s: any) => acc + s.duration, 0);
+    const totalMinutes = totalSeconds / 60;
     const completedTodos = sub.todos?.filter((t: any) => t.completed).length || 0;
     const totalTodos = sub.todos?.length || 0;
-    const masteryScore = Math.round((totalMinutes / 60) * (1 + (totalTodos > 0 ? completedTodos / totalTodos : 0)) * 10);
+    
+    // Mastery score calculation:
+    // Use raw seconds for better precision
+    // 1 hour = 3600 seconds
+    const studyHours = totalSeconds / 3600;
+    
+    // Scale it up: 100 points per hour
+    let timeScore = studyHours * 100;
+    
+    // Task bonus: up to 50 points
+    const taskBonus = (totalTodos > 0 ? (completedTodos / totalTodos) : 0) * 50;
+    
+    const masteryScore = Math.round(timeScore + taskBonus);
+
     return {
       name: sub.name,
       minutes: Math.round(totalMinutes),
-      mastery: masteryScore || 10,
+      mastery: Math.max(masteryScore, 2),
     };
   });
 
@@ -65,7 +80,7 @@ export default async function Dashboard() {
           { icon: Trophy, label: "Tasks", value: totalTasks, color: "text-emerald-400" },
           { icon: Flame, label: "Sessions", value: totalSessions, color: "text-amber-400" },
         ].map(({ icon: Icon, label, value, color }) => (
-          <div key={label} className="bg-base-200 rounded-[1.5rem] border border-base-300 p-5 flex items-center gap-4">
+          <div key={label} className="bg-base-200 rounded-3xl border border-base-300 p-5 flex items-center gap-4">
             <div className={`${color} opacity-80`}>
               <Icon size={24} />
             </div>
@@ -84,13 +99,13 @@ export default async function Dashboard() {
 
       {/* Analytics Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-base-200 rounded-[2rem] border border-base-300 p-8">
+        <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
           <h2 className="text-xl font-bold mb-1">Time Split</h2>
           <p className="text-xs opacity-40 mb-6 uppercase tracking-widest font-bold">By Subject</p>
           <TimeAllocationDonut data={subjectStats} />
         </div>
 
-        <div className="bg-base-200 rounded-[2rem] border border-base-300 p-8">
+        <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
           <h2 className="text-xl font-bold mb-1">Mastery Radar</h2>
           <p className="text-xs opacity-40 mb-6 uppercase tracking-widest font-bold">Skill Balance</p>
           <SubjectMasteryRadar data={subjectStats} />
@@ -98,16 +113,19 @@ export default async function Dashboard() {
       </div>
 
       {/* Subject Leaderboard */}
-      <div className="bg-base-200 rounded-[2rem] border border-base-300 p-8">
+      <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
         <h2 className="text-xl font-bold mb-1">Study Leaderboard</h2>
         <p className="text-xs opacity-40 mb-6 uppercase tracking-widest font-bold">Ranked by time invested</p>
         <SubjectBarChart data={subjectStats} />
       </div>
 
-      {/* Add Subject + Grid */}
-      <div className="bg-base-200 p-8 rounded-[2rem] border border-base-300">
-        <h2 className="text-2xl font-bold mb-6">New Subject</h2>
-        <AddSubjectForm />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="bg-base-200 rounded-4xl border border-base-300 p-8 shadow-sm">
+          <h2 className="text-2xl font-bold mb-6">New Subject</h2>
+          <AddSubjectForm />
+        </div>
+        
+        <RandomSubjectPicker subjects={subjects.map((s: any) => ({ _id: s._id.toString(), name: s.name }))} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

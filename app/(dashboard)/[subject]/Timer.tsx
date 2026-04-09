@@ -7,27 +7,39 @@ import { saveStudySession } from "../dashboard/subject-actions";
 export default function Timer({ subjectId }: { subjectId: string }) {
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
+    const [accumulatedSeconds, setAccumulatedSeconds] = useState(0);
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
+        
         if (isActive) {
+            const sessionStartTime = Date.now();
+            const initialSeconds = accumulatedSeconds;
+            
             interval = setInterval(() => {
-                setSeconds((prev) => prev + 1);
-            }, 1000);
-        } else if (!isActive && seconds !== 0) {
-            if (interval) clearInterval(interval);
+                const now = Date.now();
+                const elapsedSeconds = Math.floor((now - sessionStartTime) / 1000);
+                setSeconds(initialSeconds + elapsedSeconds);
+            }, 100); // Check every 0.1s for extreme accuracy
         }
+
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [isActive, seconds]);
+    }, [isActive, accumulatedSeconds]);
 
-    const toggle = () => setIsActive(!isActive);
+    const toggle = () => {
+        if (isActive) {
+            setAccumulatedSeconds(seconds);
+        }
+        setIsActive(!isActive);
+    };
     
     const reset = () => {
         setIsActive(false);
         setSeconds(0);
+        setAccumulatedSeconds(0);
     };
 
     const handleFinish = () => {
@@ -38,6 +50,7 @@ export default function Timer({ subjectId }: { subjectId: string }) {
             const result = await saveStudySession(subjectId, seconds);
             if (result.success) {
                 setSeconds(0);
+                setAccumulatedSeconds(0);
                 alert("Study session saved successfully!");
             } else {
                 alert("Failed to save session.");
