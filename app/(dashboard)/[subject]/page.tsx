@@ -62,6 +62,11 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
         <h1 className="text-6xl font-black tracking-tight">{subject.name}</h1>
       </header>
 
+              <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm flex flex-col items-center justify-center">
+          <h2 className="text-2xl font-bold mb-4">Focus Zone</h2>
+          <Timer subjectId={subject._id.toString()} />
+        </section>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column: Todo List */}
         <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm">
@@ -76,35 +81,11 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
         </section>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Exam Records */}
-        <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm">
-          <h2 className="text-2xl font-bold mb-6">Academic Records</h2>
-          <ExamsList subjectId={subject._id.toString()} initialExams={subject.exams || []} />
-        </section>
-
-        {/* Timer Section */}
-        <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold mb-4">Focus Zone</h2>
-          <Timer subjectId={subject._id.toString()} />
-        </section>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Study Analytics */}
         <section className="bg-base-200 p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
             <h2 className="text-2xl font-bold mb-2">Study Momentum</h2>
             <p className="opacity-50 text-sm mb-6">Time investment per day</p>
             <ProgressChart data={studyChartData} />
         </section>
-
-        {/* Exam Analytics */}
-        <section className="bg-base-200 p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
-            <h2 className="text-2xl font-bold mb-2">Grade Trajectory</h2>
-            <p className="opacity-50 text-sm mb-6">Exam performance over time</p>
-            <ExamChart data={examChartData} />
-        </section>
-      </div>
     </div>
   );
 }
