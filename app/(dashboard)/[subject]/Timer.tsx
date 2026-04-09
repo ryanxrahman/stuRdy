@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import toast from "react-hot-toast";
 import { Play, Pause, RotateCcw, CheckCircle } from "lucide-react";
 import { saveStudySession } from "../dashboard/subject-actions";
 
@@ -51,9 +52,9 @@ export default function Timer({ subjectId }: { subjectId: string }) {
             if (result.success) {
                 setSeconds(0);
                 setAccumulatedSeconds(0);
-                alert("Study session saved successfully!");
+                toast.success("Study session saved successfully!");
             } else {
-                alert("Failed to save session.");
+                toast.error("Failed to save session.");
             }
         });
     };
