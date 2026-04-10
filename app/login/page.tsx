@@ -10,7 +10,7 @@ export default function Login() {
     const [state, formAction, isPending] = useActionState(loginAction, null);
 
     return (
-        <div className="flex flex-col bg-neutral-900 items-center justify-center h-screen gap-4">
+        <div className="flex flex-col bg-neutral-800 items-center justify-center h-screen gap-4">
             <form action={formAction} className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
                 <Link href="/">
                     <legend className="flex gap-1 items-center link link-hover"><ArrowLeftCircle size={15} strokeWidth={1.5} /> back to home</legend>
