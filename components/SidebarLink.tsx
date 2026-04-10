@@ -17,7 +17,7 @@ export default function SidebarLink({ href, children, className }: SidebarLinkPr
     return (
         <Link 
             href={href}
-            className={`${className} ${isActive ? 'bg-neutral-800 shadow-sm border border-base-300/50' : ''}`}
+            className={`${className} ${isActive ? 'bg-neutral-800 text-white shadow-sm border border-base-300/50' : ''}`}
         >
             {children}
         </Link>

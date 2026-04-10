@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  themes: dark --default;
+  themes: dark --default, light;
 }
 
 @layer base {
   body {
-    @apply bg-neutral-800 text-white;
+    @apply transition-colors duration-500 bg-white text-neutral-900;
+  }
+
+  [data-theme='dark'] body {
+    @apply bg-neutral-900 text-white;
   }
 }
