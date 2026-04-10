@@ -2,14 +2,15 @@ import { getDb } from "@/lib/mongodb";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AddSubjectForm from "./AddSubjectForm";
-import Link from "next/link";
-import { Trash2, Flame, Clock, BookMarked, Trophy } from "lucide-react";
+import { Flame, Clock, BookMarked, Trophy } from "lucide-react";
 import { deleteSubject } from "./subject-actions";
 import ContributionMap from "@/components/ContributionMap";
 import SubjectMasteryRadar from "@/components/SubjectMasteryRadar";
 import TimeAllocationDonut from "@/components/TimeAllocationDonut";
 import SubjectBarChart from "@/components/SubjectBarChart";
 import StudyGoal from "@/components/StudyGoal";
+import StudyTrend from "@/components/StudyTrend";
+import SubjectsOverview from "@/components/SubjectsOverview";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -102,6 +103,9 @@ export default async function Dashboard() {
         ))}
       </div>
 
+      {/* Study Trend Graph */}
+      <StudyTrend sessions={sessions} />
+
       {/* Contribution Heatmap */}
       <section>
         <ContributionMap sessions={sessions} />
@@ -132,38 +136,15 @@ export default async function Dashboard() {
                     {/* Daily Study Goal */}
       <StudyGoal totalStudyMinutes={Math.round(dailyStudyMinutes)} />
 
-          <AddSubjectForm />
+      <AddSubjectForm />
 
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {subjects.length === 0 ? (
-          <p className="col-span-full text-center opacity-50 py-12 border-2 border-dashed border-base-300 rounded-3xl">
-            No subjects yet. Add one above to get started!
-          </p>
-        ) : (
-          subjects.map((sub: any) => (
-            <div key={sub._id.toString()} className="group relative">
-              <Link 
-                href={`/${encodeURIComponent(sub.name)}`}
-                className="block p-6 bg-base-200 border border-base-300 rounded-3xl hover:border-primary transition-all active:scale-95 shadow-sm hover:shadow-md"
-              >
-                <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
-                <p className="text-xs opacity-50 mt-2">
-                  {sub.todos?.filter((t: any) => t.completed).length || 0}/{sub.todos?.length || 0} tasks done • Click to open
-                </p>
-              </Link>
-              <form 
-                action={async () => { "use server"; await deleteSubject(sub._id.toString()); }} 
-                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <button type="submit" className="btn btn-ghost btn-circle btn-xs text-error hover:bg-error/10" title="Delete Subject">
-                  <Trash2 size={16} />
-                </button>
-              </form>
-            </div>
-          ))
-        )}
-      </div>
+      {/* Subjects Overview with Chart */}
+      <SubjectsOverview 
+        subjects={subjects} 
+        subjectStats={subjectStats}
+        onDelete={deleteSubject}
+        sessions={sessions}
+      />
     </div>
   );
 }
