@@ -15,13 +15,13 @@ export default function AddSubjectForm() {
     }, [state]);
 
     return (
-        <form ref={formRef} action={formAction} className="flex gap-2 w-full max-w-md mb-8">
+        <form ref={formRef} action={formAction} className="flex gap-2 max-md:flex-col w-full">
             <div className="flex-1">
                 <input 
                     name="name"
                     type="text" 
                     placeholder="Enter subject name (e.g. Math)" 
-                    className="input w-full"
+                    className="input rounded-xl w-full"
                     required 
                 />
                 {state?.error && <p className="text-error text-xs mt-1">{state.error}</p>}

@@ -132,12 +132,8 @@ export default async function Dashboard() {
                     {/* Daily Study Goal */}
       <StudyGoal totalStudyMinutes={Math.round(dailyStudyMinutes)} />
 
-      <div className="grid grid-cols-1 gap-8 mb-8">
-        <div className="bg-base-200 rounded-4xl border border-base-300 p-8 shadow-sm">
-          <h2 className="text-2xl font-bold mb-6">New Subject</h2>
           <AddSubjectForm />
-        </div>
-      </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {subjects.length === 0 ? (
