@@ -10,6 +10,15 @@
   }
 
   [data-theme='dark'] body {
-    @apply bg-neutral-900 text-white;
+    @apply bg-neutral-800 text-white;
   }
+}
+
+/* Hide scrollbar for sidebar while allowing scroll */
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
+.overflow-y-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

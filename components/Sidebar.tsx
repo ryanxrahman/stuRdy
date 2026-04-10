@@ -17,7 +17,7 @@ export default async function Sidebar() {
         .toArray();
 
     return (
-        <aside className="fixed bg-base-100 left-0 top-0 h-screen w-64 text-base-content border-r border-base-300 flex flex-col z-50">
+        <aside className="bg-base-100 h-screen w-64 text-base-content border-r border-base-300 flex flex-col">
             <div className="p-6">
                 <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">STUDY</Link>
             </div>
