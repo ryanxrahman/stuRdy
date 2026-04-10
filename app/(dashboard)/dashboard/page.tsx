@@ -10,6 +10,7 @@ import ContributionMap from "@/components/ContributionMap";
 import SubjectMasteryRadar from "@/components/SubjectMasteryRadar";
 import TimeAllocationDonut from "@/components/TimeAllocationDonut";
 import SubjectBarChart from "@/components/SubjectBarChart";
+import StudyGoal from "@/components/StudyGoal";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -30,6 +31,14 @@ export default async function Dashboard() {
     .sort({ date: 1 })
     .toArray();
   const sessions = JSON.parse(JSON.stringify(rawSessions));
+
+  // Filter sessions for TODAY only for the Daily Mission
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const dailyStudyMinutes = sessions
+    .filter((s: any) => new Date(s.date) >= today)
+    .reduce((acc: number, s: any) => acc + (s.duration / 60), 0);
 
   // Advanced metrics
   const subjectStats = subjects.map((sub: any) => {
@@ -71,6 +80,8 @@ export default async function Dashboard() {
         <h1 className="text-6xl font-black italic tracking-tighter">Command Center</h1>
         <p className="opacity-50 text-sm">Track. Execute. Dominate.</p>
       </header>
+
+
 
       {/* Quick Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -119,11 +130,15 @@ export default async function Dashboard() {
         <SubjectBarChart data={subjectStats} />
       </div>
 
+                    {/* Daily Study Goal */}
+      <StudyGoal totalStudyMinutes={Math.round(dailyStudyMinutes)} />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div className="bg-base-200 rounded-4xl border border-base-300 p-8 shadow-sm">
           <h2 className="text-2xl font-bold mb-6">New Subject</h2>
           <AddSubjectForm />
         </div>
+
         
         <RandomSubjectPicker subjects={subjects.map((s: any) => ({ _id: s._id.toString(), name: s.name }))} />
       </div>
