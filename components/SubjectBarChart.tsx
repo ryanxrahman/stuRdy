@@ -41,7 +41,7 @@ export default function SubjectBarChart({ data }: { data: SubjectData[] }) {
     const sorted = [...data].sort((a, b) => b.minutes - a.minutes);
 
     return (
-        <div className="w-full  max-md:-ml-6 h-[300px] min-h-75">
+        <div className="w-full -ml-6 h-[300px] min-h-75">
             <ResponsiveContainer width="99%" height="100%">
                 <BarChart data={sorted} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#374151" opacity={0.15} />

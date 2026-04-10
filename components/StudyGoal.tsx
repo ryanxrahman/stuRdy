@@ -37,22 +37,14 @@ export default function StudyGoal({ totalStudyMinutes }: StudyGoalProps) {
   const hoursLeft = Math.max(0, (goal - totalStudyMinutes) / 60);
 
   return (
-    <div className="bg-base-200 border border-base-300 rounded-[2.5rem] p-8 relative overflow-hidden group">
-      {/* Playful background element */}
-      <div className={`absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all duration-1000 ${progress === 100 ? 'bg-emerald-500/20 scale-150' : ''}`} />
-      
+    <div className="bg-base-200 border border-base-300 rounded-4xl p-8 relative overflow-hidden group">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-2xl ${progress === 100 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-primary/10 text-primary'}`}>
-              <Target size={24} />
-            </div>
-            <h2 className="text-2xl font-black italic tracking-tight">Daily Mission</h2>
-          </div>
-          <p className="opacity-50 text-sm font-medium">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xl font-bold">Daily Mission</h2>
+          <p className="text-xs opacity-50 uppercase tracking-widest font-bold">
             {progress === 100 
               ? "Mission accomplished! You're unstoppable today." 
-              : `You've conquered ${totalStudyMinutes}m. Just ${Math.ceil(hoursLeft * 60)}m more to reach your peak.`}
+              : `CONQUERED ${totalStudyMinutes}M. ${Math.ceil(hoursLeft * 60)}M TO PEAK.`}
           </p>
         </div>
 
@@ -63,64 +55,54 @@ export default function StudyGoal({ totalStudyMinutes }: StudyGoalProps) {
                 type="number"
                 value={tempGoal}
                 onChange={(e) => setTempGoal(e.target.value)}
-                className="bg-transparent w-20 px-3 py-1 outline-none font-bold text-center"
+                className="bg-transparent w-20 px-3 py-1 outline-none font-bold text-center text-sm"
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleSave()}
               />
-              <span className="text-xs font-bold opacity-30 uppercase pr-2">min</span>
+              <span className="text-[10px] font-bold opacity-30 uppercase pr-2">min</span>
               <button 
                 onClick={handleSave}
-                className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl hover:bg-emerald-500/30 transition-colors"
+                className="p-1.5 bg-emerald-500/10 text-emerald-500 rounded-lg hover:bg-emerald-500/20 transition-colors"
               >
-                <Check size={16} strokeWidth={3} />
+                <Check size={14} strokeWidth={3} />
               </button>
               <button 
                 onClick={() => { setIsEditing(false); setTempGoal(goal.toString()); }}
-                className="p-2 bg-rose-500/20 text-rose-400 rounded-xl hover:bg-rose-500/30 transition-colors"
+                className="p-1.5 bg-rose-500/10 text-rose-500 rounded-lg hover:bg-rose-500/20 transition-colors"
               >
-                <X size={16} strokeWidth={3} />
+                <X size={14} strokeWidth={3} />
               </button>
             </div>
           ) : (
             <div 
               onClick={() => setIsEditing(true)}
-              className="group/btn flex items-center gap-3 cursor-pointer bg-base-300/50 hover:bg-base-300 px-5 py-3 rounded-2xl border border-base-content/5 transition-all active:scale-95"
+              className="flex flex-col items-end cursor-pointer group/target"
             >
-              <div className="flex flex-col items-end">
+              <div className="flex items-center gap-2">
                 <span className="text-2xl font-black tracking-tighter leading-none">{goal}m</span>
-                <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Target</span>
+                <Edit2 size={12} className="opacity-0 group-hover/target:opacity-30 transition-opacity" />
               </div>
-              <Edit2 size={14} className="opacity-0 group-hover/btn:opacity-50 transition-opacity" />
+              <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Target</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Progress Bar Container */}
-      <div className="mt-8 relative h-6 bg-base-300 rounded-full overflow-hidden border border-base-content/5 p-1">
+      <div className="mt-8 relative h-3 bg-base-300 rounded-full overflow-hidden border border-base-content/5">
         <div 
-          className={`h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden ${
-            progress === 100 ? 'bg-linear-to-r from-emerald-500 to-teal-400' : 'bg-linear-to-r from-primary to-violet-500'
+          className={`h-full rounded-full transition-all duration-1000 ease-out relative ${
+            progress === 100 ? 'bg-emerald-500' : 'bg-primary'
           }`}
           style={{ width: `${progress}%` }}
         >
-          {/* Animated shine effect */}
-          <div className="absolute inset-0 bg-white/20 -translate-x-full animate-[shimmer_2s_infinite]" 
-               style={{ backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)' }} />
-          
-          {/* Progress label */}
-          {progress > 10 && (
-            <span className="absolute inset-y-0 right-3 flex items-center text-[10px] font-black text-white uppercase tracking-tighter mix-blend-overlay">
-              {progress}% DONE
-            </span>
-          )}
         </div>
       </div>
 
       {progress === 100 && (
-        <div className="mt-4 flex justify-center animate-bounce">
-          <span className="text-[10px] font-black italic bg-emerald-500/10 text-emerald-500 px-4 py-1 rounded-full border border-emerald-500/20">
-            ELITE STATUS ACHIEVED ⚡️
+        <div className="mt-4 flex justify-start">
+          <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 italic">
+            ELITE STATUS ACHIEVED
           </span>
         </div>
       )}
