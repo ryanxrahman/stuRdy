@@ -57,7 +57,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
   }));
 
   return (
-    <div className="flex flex-col min-h-screen p-8 max-w-6xl mx-auto gap-12">
+    <div className="flex flex-col min-h-screen p-8 max-md:p-2 max-w-6xl mx-auto gap-12">
       <header>
         <h1 className="text-6xl font-black tracking-tight">{subject.name}</h1>
       </header>
