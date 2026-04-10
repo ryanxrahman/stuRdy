@@ -2,7 +2,6 @@ import { getDb } from "@/lib/mongodb";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AddSubjectForm from "./AddSubjectForm";
-import RandomSubjectPicker from "./RandomSubjectPicker";
 import Link from "next/link";
 import { Trash2, Flame, Clock, BookMarked, Trophy } from "lucide-react";
 import { deleteSubject } from "./subject-actions";
@@ -133,14 +132,11 @@ export default async function Dashboard() {
                     {/* Daily Study Goal */}
       <StudyGoal totalStudyMinutes={Math.round(dailyStudyMinutes)} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 gap-8 mb-8">
         <div className="bg-base-200 rounded-4xl border border-base-300 p-8 shadow-sm">
           <h2 className="text-2xl font-bold mb-6">New Subject</h2>
           <AddSubjectForm />
         </div>
-
-        
-        <RandomSubjectPicker subjects={subjects.map((s: any) => ({ _id: s._id.toString(), name: s.name }))} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

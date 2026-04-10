@@ -5,6 +5,7 @@ import { logoutAction } from "@/app/login/actions";
 import { LayoutDashboard, BookOpen, LogOut } from "lucide-react";
 import SidebarLink from "./SidebarLink";
 import { ThemeToggle } from "./ThemeToggle";
+import SidebarRoulette from "./SidebarRoulette";
 
 export default async function Sidebar() {
     const session = await getSession();
@@ -15,6 +16,12 @@ export default async function Sidebar() {
         .find({ userId: session.userId })
         .sort({ name: 1 })
         .toArray();
+    
+    // Map subjects to the interface expected by SidebarRoulette
+    const rouletteSubjects = subjects.map(s => ({
+        _id: s._id.toString(),
+        name: s.name
+    }));
 
     return (
         <aside className="bg-base-100 h-screen w-64 text-base-content border-r border-base-300 flex flex-col">
@@ -47,6 +54,7 @@ export default async function Sidebar() {
 
             <div className="p-4 bg-base-200 mt-auto">
                 <div className="flex flex-col gap-2">
+                    <SidebarRoulette subjects={rouletteSubjects} />
                     <ThemeToggle />
                     <div className="px-2">
                         <p className="text-xs opacity-50 truncate">Logged in as</p>
