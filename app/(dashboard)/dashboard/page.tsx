@@ -40,6 +40,27 @@ export default async function Dashboard() {
     .filter((s: any) => new Date(s.date) >= today)
     .reduce((acc: number, s: any) => acc + (s.duration / 60), 0);
 
+  const todaySessions = sessions.filter((s: any) => new Date(s.date) >= today);
+  const sessionsToday = todaySessions.length;
+  const averageSessionMinutes = sessionsToday > 0 ? Math.round(dailyStudyMinutes / sessionsToday) : 0;
+  const activeSubjectsToday = new Set(todaySessions.map((s: any) => String(s.subjectId))).size;
+  const longestSessionMinutes = sessionsToday > 0
+    ? Math.round(Math.max(...todaySessions.map((s: any) => s.duration)) / 60)
+    : 0;
+
+  const subjectNameById = new Map<string, string>(
+    subjects.map((sub: any): [string, string] => [String(sub._id), String(sub.name)])
+  );
+  const timeBySubjectToday = new Map<string, number>();
+  todaySessions.forEach((s: any) => {
+    const key = String(s.subjectId);
+    timeBySubjectToday.set(key, (timeBySubjectToday.get(key) || 0) + s.duration);
+  });
+  const topSubjectEntry = [...timeBySubjectToday.entries()].sort((a, b) => b[1] - a[1])[0];
+  const topSubjectToday: string | undefined = topSubjectEntry
+    ? subjectNameById.get(topSubjectEntry[0])
+    : undefined;
+
   // Advanced metrics
   const subjectStats = subjects.map((sub: any) => {
     const subSessions = sessions.filter((s: any) => s.subjectId === sub._id);
@@ -134,7 +155,14 @@ export default async function Dashboard() {
       </div>
 
                     {/* Daily Study Goal */}
-      <StudyGoal totalStudyMinutes={Math.round(dailyStudyMinutes)} />
+      <StudyGoal
+        totalStudyMinutes={Math.round(dailyStudyMinutes)}
+        sessionsToday={sessionsToday}
+        averageSessionMinutes={averageSessionMinutes}
+        activeSubjectsToday={activeSubjectsToday}
+        longestSessionMinutes={longestSessionMinutes}
+        topSubjectToday={topSubjectToday}
+      />
 
       <AddSubjectForm />
 

@@ -1,26 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Target, Edit2, Check, X } from 'lucide-react';
+import { useState } from 'react';
+import { Edit2, Check, X } from 'lucide-react';
 
 interface StudyGoalProps {
   totalStudyMinutes: number;
+  sessionsToday: number;
+  averageSessionMinutes: number;
+  activeSubjectsToday: number;
+  longestSessionMinutes: number;
+  topSubjectToday?: string;
 }
 
-export default function StudyGoal({ totalStudyMinutes }: StudyGoalProps) {
-  const [goal, setGoal] = useState<number>(120); // Default 2 hours
-  const [isEditing, setIsEditing] = useState(false);
-  const [tempGoal, setTempGoal] = useState<string>("120");
-  const [mounted, setMounted] = useState(false);
+function getInitialGoal() {
+  if (typeof window === 'undefined') return 120;
+  const savedGoal = localStorage.getItem('study-goal');
+  const parsed = savedGoal ? parseInt(savedGoal, 10) : NaN;
+  return Number.isNaN(parsed) || parsed <= 0 ? 120 : parsed;
+}
 
-  useEffect(() => {
-    const savedGoal = localStorage.getItem('study-goal');
-    if (savedGoal) {
-      setGoal(parseInt(savedGoal));
-      setTempGoal(savedGoal);
-    }
-    setMounted(true);
-  }, []);
+export default function StudyGoal({
+  totalStudyMinutes,
+  sessionsToday,
+  averageSessionMinutes,
+  activeSubjectsToday,
+  longestSessionMinutes,
+  topSubjectToday,
+}: StudyGoalProps) {
+  const [goal, setGoal] = useState<number>(getInitialGoal);
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempGoal, setTempGoal] = useState<string>(() => String(getInitialGoal()));
 
   const handleSave = () => {
     const newGoal = parseInt(tempGoal);
@@ -31,10 +40,9 @@ export default function StudyGoal({ totalStudyMinutes }: StudyGoalProps) {
     }
   };
 
-  if (!mounted) return null;
-
   const progress = Math.min(Math.round((totalStudyMinutes / goal) * 100), 100);
-  const hoursLeft = Math.max(0, (goal - totalStudyMinutes) / 60);
+  const minutesLeft = Math.max(0, goal - totalStudyMinutes);
+  const overGoalMinutes = Math.max(0, totalStudyMinutes - goal);
 
   return (
     <div className="bg-base-200 border border-base-300 rounded-4xl p-8 relative overflow-hidden group">
@@ -44,7 +52,10 @@ export default function StudyGoal({ totalStudyMinutes }: StudyGoalProps) {
           <p className="text-xs opacity-50 uppercase tracking-widest font-bold">
             {progress === 100 
               ? "Mission accomplished! You're unstoppable today." 
-              : `CONQUERED ${totalStudyMinutes}M. ${Math.ceil(hoursLeft * 60)}M TO PEAK.`}
+              : `CONQUERED ${totalStudyMinutes}M. ${minutesLeft}M TO PEAK.`}
+          </p>
+          <p className="text-[11px] opacity-45 font-bold uppercase tracking-wider mt-1">
+            {sessionsToday} sessions • avg {averageSessionMinutes}m • {activeSubjectsToday} subjects
           </p>
         </div>
 
@@ -96,6 +107,27 @@ export default function StudyGoal({ totalStudyMinutes }: StudyGoalProps) {
           }`}
           style={{ width: `${progress}%` }}
         >
+        </div>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="bg-base-300/60 rounded-2xl p-3 border border-base-content/5">
+          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Progress</p>
+          <p className="text-lg font-black mt-1">{progress}%</p>
+        </div>
+        <div className="bg-base-300/60 rounded-2xl p-3 border border-base-content/5">
+          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Longest</p>
+          <p className="text-lg font-black mt-1">{longestSessionMinutes}m</p>
+        </div>
+        <div className="bg-base-300/60 rounded-2xl p-3 border border-base-content/5">
+          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Top Subject</p>
+          <p className="text-sm font-black mt-1 truncate">{topSubjectToday ?? "None yet"}</p>
+        </div>
+        <div className="bg-base-300/60 rounded-2xl p-3 border border-base-content/5">
+          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+            {overGoalMinutes > 0 ? "Over Goal" : "Remaining"}
+          </p>
+          <p className="text-lg font-black mt-1">{overGoalMinutes > 0 ? `${overGoalMinutes}m` : `${minutesLeft}m`}</p>
         </div>
       </div>
 
