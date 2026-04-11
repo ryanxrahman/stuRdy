@@ -59,13 +59,13 @@ export default async function Home() {
         </div>
         <div className="flex flex-col gap-5 items-start">
           <h1 className="items-start text-start text-2xl" >
-           Stuggled with focus. <br /> created this for myself, <br /> but if it can help you too, <br /> then that's a win.
+           Stuggled with <span className="bg-orange-400 text-black">focus.</span> <br /> created this for myself, <br /> but if it can help you too, <br /> then that's a <span className="italic">win</span>.
           </h1>
           <div className="text-start"> 
             <p>
               <Link className="text-orange-400" href="https://www.xrahman.com" target="_blank">xrahman</Link>, if you're reading this, you know what to do.
             </p>
-            <p>
+            <p >
               just fucking study, bro.
             </p>
           </div>
