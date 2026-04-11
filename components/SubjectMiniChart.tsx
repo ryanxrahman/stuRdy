@@ -59,7 +59,7 @@ export default function SubjectMiniChart({ sessions, subjectName }: SubjectMiniC
   };
 
   return (
-    <div className="w-full h-40">
+    <div className="w-full h-40 -ml-8">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} vertical={false} />
