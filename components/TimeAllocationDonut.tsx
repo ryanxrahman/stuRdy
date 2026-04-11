@@ -1,18 +1,24 @@
 "use client";
 
+import { useMemo, useState } from 'react';
 import { 
     PieChart, 
     Pie, 
     Cell, 
     Tooltip, 
-    ResponsiveContainer,
-    Legend
+    ResponsiveContainer
 } from 'recharts';
 
 type SubjectData = {
     name: string;
     minutes: number;
 }
+
+type EnrichedSubjectData = SubjectData & {
+    percent: number;
+    color: string;
+    gradientId: string;
+};
 
 const COLORS = [
     '#8b5cf6', // purple
@@ -30,13 +36,33 @@ function formatMinutes(minutes: number) {
     return `${(minutes / 60).toFixed(1)}h`;
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+type TooltipPayloadItem = {
+    value: number;
+    payload: EnrichedSubjectData;
+};
+
+type CustomTooltipProps = {
+    active?: boolean;
+    payload?: TooltipPayloadItem[];
+};
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
+        const item = payload[0];
         return (
-            <div className="bg-black text-white px-4 py-2 rounded-xl text-sm shadow-2xl">
-                <p className="font-bold">{payload[0].name}</p>
-                <p className="opacity-80">{formatMinutes(payload[0].value)} studied</p>
-                <p className="opacity-50">{payload[0].payload.percent}% of total</p>
+            <div
+                className="min-w-44 rounded-2xl border border-base-content/20 bg-base-100 px-4 py-3 shadow-2xl"
+                style={{ boxShadow: `0 10px 30px -12px ${item.payload.color}66` }}
+            >
+                <div className="flex items-center gap-2 mb-1.5">
+                    <span
+                        className="inline-block h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: item.payload.color }}
+                    />
+                    <p className="font-bold text-sm" style={{ color: item.payload.color }}>{item.payload.name}</p>
+                </div>
+                <p className="text-sm font-semibold opacity-90">{formatMinutes(item.value)} studied</p>
+                <p className="text-xs opacity-60 mt-0.5">{item.payload.percent}% of total time</p>
             </div>
         );
     }
@@ -44,6 +70,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export default function TimeAllocationDonut({ data }: { data: SubjectData[] }) {
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const totalMinutes = data.reduce((acc, d) => acc + d.minutes, 0);
 
     if (data.length === 0 || totalMinutes === 0) {
@@ -54,23 +81,30 @@ export default function TimeAllocationDonut({ data }: { data: SubjectData[] }) {
         );
     }
 
-    const enrichedData = data
-        .filter(d => d.minutes > 0)
-        .map(d => ({
-            ...d,
-            percent: Math.round((d.minutes / totalMinutes) * 100)
-        }));
+    const enrichedData = useMemo(
+        () => data
+            .filter(d => d.minutes > 0)
+            .map((d, i) => ({
+                ...d,
+                percent: Math.round((d.minutes / totalMinutes) * 100),
+                color: COLORS[i % COLORS.length],
+                gradientId: `donut-grad-${i}`,
+            })),
+        [data, totalMinutes]
+    );
+
+    const highlighted = activeIndex !== null ? enrichedData[activeIndex] : null;
 
     return (
         <div className="flex flex-col items-center gap-4">
-            <div className="w-full h-[260px] min-h-65 relative">
+            <div className="w-full h-65 min-h-65 relative rounded-3xl bg-linear-to-b from-base-100/70 to-transparent">
                 <ResponsiveContainer width="99%" height="100%">
                     <PieChart>
                         <defs>
-                            {enrichedData.map((_, i) => (
-                                <linearGradient key={i} id={`donut-grad-${i}`} x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor={COLORS[i % COLORS.length]} stopOpacity={1}/>
-                                    <stop offset="100%" stopColor={COLORS[i % COLORS.length]} stopOpacity={0.6}/>
+                            {enrichedData.map((item) => (
+                                <linearGradient key={item.gradientId} id={item.gradientId} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor={item.color} stopOpacity={1}/>
+                                    <stop offset="100%" stopColor={item.color} stopOpacity={0.6}/>
                                 </linearGradient>
                             ))}
                         </defs>
@@ -84,28 +118,52 @@ export default function TimeAllocationDonut({ data }: { data: SubjectData[] }) {
                             cornerRadius={6}
                             dataKey="minutes"
                             strokeWidth={0}
+                            onMouseEnter={(_, index) => setActiveIndex(index)}
+                            onMouseLeave={() => setActiveIndex(null)}
+                            isAnimationActive
+                            animationDuration={750}
+                            animationEasing="ease-out"
                         >
-                            {enrichedData.map((_, i) => (
-                                <Cell key={i} fill={`url(#donut-grad-${i})`} />
+                            {enrichedData.map((item, i) => (
+                                <Cell
+                                    key={item.gradientId}
+                                    fill={`url(#${item.gradientId})`}
+                                    style={{
+                                        filter: activeIndex === i ? `drop-shadow(0 0 8px ${item.color}88)` : 'none',
+                                        opacity: activeIndex === null || activeIndex === i ? 1 : 0.45,
+                                        transition: 'filter 180ms ease-out',
+                                    }}
+                                />
                             ))}
                         </Pie>
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip
+                            content={<CustomTooltip />}
+                            position={{ x: 16, y: 16 }}
+                            wrapperStyle={{ zIndex: 20, pointerEvents: 'none' }}
+                        />
                     </PieChart>
                 </ResponsiveContainer>
                 {/* Center label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <p className="text-3xl font-black tabular-nums">{formatMinutes(totalMinutes)}</p>
-                    <p className="text-xs opacity-40 uppercase font-bold tracking-widest">Total</p>
+                    <p className="text-3xl font-black tabular-nums" style={{ color: highlighted?.color }}>
+                        {highlighted ? formatMinutes(highlighted.minutes) : formatMinutes(totalMinutes)}
+                    </p>
+                    <p className="text-xs opacity-50 uppercase font-bold tracking-widest">
+                        {highlighted ? highlighted.name : 'Total'}
+                    </p>
                 </div>
             </div>
 
             {/* Legend grid */}
             <div className="grid grid-cols-2 gap-2 w-full">
                 {enrichedData.map((d, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs">
-                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                        <span className="truncate opacity-70 font-medium">{d.name}</span>
-                        <span className="ml-auto font-black opacity-50">{d.percent}%</span>
+                    <div
+                        key={d.gradientId}
+                        className={`flex items-center gap-2 text-xs rounded-xl px-2 py-1.5 transition-colors ${activeIndex === i ? 'bg-base-300/60' : ''}`}
+                    >
+                        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
+                        <span className={`truncate font-medium ${activeIndex === i ? 'opacity-100' : 'opacity-70'}`}>{d.name}</span>
+                        <span className={`ml-auto font-black ${activeIndex === i ? 'opacity-90' : 'opacity-50'}`}>{d.percent}%</span>
                     </div>
                 ))}
             </div>
