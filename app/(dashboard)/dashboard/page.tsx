@@ -118,7 +118,7 @@ export default async function Dashboard() {
             </div>
             <div>
               <p className="text-xl font-black">{value}</p>
-              <p className="text-xs opacity-40 font-bold uppercase tracking-widest">{label}</p>
+              <p className="text-xs opacity-50 font-mono tracking-tight uppercase">{label}</p>
             </div>
           </div>
         ))}
