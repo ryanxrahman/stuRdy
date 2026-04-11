@@ -6,6 +6,7 @@ import { LayoutDashboard, BookOpen, LogOut } from "lucide-react";
 import SidebarLink from "./SidebarLink";
 import { ThemeToggle } from "./ThemeToggle";
 import SidebarRoulette from "./SidebarRoulette";
+import Image from "next/image";
 
 export default async function Sidebar() {
     const session = await getSession();
@@ -25,7 +26,8 @@ export default async function Sidebar() {
 
     return (
         <aside className="bg-base-100 h-screen w-64 text-base-content border-r border-base-300 flex flex-col">
-            <div className="p-6">
+            <div className="p-6 flex items-center border-b border-base-300 mb-8">
+                <Image src="/study.jpeg" alt="Logo" width={32} height={32} className="inline-block mr-2" />
                 <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">STUDY</Link>
             </div>
 
