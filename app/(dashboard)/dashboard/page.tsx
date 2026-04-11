@@ -135,7 +135,7 @@ export default async function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
           <h2 className="text-xl font-bold mb-1">Time Split</h2>
-          <p className="text-xs opacity-40 mb-6 uppercase tracking-widest font-bold">By Subject</p>
+          <p className="text-xs opacity-50 mb-6 uppercase tracking-tight font-mono">By Subject</p>
           <TimeAllocationDonut data={subjectStats} />
         </div>
 
