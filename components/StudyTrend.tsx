@@ -66,8 +66,7 @@ export default function StudyTrend({ sessions }: StudyTrendProps) {
         <h2 className="text-xl font-bold mb-1">Study Trend</h2>
         <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last 14 Days)</p>
       </div>
-  <div className="w-full h-62.5 -ml-8 outline-none **:outline-none">
-        <style>{`.recharts-wrapper *:focus { outline: none !important; }`}</style>
+      <div className="w-full h-62.5 -ml-8 outline-none **:outline-none">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} tabIndex={-1}>
             <defs>

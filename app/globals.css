@@ -22,3 +22,8 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Recharts focus ring suppression (keeps tooltip hover behavior) */
+.recharts-wrapper *:focus {
+  outline: none !important;
+}

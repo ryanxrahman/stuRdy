@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { Edit2, Check, X } from 'lucide-react';
 
 interface StudyGoalProps {
@@ -12,11 +12,29 @@ interface StudyGoalProps {
   topSubjectToday?: string;
 }
 
-function getInitialGoal() {
+const STUDY_GOAL_KEY = 'study-goal';
+const STUDY_GOAL_EVENT = 'study-goal-change';
+
+function readStoredGoal() {
   if (typeof window === 'undefined') return 120;
-  const savedGoal = localStorage.getItem('study-goal');
+  const savedGoal = localStorage.getItem(STUDY_GOAL_KEY);
   const parsed = savedGoal ? parseInt(savedGoal, 10) : NaN;
   return Number.isNaN(parsed) || parsed <= 0 ? 120 : parsed;
+}
+
+function subscribeToGoalStore(onStoreChange: () => void) {
+  if (typeof window === 'undefined') return () => {};
+
+  const onStorage = () => onStoreChange();
+  const onCustom = () => onStoreChange();
+
+  window.addEventListener('storage', onStorage);
+  window.addEventListener(STUDY_GOAL_EVENT, onCustom);
+
+  return () => {
+    window.removeEventListener('storage', onStorage);
+    window.removeEventListener(STUDY_GOAL_EVENT, onCustom);
+  };
 }
 
 export default function StudyGoal({
@@ -27,15 +45,15 @@ export default function StudyGoal({
   longestSessionMinutes,
   topSubjectToday,
 }: StudyGoalProps) {
-  const [goal, setGoal] = useState<number>(getInitialGoal);
+  const goal = useSyncExternalStore(subscribeToGoalStore, readStoredGoal, () => 120);
   const [isEditing, setIsEditing] = useState(false);
-  const [tempGoal, setTempGoal] = useState<string>(() => String(getInitialGoal()));
+  const [tempGoal, setTempGoal] = useState<string>('120');
 
   const handleSave = () => {
     const newGoal = parseInt(tempGoal);
     if (!isNaN(newGoal) && newGoal > 0) {
-      setGoal(newGoal);
-      localStorage.setItem('study-goal', newGoal.toString());
+      localStorage.setItem(STUDY_GOAL_KEY, newGoal.toString());
+      window.dispatchEvent(new Event(STUDY_GOAL_EVENT));
       setIsEditing(false);
     }
   };
@@ -86,7 +104,10 @@ export default function StudyGoal({
             </div>
           ) : (
             <div 
-              onClick={() => setIsEditing(true)}
+              onClick={() => {
+                setTempGoal(String(goal));
+                setIsEditing(true);
+              }}
               className="flex flex-col items-end cursor-pointer group/target"
             >
               <div className="flex items-center gap-2">
