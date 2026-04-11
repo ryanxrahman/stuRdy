@@ -50,29 +50,27 @@ export default function SubjectsOverview({ subjects, subjectStats, onDelete, ses
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
-                    <p className="text-xs opacity-50 mt-2">
+                    <p className="text-xs opacity-50 uppercase font-mono tracking-tight mt-2">
                       {completedTodos}/{totalTodos} tasks done
                     </p>
                   </div>
-                  <form 
-                    action={async () => { "use server"; await onDelete(sub._id.toString()); }} 
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <button type="submit" className="btn btn-ghost btn-circle btn-xs text-error hover:bg-error/10" title="Delete Subject">
-                      <Trash2 size={16} />
-                    </button>
-                  </form>
+                   {/* Stats */}
+                <div className="flex flex-col items-center gap-2">
+                  {stat && (
+                      <p className="text-2xl font-bold text-primary">
+                        {stat.minutes < 60 ? `${stat.minutes}m` : `${(stat.minutes / 60).toFixed(1)}h`}
+                      </p>
+                  )}
+                    <form
+                      action={async () => { "use server"; await onDelete(sub._id.toString()); }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button type="submit" className="btn btn-ghost btn-circle btn-xs text-error hover:bg-error/10" title="Delete Subject">
+                        <Trash2 size={16} />
+                      </button>
+                    </form>
                 </div>
-                
-                {/* Stats */}
-                {stat && (
-                  <div className="mt-4 pt-4 border-t border-base-300">
-                    <p className="text-xs opacity-50 font-bold uppercase tracking-wider">Total Study Time</p>
-                    <p className="text-lg font-bold text-primary">
-                      {stat.minutes < 60 ? `${stat.minutes}m` : `${(stat.minutes / 60).toFixed(1)}h`}
-                    </p>
-                  </div>
-                )}
+                </div>
               </Link>
 
               {/* Mini Chart */}
