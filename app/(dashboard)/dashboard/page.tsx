@@ -135,13 +135,13 @@ export default async function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
           <h2 className="text-xl font-bold mb-1">Time Split</h2>
-          <p className="text-xs opacity-50 mb-6 uppercase tracking-tight font-mono">By Subject</p>
+          <p className="text-xs opacity-50 mb-6 uppercase tracking-tight font-mono">(By Subject)</p>
           <TimeAllocationDonut data={subjectStats} />
         </div>
 
         <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
           <h2 className="text-xl font-bold mb-1">Mastery Radar</h2>
-          <p className="text-xs opacity-40 mb-6 uppercase tracking-widest font-bold">Skill Balance</p>
+          <p className="text-xs opacity-50 mb-6 uppercase tracking-tight font-mono">(Skill Balance)</p>
           <SubjectMasteryRadar data={subjectStats} />
         </div>
       </div>
@@ -149,7 +149,7 @@ export default async function Dashboard() {
       {/* Subject Leaderboard */}
       <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
         <h2 className="text-xl font-bold mb-1">Study Leaderboard</h2>
-        <p className="text-xs opacity-40 mb-6 uppercase tracking-widest font-bold">Ranked by time invested</p>
+        <p className="text-xs opacity-50 mb-6 uppercase tracking-tight font-mono">Ranked by time invested</p>
         <SubjectBarChart data={subjectStats} />
       </div>
 
