@@ -95,7 +95,7 @@ export default async function Dashboard() {
   const totalSessions = sessions.length;
 
   return (
-    <div className="flex flex-col gap-10 p-8 max-w-6xl mx-auto pb-20 ">
+    <div className="flex flex-col gap-10 p-8 max-md:p-2 max-w-6xl mx-auto pb-20 ">
       {/* Header */}
       <header className="flex flex-col gap-1">
         <h1 className="text-6xl font-black italic tracking-tighter">Command Center</h1>
