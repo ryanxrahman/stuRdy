@@ -61,12 +61,15 @@ export default function StudyTrend({ sessions }: StudyTrendProps) {
   };
 
   return (
-    <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
-      <h2 className="text-xl font-bold mb-1">Study Trend</h2>
-      <p className="text-xs opacity-40 mb-6 uppercase tracking-widest font-bold">Last 14 Days</p>
-      <div className="w-full h-62.5">
+    <div className="flex flex-col gap-5 bg-base-200 rounded-4xl border border-base-300 p-8">
+      <div>
+        <h2 className="text-xl font-bold mb-1">Study Trend</h2>
+        <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last 14 Days)</p>
+      </div>
+  <div className="w-full h-62.5 -ml-8 outline-none **:outline-none">
+        <style>{`.recharts-wrapper *:focus { outline: none !important; }`}</style>
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData}>
+          <AreaChart data={chartData} tabIndex={-1}>
             <defs>
               <linearGradient id="colorMinutes" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
@@ -82,7 +85,6 @@ export default function StudyTrend({ sessions }: StudyTrendProps) {
             <YAxis 
               tick={{ fontSize: 12, opacity: 0.6 }}
               axisLine={false}
-              label={{ value: 'Minutes', angle: -90, position: 'insideLeft' }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Area 
