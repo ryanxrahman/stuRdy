@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Study",
-  description: "Study project",
+  title: "Study by MR",
+  description: "A minimalist study timer and analytics dashboard to help you stay focused and track your progress.",
 };
 
 export default function RootLayout({
