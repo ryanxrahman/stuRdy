@@ -3,7 +3,6 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AddSubjectForm from "./AddSubjectForm";
 import { Flame, Clock, BookMarked, Trophy } from "lucide-react";
-import { deleteSubject } from "./subject-actions";
 import ContributionMap from "@/components/ContributionMap";
 import SubjectMasteryRadar from "@/components/SubjectMasteryRadar";
 import TimeAllocationDonut from "@/components/TimeAllocationDonut";
@@ -170,7 +169,6 @@ export default async function Dashboard() {
       <SubjectsOverview 
         subjects={subjects} 
         subjectStats={subjectStats}
-        onDelete={deleteSubject}
         sessions={sessions}
       />
     </div>

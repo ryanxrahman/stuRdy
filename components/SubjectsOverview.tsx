@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
 import SubjectMiniChart from "./SubjectMiniChart";
+import DeleteSubjectButton from "./DeleteSubjectButton";
 
 type Subject = {
   _id: string;
@@ -17,11 +17,10 @@ type SubjectData = {
 type SubjectsOverviewProps = {
   subjects: Subject[];
   subjectStats: SubjectData[];
-  onDelete: (id: string) => Promise<any>;
   sessions: any[];
 };
 
-export default function SubjectsOverview({ subjects, subjectStats, onDelete, sessions }: SubjectsOverviewProps) {
+export default function SubjectsOverview({ subjects, subjectStats, sessions }: SubjectsOverviewProps) {
   if (subjects.length === 0) {
     return (
       <p className="col-span-full text-center opacity-50 py-12 border-2 border-dashed border-base-300 rounded-3xl">
@@ -43,35 +42,29 @@ export default function SubjectsOverview({ subjects, subjectStats, onDelete, ses
           return (
             <div key={sub._id.toString()} className="group">
               {/* Subject Card */}
-              <Link 
-                href={`/${encodeURIComponent(sub.name)}`}
-                className="block p-6 bg-base-200 border border-base-300 rounded-t-3xl hover:border-primary transition-all active:scale-95 shadow-sm hover:shadow-md"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
+              <div className="p-6 bg-base-200 border border-base-300 rounded-t-3xl hover:border-primary transition-all shadow-sm hover:shadow-md">
+                <div className="flex items-start justify-between gap-3">
+                  <Link
+                    href={`/${encodeURIComponent(sub.name)}`}
+                    className="flex-1 block active:scale-95 transition-transform"
+                  >
                     <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{sub.name}</h3>
                     <p className="text-xs opacity-50 uppercase font-mono tracking-tight mt-2">
                       {completedTodos}/{totalTodos} tasks done
                     </p>
-                  </div>
-                   {/* Stats */}
-                <div className="flex flex-col items-center gap-2">
-                  {stat && (
+                  </Link>
+                  <div className="flex flex-col items-center gap-2">
+                    {stat && (
                       <p className="text-2xl font-bold text-primary">
                         {stat.minutes < 60 ? `${stat.minutes}m` : `${(stat.minutes / 60).toFixed(1)}h`}
                       </p>
-                  )}
-                    <form
-                      action={async () => { "use server"; await onDelete(sub._id.toString()); }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <button type="submit" className="btn btn-ghost btn-circle btn-xs text-error hover:bg-error/10" title="Delete Subject">
-                        <Trash2 size={16} />
-                      </button>
-                    </form>
+                    )}
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <DeleteSubjectButton subjectId={sub._id.toString()} subjectName={sub.name} />
+                    </div>
+                  </div>
                 </div>
-                </div>
-              </Link>
+              </div>
 
               {/* Mini Chart */}
               <div className="bg-base-200 border border-t-0 border-base-300 rounded-b-3xl p-6 shadow-sm">
