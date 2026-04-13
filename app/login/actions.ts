@@ -36,7 +36,6 @@ export async function loginAction(prevState: any, formData: FormData) {
     const token = await new SignJWT({ userId: user._id.toString(), email: user.email })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("24h")
       .sign(JWT_SECRET);
 
     const cookieStore = await cookies();
@@ -44,7 +43,6 @@ export async function loginAction(prevState: any, formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 1 day
       path: "/",
     });
 
@@ -87,7 +85,6 @@ export async function registerAction(prevState: any, formData: FormData) {
     const token = await new SignJWT({ userId: result.insertedId.toString(), email })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("24h")
       .sign(JWT_SECRET);
 
     const cookieStore = await cookies();
@@ -95,7 +92,6 @@ export async function registerAction(prevState: any, formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 1 day
       path: "/",
     });
 
