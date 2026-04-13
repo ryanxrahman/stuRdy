@@ -46,29 +46,6 @@ type CustomTooltipProps = {
     payload?: TooltipPayloadItem[];
 };
 
-const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
-    if (active && payload && payload.length) {
-        const item = payload[0];
-        return (
-            <div
-                className="min-w-44 rounded-2xl border border-base-content/20 bg-base-100 px-4 py-3 shadow-2xl"
-                style={{ boxShadow: `0 10px 30px -12px ${item.payload.color}66` }}
-            >
-                <div className="flex items-center gap-2 mb-1.5">
-                    <span
-                        className="inline-block h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: item.payload.color }}
-                    />
-                    <p className="font-bold text-sm" style={{ color: item.payload.color }}>{item.payload.name}</p>
-                </div>
-                <p className="text-sm font-semibold opacity-90">{formatMinutes(item.value)} studied</p>
-                <p className="text-xs opacity-60 mt-0.5">{item.payload.percent}% of total time</p>
-            </div>
-        );
-    }
-    return null;
-};
-
 export default function TimeAllocationDonut({ data }: { data: SubjectData[] }) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const totalMinutes = data.reduce((acc, d) => acc + d.minutes, 0);
@@ -136,11 +113,6 @@ export default function TimeAllocationDonut({ data }: { data: SubjectData[] }) {
                                 />
                             ))}
                         </Pie>
-                        <Tooltip
-                            content={<CustomTooltip />}
-                            position={{ x: 16, y: 16 }}
-                            wrapperStyle={{ zIndex: 20, pointerEvents: 'none' }}
-                        />
                     </PieChart>
                 </ResponsiveContainer>
                 {/* Center label */}
