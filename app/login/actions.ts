@@ -10,6 +10,8 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "default_secret_please_change_me"
 );
 
+const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+
 export async function loginAction(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -36,6 +38,7 @@ export async function loginAction(prevState: any, formData: FormData) {
     const token = await new SignJWT({ userId: user._id.toString(), email: user.email })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
+      .setExpirationTime("30d")
       .sign(JWT_SECRET);
 
     const cookieStore = await cookies();
@@ -43,6 +46,7 @@ export async function loginAction(prevState: any, formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      maxAge: SESSION_MAX_AGE,
       path: "/",
     });
 
@@ -85,6 +89,7 @@ export async function registerAction(prevState: any, formData: FormData) {
     const token = await new SignJWT({ userId: result.insertedId.toString(), email })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
+      .setExpirationTime("30d")
       .sign(JWT_SECRET);
 
     const cookieStore = await cookies();
@@ -92,6 +97,7 @@ export async function registerAction(prevState: any, formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      maxAge: SESSION_MAX_AGE,
       path: "/",
     });
 
