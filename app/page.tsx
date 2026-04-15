@@ -86,6 +86,21 @@ export default async function Home() {
     minutes: Math.round(minutes),
   }));
 
+  const journeyStart = new Date("2026-04-07T00:00:00");
+  const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const journeyStartDate = new Date(
+    journeyStart.getFullYear(),
+    journeyStart.getMonth(),
+    journeyStart.getDate()
+  );
+  const MS_PER_DAY = 1000 * 60 * 60 * 24;
+  const daysSinceStart = Math.max(
+    0,
+    Math.floor((todayStart.getTime() - journeyStartDate.getTime()) / MS_PER_DAY)
+  );
+  const totalHoursStudied = (totalMinutes / 60).toFixed(1);
+
   return (
     <div className="min-h-screen bg-neutral-900 text-neutral-100 selection:bg-orange-100 selection:text-orange-900">
       <nav className="sticky top-0 z-50 border-b border-white/10 bg-neutral-900/85 backdrop-blur-xl">
@@ -172,6 +187,14 @@ export default async function Home() {
           <h2 className="text-2xl font-black mb-1">What I study the most</h2>
           <p className="text-sm opacity-50 mb-6">Subject-wise focus time from real timer sessions.</p>
           <SubjectBarChart data={subjectStats} />
+        </section>
+
+        <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-widest opacity-50 mb-3">Journey Counter</p>
+          <p className="text-2xl md:text-3xl font-black tracking-tight leading-tight">
+            It&apos;s been <span className="text-violet-500">{daysSinceStart}</span> days and I have studied <span className="text-emerald-500">{totalHoursStudied}</span> hours.
+          </p>
+          <p className="text-sm opacity-50 mt-3">Counting from April 7, 2026. when i made this app.</p>
         </section>
       </main>
     </div>
