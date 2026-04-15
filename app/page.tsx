@@ -1,23 +1,17 @@
-
-import { getSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Image from "next/image";
-
 import Link from "next/link";
-import { 
-  BookOpen, 
-  Trophy, 
-  Clock, 
-  ChevronDown, 
-  CheckCircle2, 
-  BarChart3, 
-  Calendar, 
-  Zap,
-  ShieldCheck,
-  LayoutDashboard,
-  Sparkles,
-  ArrowRight
-} from "lucide-react";
+import { redirect } from "next/navigation";
+import { BarChart3, BookOpen, Clock, Flame, ArrowRight } from "lucide-react";
+import { getSession } from "@/lib/auth";
+import { getDb } from "@/lib/mongodb";
+import ProgressChart from "./(dashboard)/[subject]/ProgressChart";
+import SubjectBarChart from "@/components/SubjectBarChart";
+
+type SessionDoc = {
+  date: Date | string;
+  duration: number;
+  subjectId?: { toString(): string } | string;
+};
 
 export default async function Home() {
   const session = await getSession();
@@ -26,52 +20,160 @@ export default async function Home() {
     redirect("/dashboard");
   }
 
-  return (
-    <div className="bg-neutral-800 text-white selection:bg-orange-100 selection:text-orange-900 min-h-screen">
-      {/* 
-        A more "human-designed" layout:
-        - Less rigid geometry, more whitespace.
-        - Warmer color palette (slight off-whites, oranges, and deep grays).
-        - Elegant typography-first approach.
-      */}
+  const db = await getDb();
 
-      {/* Modern, Floating Header */}
-      <nav className="fixed top-6 inset-x-0 z-50 mx-auto max-w-fit flex items-center bg-neutral-800/70 backdrop-blur-xl border border-white/5 px-6 py-3 rounded-2xl shadow-lg shadow-black/20 space-x-8">
-        <div className="flex items-center gap-2">
-         <Image src="/study.jpeg" alt="Logo" width={30} height={30} className="rounded-full" />
-          <span className="font-semibold tracking-tight text-sm text-white">Study by mr</span>
-        </div>
-        <div className="flex gap-3 items-center pl-4 border-l border-white/10">
-          <Link href="/login" className="text-sm font-semibold hover:opacity-70 transition-opacity px-2 py-1 text-white">Login</Link>
-          <Link href="/register" className="bg-white text-black px-5 py-2 rounded-xl text-xs font-bold hover:scale-105 active:scale-95 transition-all">Sign Up</Link>
+  const profileEmail = process.env.LANDING_STATS_EMAIL || process.env.PORTFOLIO_EMAIL;
+  const profileUser = profileEmail
+    ? await db.collection("users").findOne({ email: profileEmail })
+    : await db.collection("users").findOne({}, { sort: { createdAt: 1 } });
+
+  const userId = profileUser?._id?.toString();
+
+  const rawSubjects = userId
+    ? await db.collection("subjects").find({ userId }).toArray()
+    : [];
+
+  const rawSessions = userId
+    ? await db.collection<SessionDoc>("sessions").find({ userId }).sort({ date: 1 }).toArray()
+    : [];
+
+  const sessions = rawSessions;
+
+  const totalMinutes = Math.round(
+    sessions.reduce((acc, s) => acc + ((s.duration || 0) / 60), 0)
+  );
+
+  const totalSessions = sessions.length;
+  const totalSubjects = rawSubjects.length;
+
+  const uniqueDays = new Set(
+    sessions.map((s) => new Date(s.date).toDateString())
+  ).size;
+
+  const minutesBySubjectId: Record<string, number> = {};
+  sessions.forEach((s) => {
+    const subjectKey = s.subjectId?.toString();
+    if (!subjectKey) return;
+    minutesBySubjectId[subjectKey] = (minutesBySubjectId[subjectKey] || 0) + ((s.duration || 0) / 60);
+  });
+
+  const subjectNameById: Record<string, string> = {};
+  rawSubjects.forEach((sub: any) => {
+    subjectNameById[sub._id.toString()] = sub.name;
+  });
+
+  const subjectStats = Object.entries(minutesBySubjectId)
+    .map(([id, minutes]) => ({
+      name: subjectNameById[id] || "Unknown",
+      minutes: Math.round(minutes),
+    }))
+    .filter((s) => s.minutes > 0)
+    .sort((a, b) => b.minutes - a.minutes);
+
+  const topSubject = subjectStats[0]?.name || "Not enough data yet";
+
+  const studyChartDataMap: Record<string, number> = {};
+  sessions.forEach((s) => {
+    const dateStr = new Date(s.date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+    studyChartDataMap[dateStr] = (studyChartDataMap[dateStr] || 0) + ((s.duration || 0) / 60);
+  });
+
+  const studyChartData = Object.entries(studyChartDataMap).map(([date, minutes]) => ({
+    date,
+    minutes: Math.round(minutes),
+  }));
+
+  return (
+    <div className="min-h-screen bg-neutral-900 text-neutral-100 selection:bg-orange-100 selection:text-orange-900">
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-neutral-900/85 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Image src="/study.jpeg" alt="Study logo" width={32} height={32} className="rounded-full" />
+            <span className="font-semibold tracking-tight">Study by mr</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link href="/login" className="px-4 py-2 rounded-xl text-sm font-semibold hover:bg-white/10 transition-colors">
+              Login
+            </Link>
+            <Link href="/register" className="px-4 py-2 rounded-xl text-sm font-bold bg-white text-black hover:opacity-90 transition-opacity">
+              Sign Up
+            </Link>
+          </div>
         </div>
       </nav>
 
-      {/* Slide 1: Human-Centric Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 text-center relative pt-20 overflow-hidden">
-        {/* Organic shapes for a more human feel */}
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-900/20 rounded-full blur-[120px] -z-10 opacity-60" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px] -z-10 opacity-40" />
+      <main className="max-w-6xl mx-auto px-6 py-10 md:py-14 flex flex-col gap-10">
+        <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div className="space-y-4">
+              <p className="text-xs font-bold uppercase tracking-widest opacity-50">My POV</p>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
+                I built this because I kept losing focus.
+              </h1>
+              <p className="opacity-70 max-w-xl">
+                No fake motivation here — just sessions tracked every day, subjects ranked by time,
+                and visible progress. This page shows how I actually study.
+              </p>
+              <p className="text-sm opacity-60">
+                Top studied subject right now: <span className="font-bold opacity-100">{topSubject}</span>
+              </p>
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 mt-2 px-5 py-3 rounded-2xl bg-violet-500 text-white font-bold text-sm hover:bg-violet-400 transition-colors"
+              >
+                Start your own study log
+                <ArrowRight size={16} />
+              </Link>
+            </div>
 
-      <div className="flex flex-col lg:flex-row items-center gap-12 max-w-5xl">
-        <div className="shrink-0">
-          <Image src="/study.jpeg" alt="Description" className="rounded-2xl" width={500} height={300} />
-        </div>
-        <div className="flex flex-col gap-5 items-start">
-          <h1 className="items-start text-start text-2xl" >
-           Stuggled with <span className="bg-orange-400 text-black">focus.</span> <br /> created this for myself, <br /> but if it can help you too, <br /> then that's a <span className="italic">win</span>.
-          </h1>
-          <div className="text-start"> 
-            <p>
-              <Link className="text-orange-400" href="https://www.xrahman.com" target="_blank">xrahman</Link>, if you're reading this, you know what to do.
-            </p>
-            <p >
-              just fucking study, bro.
-            </p>
+            <div className="rounded-3xl overflow-hidden border border-base-300 bg-base-300/20">
+              <Image
+                src="/study.jpeg"
+                alt="Study preview"
+                width={900}
+                height={520}
+                className="w-full h-auto object-cover"
+                priority
+              />
+            </div>
           </div>
-        </div>
-      </div>
-      </section>
+        </section>
+
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { icon: Clock, label: "Total Focus", value: totalMinutes < 60 ? `${totalMinutes}m` : `${(totalMinutes / 60).toFixed(1)}h`, color: "text-violet-400" },
+            { icon: Flame, label: "Sessions", value: totalSessions, color: "text-amber-400" },
+            { icon: BookOpen, label: "Subjects", value: totalSubjects, color: "text-cyan-400" },
+            { icon: BarChart3, label: "Study Days", value: uniqueDays, color: "text-emerald-400" },
+          ].map(({ icon: Icon, label, value, color }) => (
+            <div key={label} className="bg-base-200 text-base-content rounded-3xl border border-base-300 p-5 flex items-center gap-4">
+              <div className={`${color} opacity-90`}>
+                <Icon size={22} />
+              </div>
+              <div>
+                <p className="text-xl font-black leading-none">{value}</p>
+                <p className="text-xs opacity-50 uppercase tracking-tight font-mono mt-1">{label}</p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+          <h2 className="text-2xl font-black mb-1">Study Momentum</h2>
+          <p className="text-sm opacity-50 mb-6">Same chart style I use inside each subject page.</p>
+          <ProgressChart data={studyChartData} />
+        </section>
+
+        <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+          <h2 className="text-2xl font-black mb-1">What I study the most</h2>
+          <p className="text-sm opacity-50 mb-6">Subject-wise focus time from real timer sessions.</p>
+          <SubjectBarChart data={subjectStats} />
+        </section>
+      </main>
     </div>
   );
 }
