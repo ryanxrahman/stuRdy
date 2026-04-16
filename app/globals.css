@@ -27,3 +27,87 @@
 .recharts-wrapper *:focus {
   outline: none !important;
 }
+
+/* StudyReward Component Styles */
+@layer components {
+  /* Progress bar animation */
+  .study-reward-progress {
+    @apply h-1.5 bg-base-200 rounded-full overflow-hidden;
+  }
+
+  .study-reward-progress-bar {
+    @apply h-full rounded-full transition-all duration-500;
+  }
+
+  /* Level card styles */
+  .study-reward-card {
+    @apply rounded-2xl border overflow-hidden transition-colors;
+  }
+
+  .study-reward-card-unlocked {
+    @apply bg-emerald-500/5 border-emerald-500/20;
+  }
+
+  .study-reward-card-current {
+    @apply bg-violet-500/5 border-violet-500/20;
+  }
+
+  .study-reward-card-locked {
+    @apply bg-base-100 border-base-content/10;
+  }
+
+  /* Badge styles */
+  .study-reward-badge {
+    @apply w-9 h-9 rounded-full flex items-center justify-center text-base font-medium;
+  }
+
+  .study-reward-badge-unlocked {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .study-reward-badge-current {
+    @apply bg-violet-100 text-violet-700;
+  }
+
+  .study-reward-badge-locked {
+    @apply bg-base-200 text-base-content/30;
+  }
+
+  /* Status badge styles */
+  .study-reward-status-badge {
+    @apply text-[11px] font-medium px-2 py-0.5 rounded-full;
+  }
+
+  .study-reward-status-cleared {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .study-reward-status-in-progress {
+    @apply bg-violet-100 text-violet-700;
+  }
+
+  .study-reward-status-locked {
+    @apply bg-base-200 text-base-content/40;
+  }
+
+  /* Form input animation */
+  .study-reward-input {
+    @apply rounded-lg transition-all focus:outline-none px-3 py-2 text-sm bg-base-100 border border-base-content/20;
+  }
+
+  /* Button loading state */
+  .study-reward-btn-loading {
+    @apply opacity-50 pointer-events-none;
+  }
+
+  /* Stats grid responsive */
+  .study-reward-stats {
+    @apply grid grid-cols-3 gap-2.5;
+  }
+
+  @media (max-width: 640px) {
+    .study-reward-stats {
+      @apply grid-cols-1;
+    }
+  }
+}

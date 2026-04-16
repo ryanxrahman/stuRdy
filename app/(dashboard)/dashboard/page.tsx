@@ -4,12 +4,14 @@ import { redirect } from "next/navigation";
 import AddSubjectForm from "./AddSubjectForm";
 import { Flame, Clock, BookMarked, Trophy } from "lucide-react";
 import ContributionMap from "@/components/ContributionMap";
+import { ObjectId } from "mongodb";
 import SubjectMasteryRadar from "@/components/SubjectMasteryRadar";
 import TimeAllocationDonut from "@/components/TimeAllocationDonut";
 import SubjectBarChart from "@/components/SubjectBarChart";
 import StudyGoal from "@/components/StudyGoal";
 import StudyTrend from "@/components/StudyTrend";
 import SubjectsOverview from "@/components/SubjectsOverview";
+import StudyReward from "@/components/StudyReward";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -68,6 +70,12 @@ export default async function Dashboard() {
   });
 
   const totalStudyMinutes = subjectStats.reduce((acc: number, s: any) => acc + s.minutes, 0);
+  const totalStudyHours = totalStudyMinutes / 60;
+  
+  // Fetch reward levels
+  const rawUser = await db.collection("users").findOne({ _id: new ObjectId(session.userId) });
+  const rewardLevels = rawUser?.rewardLevels ? JSON.parse(JSON.stringify(rawUser.rewardLevels)) : [];
+
   const totalSubjects = subjects.length;
   const totalTasks = subjects.reduce((acc: number, s: any) => acc + (s.todos?.length || 0), 0);
   const totalSessions = sessions.length;
@@ -135,6 +143,11 @@ export default async function Dashboard() {
                     {/* Daily Study Goal */}
       <StudyGoal
         totalStudyMinutes={Math.round(dailyStudyMinutes)}
+      />
+
+      <StudyReward 
+        totalStudyHours={totalStudyHours} 
+        initialRewards={rewardLevels} 
       />
 
       <AddSubjectForm />
