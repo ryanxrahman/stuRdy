@@ -10,12 +10,17 @@ export default function Login() {
     const [state, formAction, isPending] = useActionState(loginAction, null);
 
     return (
-        <div className="flex flex-col bg-neutral-800 items-center justify-center h-screen gap-4">
-            <form action={formAction} className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                <Link href="/">
-                    <legend className="flex gap-1 items-center link link-hover"><ArrowLeftCircle size={15} strokeWidth={1.5} /> back to home</legend>
-                </Link>
-                <legend className="fieldset-legend text-xl font-bold">Login</legend>
+        <div className="flex flex-col bg-neutral-900 items-center justify-center min-h-screen my-auto gap-4">
+            <form action={formAction} className="fieldset bg-slate-700 border-base-300 items-center justify-center my-atuo rounded-box w-md h-full border p-4 lg:p-10">
+                <div>
+                    <Link href="/">
+                        <legend className="flex gap-1 items-center link link-hover"><ArrowLeftCircle size={15} strokeWidth={1.5} /> back to home</legend>
+                    </Link>
+                    <div className="flex flex-col items-center mt-4 mb-2">
+                        <h1 className="text-xl font-bold">Welcome Back</h1>
+                        <p className="text-xs italic">lets study!</p>
+                    </div>
+                </div>
 
                 {state?.error && (
                     <div className="text-error text-sm mb-2">{state.error}</div>
@@ -25,8 +30,8 @@ export default function Login() {
                 <input 
                     name="email"
                     type="email" 
-                    className="input w-full rounded-xl" 
-                    placeholder="Email" 
+                    className="input rounded-xl w-full focus:outline-none" 
+                    placeholder="zuck@gmail.com" 
                
                     required 
                 />
@@ -36,12 +41,12 @@ export default function Login() {
                     name="password"
                     type="password" 
                     className="input w-full rounded-xl" 
-                    placeholder="Password" 
+                    placeholder="password" 
                     required 
                 />
 
                 <div className="mt-4">
-                    <BtnPrimary className="w-full bg-neutral-900 text-white" type="submit" disabled={isPending}>
+                    <BtnPrimary className="w-full bg-neutral-900 text-white dark:bg-white dark:text-black" type="submit" disabled={isPending}>
                         {isPending ? "Logging in..." : "Login"}
                     </BtnPrimary>
                 </div>
