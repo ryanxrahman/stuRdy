@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${gabarito.variable} ${geistMono.variable} h-full antialiased font-(family-name:--font-gabarito)`}
       suppressHydrationWarning
     >
       <body className="min-h-full scroll-smooth flex flex-col">
