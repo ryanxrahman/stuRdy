@@ -6,8 +6,11 @@ import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import ProgressChart from "./(dashboard)/[subject]/ProgressChart";
 import SubjectBarChart from "@/components/SubjectBarChart";
+import ContributionMap from "@/components/ContributionMap";
+import StudyGoal from "@/components/StudyGoal";
 
 type SessionDoc = {
+  _id?: any;
   date: Date | string;
   duration: number;
   subjectId?: { toString(): string } | string;
@@ -85,6 +88,20 @@ export default async function Home() {
     date,
     minutes: Math.round(minutes),
   }));
+
+  const contributionSessions = sessions.map(s => ({
+    date: new Date(s.date),
+    duration: s.duration || 0
+  }));
+
+  const todaySessions = sessions.filter(s => {
+    const sDate = new Date(s.date);
+    const now = new Date();
+    return sDate.getDate() === now.getDate() &&
+      sDate.getMonth() === now.getMonth() &&
+      sDate.getFullYear() === now.getFullYear();
+  });
+  const todayMinutes = Math.round(todaySessions.reduce((acc, s) => acc + ((s.duration || 0) / 60), 0));
 
   const journeyStart = new Date("2026-04-07T00:00:00");
   const today = new Date();
@@ -187,6 +204,11 @@ export default async function Home() {
           <h2 className="text-2xl font-black mb-1">What I study the most</h2>
           <p className="text-sm opacity-50 mb-6">Subject-wise focus time from real timer sessions.</p>
           <SubjectBarChart data={subjectStats} />
+        </section>
+
+        <section className="grid md:grid-cols-2 gap-8">
+          <ContributionMap sessions={contributionSessions} />
+          <StudyGoal totalStudyMinutes={todayMinutes} />
         </section>
 
         <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
