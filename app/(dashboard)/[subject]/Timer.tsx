@@ -21,12 +21,17 @@ export default function Timer({ subjectId }: { subjectId: string }) {
             interval = setInterval(() => {
                 const now = Date.now();
                 const elapsedSeconds = Math.floor((now - sessionStartTime) / 1000);
-                setSeconds(initialSeconds + elapsedSeconds);
+                const currentSeconds = initialSeconds + elapsedSeconds;
+                setSeconds(currentSeconds);
+                document.title = ` ${formatTime(currentSeconds)}`;
             }, 100); // Check every 0.1s for extreme accuracy
+        } else {
+            document.title = "Study App";
         }
 
         return () => {
             if (interval) clearInterval(interval);
+            document.title = "Study App";
         };
     }, [isActive, accumulatedSeconds]);
 
