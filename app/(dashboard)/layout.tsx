@@ -27,10 +27,19 @@ export default async function DashboardLayout({
     .sort({ name: 1 })
     .toArray();
 
+  const sidebarSubjects = subjects.map((subject) => ({
+    _id: subject._id.toString(),
+    name: typeof subject.name === "string" ? subject.name : "Untitled",
+  }));
+
+  const sidebarUser = {
+    email: typeof user?.email === "string" ? user.email : session.email,
+  };
+
   return (
     <div className="flex min-h-screen bg-base-100">
       <SidebarMobile>
-        <Sidebar subjects={subjects} user={user} />
+        <Sidebar subjects={sidebarSubjects} user={sidebarUser} />
       </SidebarMobile>
       <main className="flex-1 lg:ml-64 p-4 lg:p-8 w-full overflow-x-hidden pt-20 lg:pt-8">
         <div className="max-w-6xl mx-auto">
