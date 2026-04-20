@@ -152,6 +152,8 @@ export default async function Dashboard() {
         <SubjectBarChart data={subjectStats} />
       </div>
 
+        <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
+
                     {/* Daily Study Goal */}
       <StudyGoal
         totalStudyMinutes={Math.round(dailyStudyMinutes)}
@@ -171,7 +173,7 @@ export default async function Dashboard() {
         sessions={sessions}
       />
 
-      <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
+    
     </div>
   );
 }
