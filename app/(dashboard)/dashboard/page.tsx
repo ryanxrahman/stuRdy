@@ -12,6 +12,7 @@ import StudyGoal from "@/components/StudyGoal";
 import StudyTrend from "@/components/StudyTrend";
 import SubjectsOverview from "@/components/SubjectsOverview";
 import StudyReward from "@/components/StudyReward";
+import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -79,6 +80,17 @@ export default async function Dashboard() {
   const totalSubjects = subjects.length;
   const totalTasks = subjects.reduce((acc: number, s: any) => acc + (s.todos?.length || 0), 0);
   const totalSessions = sessions.length;
+
+  const areaChartSubjects = subjects.map((sub: any) => ({
+    _id: String(sub._id),
+    name: typeof sub.name === "string" ? sub.name : "Untitled",
+  }));
+
+  const areaChartSessions = sessions.map((s: any) => ({
+    date: String(s.date),
+    duration: Number(s.duration || 0),
+    subjectId: String(s.subjectId || ""),
+  }));
 
   return (
     <div className="flex flex-col gap-10 p-8 max-md:p-2 max-w-6xl mx-auto pb-20 ">
@@ -158,6 +170,8 @@ export default async function Dashboard() {
         subjectStats={subjectStats}
         sessions={sessions}
       />
+
+      <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
     </div>
   );
 }
