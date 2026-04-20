@@ -1,30 +1,41 @@
-import { getDb } from "@/lib/mongodb";
-import { getSession } from "@/lib/auth";
+"use client";
+
+import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { logoutAction } from "@/app/login/actions";
-import { LayoutDashboard, BookOpen, LogOut } from "lucide-react";
+import { LayoutDashboard, BookOpen, LogOut, Plus, X } from "lucide-react";
 import SidebarLink from "./SidebarLink";
 import { ThemeToggle } from "./ThemeToggle";
 import SidebarRoulette from "./SidebarRoulette";
 import Image from "next/image";
+import AddSubjectForm from "@/app/(dashboard)/dashboard/AddSubjectForm";
 
-export default async function Sidebar() {
-    const session = await getSession();
-    if (!session) return null;
+type Subject = {
+    _id?: unknown;
+    name?: unknown;
+} & Record<string, unknown>;
 
-    const db = await getDb();
-    const subjects = await db.collection("subjects")
-        .find({ userId: session.userId })
-        .sort({ name: 1 })
-        .toArray();
-    
-    // Map subjects to the interface expected by SidebarRoulette
-    const rouletteSubjects = subjects.map(s => ({
-        _id: s._id.toString(),
-        name: s.name
-    }));
+export default function Sidebar({ subjects = [], user }: { subjects?: Subject[], user?: { email?: string } | null | Record<string, unknown> }) {
+    const isValidSubject = (sub: Subject): sub is Subject & { _id: { toString(): string } | string; name: string } => {
+        return Boolean(sub?._id) && typeof sub?.name === "string";
+    };
+
+    const validSubjects = useMemo(() => subjects.filter(isValidSubject), [subjects]);
+    const [isAddOpen, setIsAddOpen] = useState(false);
+    const rouletteSubjects = useMemo(
+        () =>
+            validSubjects.map((s) => ({
+                    _id: s._id.toString(),
+                    name: s.name,
+                })),
+        [validSubjects]
+    );
+
+    const userEmail = typeof user?.email === "string" ? user.email : "Unknown user";
 
     return (
+        <>
         <aside className="bg-base-100 h-screen w-64 text-base-content border-r border-base-300 flex flex-col">
             <div className="p-6 flex items-center border-b border-base-300 mb-8">
                 <Image src="/study.jpeg" alt="Logo" width={32} height={32} className="inline-block mr-2" />
@@ -32,7 +43,20 @@ export default async function Sidebar() {
             </div>
 
             <nav className="flex-1 overflow-y-auto px-4 py-2">
-                <div className="text-xs font-bold opacity-30 uppercase tracking-widest mb-4 px-2">Subjects</div>
+                <div className="text-x flex items-center justify-between font-bold opacity-30 uppercase tracking-widest mb-4 px-2">
+                    <p>
+                        sidebar
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() => setIsAddOpen(true)}
+                        className="btn btn-xs btn-ghost btn-circle"
+                        aria-label="Add subject"
+                        title="Add subject"
+                    >
+                        <Plus size={14} />
+                    </button>
+                </div>
                 <div className="flex flex-col gap-1">
                     <SidebarLink 
                         href="/dashboard"
@@ -41,7 +65,7 @@ export default async function Sidebar() {
                         <LayoutDashboard size={18} className="opacity-70" />
                         Dashboard
                     </SidebarLink>
-                    {subjects.map((sub) => (
+                    {validSubjects.map((sub) => (
                         <SidebarLink 
                             key={sub._id.toString()} 
                             href={`/${encodeURIComponent(sub.name)}`}
@@ -60,7 +84,7 @@ export default async function Sidebar() {
                     <ThemeToggle />
                     <div className="px-2">
                         <p className="text-xs opacity-50 truncate">Logged in as</p>
-                        <p className="text-sm font-bold truncate">{session.email}</p>
+                        <p className="text-sm font-bold truncate">{userEmail}</p>
                     </div>
                     <form action={logoutAction} className="w-full">
                         <button type="submit" className="btn btn-error btn-outline btn-sm w-full rounded-xl flex items-center justify-center gap-2">
@@ -71,5 +95,31 @@ export default async function Sidebar() {
                 </div>
             </div>
         </aside>
+        {isAddOpen && typeof window !== "undefined" && createPortal(
+            <div
+                className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[1px] flex items-center justify-center p-4"
+                onClick={() => setIsAddOpen(false)}
+            >
+                <div
+                    className="bg-base-100 p-6 rounded-2xl border border-base-300 w-full max-w-lg"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-bold text-lg">Add Subject</h3>
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-ghost btn-circle"
+                            onClick={() => setIsAddOpen(false)}
+                            aria-label="Close add subject popup"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
+                    <AddSubjectForm />
+                </div>
+            </div>,
+            document.body
+        )}
+        </>
     );
 }

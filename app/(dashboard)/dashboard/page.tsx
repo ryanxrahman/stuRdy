@@ -84,7 +84,7 @@ export default async function Dashboard() {
     <div className="flex flex-col gap-10 p-8 max-md:p-2 max-w-6xl mx-auto pb-20 ">
       {/* Header */}
       <header className="flex flex-col gap-1">
-        <h1 className="text-6xl font-black italic tracking-tighter">Command Center</h1>
+        <h1 className="text-6xl font-black tracking-tighter">Command Center</h1>
         <p className="opacity-50 text-sm">Track. Execute. Dominate.</p>
       </header>
 
