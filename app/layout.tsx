@@ -29,7 +29,7 @@ export default function RootLayout({
       className={`${gabarito.variable} ${geistMono.variable} h-full antialiased font-(family-name:--font-gabarito)`}
       suppressHydrationWarning
     >
-      <body className="min-h-full scroll-smooth flex flex-col">
+      <body className="min-h-full scroll-smooth flex flex-col" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

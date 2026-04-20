@@ -3,19 +3,33 @@
 import { useActionState, useEffect, useRef } from "react";
 import { createSubject } from "@/app/(dashboard)/dashboard/subject-actions";
 import BtnPrimary from "@/components/btn/BtnPrimary";
+import toast from "react-hot-toast";
+
 
 export default function AddSubjectForm() {
     const [state, formAction, isPending] = useActionState(createSubject, null);
     const formRef = useRef<HTMLFormElement>(null);
+    const submittedSubjectNameRef = useRef("");
 
     useEffect(() => {
         if (state?.success) {
+            const subjectName = submittedSubjectNameRef.current.trim();
+            if (subjectName) {
+                toast.success(`${subjectName} subject is added`);
+            }
             formRef.current?.reset();
+            submittedSubjectNameRef.current = "";
         }
     }, [state]);
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        const formData = new FormData(event.currentTarget);
+        const subjectName = formData.get("name");
+        submittedSubjectNameRef.current = typeof subjectName === "string" ? subjectName : "";
+    };
+
     return (
-        <form ref={formRef} action={formAction} className="flex gap-2 max-md:flex-col w-full">
+        <form ref={formRef} action={formAction} onSubmit={handleSubmit} className="flex gap-2 max-md:flex-col w-full">
             <div className="flex-1">
                 <input 
                     name="name"
