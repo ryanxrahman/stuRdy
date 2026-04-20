@@ -1,11 +1,43 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider, useTheme } from 'next-themes';
+
+function ThemeHotkey() {
+  const { resolvedTheme, setTheme } = useTheme();
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== 'd') return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+
+      const tagName = target.tagName.toLowerCase();
+      const isTypingField =
+        tagName === 'input' ||
+        tagName === 'textarea' ||
+        tagName === 'select' ||
+        target.isContentEditable;
+
+      if (isTypingField) return;
+
+      setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [resolvedTheme, setTheme]);
+
+  return null;
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="data-theme" defaultTheme="dark">
+      <ThemeHotkey />
       {children}
       <Toaster
         position="top-right"
