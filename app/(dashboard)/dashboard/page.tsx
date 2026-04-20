@@ -13,6 +13,7 @@ import StudyTrend from "@/components/StudyTrend";
 import SubjectsOverview from "@/components/SubjectsOverview";
 import StudyReward from "@/components/StudyReward";
 import SubjectsAreaChart from "@/components/SubjectsAreaChart";
+import AddSubjectHeaderButton from "./AddSubjectHeaderButton";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -95,9 +96,9 @@ export default async function Dashboard() {
   return (
     <div className="flex flex-col gap-10 p-8 max-md:p-2 max-w-6xl mx-auto pb-20 ">
       {/* Header */}
-      <header className="flex flex-col gap-1">
-        <h1 className="text-6xl font-black tracking-tighter">Command Center</h1>
-        <p className="opacity-50 text-sm">Track. Execute. Dominate.</p>
+      <header className="flex items-center justify-between gap-4">
+          <h1 className="text-6xl max-md:text-3xl font-black tracking-tighter">Command Center</h1>
+        <AddSubjectHeaderButton />
       </header>
 
 
