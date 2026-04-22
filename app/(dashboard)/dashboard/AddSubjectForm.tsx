@@ -6,7 +6,7 @@ import BtnPrimary from "@/components/btn/BtnPrimary";
 import toast from "react-hot-toast";
 
 
-export default function AddSubjectForm() {
+export default function AddSubjectForm({active}: {active?: boolean}) {
     const [state, formAction, isPending] = useActionState(createSubject, null);
     const formRef = useRef<HTMLFormElement>(null);
     const submittedSubjectNameRef = useRef("");
@@ -32,6 +32,7 @@ export default function AddSubjectForm() {
         <form ref={formRef} action={formAction} onSubmit={handleSubmit} className="flex gap-2 max-md:flex-col w-full">
             <div className="flex-1">
                 <input 
+                    autoFocus={active}
                     name="name"
                     type="text" 
                     placeholder="Enter subject name (e.g. Math)" 

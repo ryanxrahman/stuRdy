@@ -10,12 +10,17 @@ export default function AddSubjectHeaderButton() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-
       const target = e.target as HTMLElement;
       if (target.isContentEditable || ["input", "textarea", "select"].includes(target.tagName.toLowerCase())) {
         return;
       }
+
+      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) {
+        return;
+      }
+
       if (e.key.toLowerCase() === "a") {
+        e.preventDefault();
         setIsOpen((prev) => !prev);
       }
     };
@@ -59,7 +64,7 @@ export default function AddSubjectHeaderButton() {
                   <X size={16} />
                 </button>
               </div>
-              <AddSubjectForm />
+              <AddSubjectForm active={isOpen} />
             </div>
           </div>,
           document.body
