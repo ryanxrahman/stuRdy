@@ -46,8 +46,8 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
 
     return (
         <>
-            <aside className="bg-base-100 h-screen w-64 text-base-content border-r border-base-300 flex flex-col">
-                <div className="p-6 flex items-center border-b border-base-300 mb-8">
+            <aside className="bg-base-200/50 backdrop-blur-xl h-screen w-64 text-base-content border-r border-base-content/5 flex flex-col transition-colors duration-500">
+                <div className="p-6 flex items-center border-b border-base-content/5 mb-8">
                     <Image src="/study.jpeg" alt="Logo" width={32} height={32} className="inline-block mr-2" />
                     <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">STUDY</Link>
                 </div>
@@ -81,12 +81,12 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                                 <SidebarLink
                                     key={sub._id.toString()}
                                     href={`/${encodeURIComponent(sub.name)}`}
-                                    className="relative flex items-center gap-3 p-3 rounded-xl hover:bg-base-200 transition-all text-sm font-medium truncate overflow-hidden group/link"
+                                    className="relative flex items-center gap-3 p-3 rounded-xl hover:bg-base-content/5 transition-all text-sm font-medium truncate overflow-hidden group/link"
                                 >
                                     {/* Progress Bar Background */}
                                     {progress > 0 && (
                                         <div 
-                                            className="absolute inset-y-0 left-0 bg-primary/10 transition-all duration-1000 ease-out" 
+                                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-violet-500/10 via-primary/5 to-emerald-500/5 transition-all duration-1000 ease-out border-r border-violet-500/10" 
                                             style={{ width: `${progress}%` }}
                                         />
                                     )}
@@ -95,7 +95,7 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                                         <BookOpen size={18} className="opacity-70 shrink-0" />
                                         <span className="truncate flex-1">{sub.name}</span>
                                         {sub.totalMinutes !== undefined && sub.totalMinutes > 0 && (
-                                            <span className="text-[10px] opacity-0 group-hover/link:opacity-40 transition-opacity font-mono whitespace-nowrap">
+                                            <span className="text-[10px] opacity-30 group-hover/link:opacity-100 transition-opacity font-mono tracking-tighter bg-base-content/5 px-1.5 rounded">
                                                 {sub.totalMinutes < 60 ? `${sub.totalMinutes}m` : `${(sub.totalMinutes/60).toFixed(1)}h`}
                                             </span>
                                         )}
@@ -106,19 +106,21 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                     </div>
                 </nav>
 
-                <div className="p-4 bg-base-200 mt-auto">
-                    <div className="flex flex-col gap-2">
-                        <div className="border max-md:hidden space-y-2 text-xs border-base-300 rounded-lg p-3 bg-base-300/50">
-                            <h1>Shortcuts:</h1>
-                            <p><span className="bg-neutral-400 font-semibold dark:text-black px-1 rounded">A</span> to add a subject</p>
-                            <p><span className="bg-neutral-400 font-semibold dark:text-black px-1 rounded">D</span> to toggle theme</p>
+                <div className="p-4 bg-base-200 mt-auto border-t border-base-content/5">
+                    <div className="flex flex-col gap-4">
+                        <div className="border max-md:hidden space-y-2 text-xs border-base-content/5 rounded-xl p-3 bg-base-300/30">
+                            <h1 className="font-bold opacity-50 uppercase tracking-widest text-[10px]">Shortcuts</h1>
+                            <p><span className="bg-base-content/10 font-mono px-1 rounded">A</span> to add a subject</p>
+                            <p><span className="bg-base-content/10 font-mono px-1 rounded">D</span> to toggle theme</p>
+                        </div>
+ 
+                        <ThemeToggle />
+                        
+                        <div className="px-1 overflow-hidden">
+                            <p className="text-[10px] opacity-40 uppercase tracking-widest font-bold">Logged in as</p>
+                            <p className="text-xs font-bold truncate">{userEmail}</p>
                         </div>
 
-                        <ThemeToggle />
-                        <div className="px-2">
-                            <p className="text-xs opacity-50 truncate">Logged in as</p>
-                            <p className="text-sm font-bold truncate">{userEmail}</p>
-                        </div>
                         <form action={logoutAction} className="w-full">
                             <button type="submit" className="btn btn-error btn-outline btn-sm w-full rounded-xl flex items-center justify-center gap-2">
                                 <LogOut size={14} />

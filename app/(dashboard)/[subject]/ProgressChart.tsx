@@ -8,7 +8,6 @@ import {
     ResponsiveContainer,
     Area,
     AreaChart,
-    Stop
 } from 'recharts';
 
 type SessionData = {
