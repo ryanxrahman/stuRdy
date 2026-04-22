@@ -80,7 +80,12 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
 
             <div className="p-4 bg-base-200 mt-auto">
                 <div className="flex flex-col gap-2">
-                    <SidebarRoulette subjects={rouletteSubjects} />
+                    <div className="border space-y-2 text-xs border-base-300 rounded-lg p-3 bg-base-300/50">
+                        <h1>Shortcuts:</h1>
+                        <p><span className="bg-neutral-400 font-semibold dark:text-black px-1 rounded">A</span> to add a subject</p>
+                        <p><span className="bg-neutral-400 font-semibold dark:text-black px-1 rounded">D</span> to toggle theme</p>
+                    </div>
+                    
                     <ThemeToggle />
                     <div className="px-2">
                         <p className="text-xs opacity-50 truncate">Logged in as</p>
