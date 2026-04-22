@@ -12,16 +12,26 @@ import Image from "next/image";
 import AddSubjectForm from "@/app/(dashboard)/dashboard/AddSubjectForm";
 
 type Subject = {
-    _id?: unknown;
-    name?: unknown;
-} & Record<string, unknown>;
+    _id: string;
+    name: string;
+    totalMinutes?: number;
+};
 
 export default function Sidebar({ subjects = [], user }: { subjects?: Subject[], user?: { email?: string } | null | Record<string, unknown> }) {
     const isValidSubject = (sub: Subject): sub is Subject & { _id: { toString(): string } | string; name: string } => {
         return Boolean(sub?._id) && typeof sub?.name === "string";
     };
 
-    const validSubjects = useMemo(() => subjects.filter(isValidSubject), [subjects]);
+    const validSubjects = useMemo(() => {
+        return subjects
+            .filter(isValidSubject)
+            .sort((a, b) => (b.totalMinutes || 0) - (a.totalMinutes || 0));
+    }, [subjects]);
+
+    const maxMinutes = useMemo(() => {
+        return Math.max(...validSubjects.map(s => s.totalMinutes || 0), 1);
+    }, [validSubjects]);
+
     const [isAddOpen, setIsAddOpen] = useState(false);
     const rouletteSubjects = useMemo(
         () =>
@@ -65,16 +75,34 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                             <LayoutDashboard size={18} className="opacity-70" />
                             Dashboard
                         </SidebarLink>
-                        {validSubjects.map((sub) => (
-                            <SidebarLink
-                                key={sub._id.toString()}
-                                href={`/${encodeURIComponent(sub.name)}`}
-                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-200 transition-colors text-sm font-medium truncate"
-                            >
-                                <BookOpen size={18} className="opacity-70" />
-                                {sub.name}
-                            </SidebarLink>
-                        ))}
+                        {validSubjects.map((sub) => {
+                            const progress = ((sub.totalMinutes || 0) / maxMinutes) * 100;
+                            return (
+                                <SidebarLink
+                                    key={sub._id.toString()}
+                                    href={`/${encodeURIComponent(sub.name)}`}
+                                    className="relative flex items-center gap-3 p-3 rounded-xl hover:bg-base-200 transition-all text-sm font-medium truncate overflow-hidden group/link"
+                                >
+                                    {/* Progress Bar Background */}
+                                    {progress > 0 && (
+                                        <div 
+                                            className="absolute inset-y-0 left-0 bg-primary/10 transition-all duration-1000 ease-out" 
+                                            style={{ width: `${progress}%` }}
+                                        />
+                                    )}
+                                    
+                                    <div className="relative flex items-center gap-3 w-full">
+                                        <BookOpen size={18} className="opacity-70 shrink-0" />
+                                        <span className="truncate flex-1">{sub.name}</span>
+                                        {sub.totalMinutes !== undefined && sub.totalMinutes > 0 && (
+                                            <span className="text-[10px] opacity-0 group-hover/link:opacity-40 transition-opacity font-mono whitespace-nowrap">
+                                                {sub.totalMinutes < 60 ? `${sub.totalMinutes}m` : `${(sub.totalMinutes/60).toFixed(1)}h`}
+                                            </span>
+                                        )}
+                                    </div>
+                                </SidebarLink>
+                            );
+                        })}
                     </div>
                 </nav>
 

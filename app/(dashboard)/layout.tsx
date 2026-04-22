@@ -22,15 +22,29 @@ export default async function DashboardLayout({
     ? await db.collection("users").findOne({ _id: new ObjectId(session.userId) })
     : await db.collection("users").findOne({ email: session.email });
 
-  const subjects = await db.collection("subjects")
+  const rawSubjects = await db.collection("subjects")
     .find({ userId: session.userId })
-    .sort({ name: 1 })
     .toArray();
 
-  const sidebarSubjects = subjects.map((subject) => ({
-    _id: subject._id.toString(),
-    name: typeof subject.name === "string" ? subject.name : "Untitled",
-  }));
+  const rawSessions = await db.collection("sessions")
+    .find({ userId: session.userId })
+    .toArray();
+
+  const subjects = JSON.parse(JSON.stringify(rawSubjects));
+  const sessions = JSON.parse(JSON.stringify(rawSessions));
+
+  const sidebarSubjects = subjects.map((subject: any) => {
+    const subjectIdStr = subject._id;
+    const totalSeconds = sessions
+      .filter((s: any) => s.subjectId === subjectIdStr)
+      .reduce((acc: number, s: any) => acc + (s.duration || 0), 0);
+    
+    return {
+      _id: subjectIdStr,
+      name: typeof subject.name === "string" ? subject.name : "Untitled",
+      totalMinutes: Math.round(totalSeconds / 60),
+    };
+  });
 
   const sidebarUser = {
     email: typeof user?.email === "string" ? user.email : session.email,
