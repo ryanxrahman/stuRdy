@@ -54,7 +54,7 @@ export default function SessionsList({ initialSessions }: { initialSessions: Ses
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 mt-2">
                 {initialSessions.length === 0 && (
                     <p className="opacity-50 italic text-xs col-span-full">No sessions recorded yet.</p>
                 )}
