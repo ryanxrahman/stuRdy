@@ -1,12 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Plus, X } from "lucide-react";
 import AddSubjectForm from "./AddSubjectForm";
 
 export default function AddSubjectHeaderButton() {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+
+      const target = e.target as HTMLElement;
+      if (target.isContentEditable || ["input", "textarea", "select"].includes(target.tagName.toLowerCase())) {
+        return;
+      }
+      if (e.key.toLowerCase() === "a") {
+        setIsOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <>
