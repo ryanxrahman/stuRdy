@@ -46,7 +46,7 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
 
     return (
         <>
-            <aside className="bg-base-200/50 backdrop-blur-xl h-screen w-64 text-base-content border-r border-base-content/5 flex flex-col transition-colors duration-500">
+            <aside className="bg-base-200/50 backdrop-blur-xl h-screen w-64 text-base-content border-r border-base-content/5 flex flex-col">
                 <div className="p-6 flex items-center border-b border-base-content/5 mb-8">
                     <Image src="/study.jpeg" alt="Logo" width={32} height={32} className="inline-block mr-2" />
                     <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">STUDY</Link>
@@ -85,18 +85,18 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                                 >
                                     {/* Progress Bar Background */}
                                     {progress > 0 && (
-                                        <div 
-                                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-violet-500/10 via-primary/5 to-emerald-500/5 transition-all duration-1000 ease-out border-r border-violet-500/10" 
+                                        <div
+                                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-violet-500/10 via-primary/5 to-emerald-500/5 transition-all duration-1000 ease-out border-r border-violet-500/10"
                                             style={{ width: `${progress}%` }}
                                         />
                                     )}
-                                    
+
                                     <div className="relative flex items-center gap-3 w-full">
                                         <BookOpen size={18} className="opacity-70 shrink-0" />
                                         <span className="truncate flex-1">{sub.name}</span>
                                         {sub.totalMinutes !== undefined && sub.totalMinutes > 0 && (
                                             <span className="text-[10px] opacity-30 group-hover/link:opacity-100 transition-opacity font-mono tracking-tighter bg-base-content/5 px-1.5 rounded">
-                                                {sub.totalMinutes < 60 ? `${sub.totalMinutes}m` : `${(sub.totalMinutes/60).toFixed(1)}h`}
+                                                {sub.totalMinutes < 60 ? `${sub.totalMinutes}m` : `${(sub.totalMinutes / 60).toFixed(1)}h`}
                                             </span>
                                         )}
                                     </div>
@@ -113,9 +113,9 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                             <p><span className="bg-base-content/10 font-mono px-1 rounded">A</span> to add a subject</p>
                             <p><span className="bg-base-content/10 font-mono px-1 rounded">D</span> to toggle theme</p>
                         </div>
- 
+
                         <ThemeToggle />
-                        
+
                         <div className="px-1 overflow-hidden">
                             <p className="text-[10px] opacity-40 uppercase tracking-widest font-bold">Logged in as</p>
                             <p className="text-xs font-bold truncate">{userEmail}</p>
