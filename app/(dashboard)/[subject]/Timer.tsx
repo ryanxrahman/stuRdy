@@ -1,30 +1,80 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition, useRef } from "react";
 import toast from "react-hot-toast";
 import { Play, Pause, RotateCcw, CheckCircle } from "lucide-react";
 import { saveStudySession } from "../dashboard/subject-actions";
 
 export default function Timer({ subjectId }: { subjectId: string }) {
-    const [seconds, setSeconds] = useState(0);
-    const [isActive, setIsActive] = useState(false);
-    const [accumulatedSeconds, setAccumulatedSeconds] = useState(0);
     const [isPending, startTransition] = useTransition();
 
+    const storageKeys = useMemo(
+        () => ({
+            startTime: `study-timer:${subjectId}:startTime`,
+            isRunning: `study-timer:${subjectId}:isRunning`,
+        }),
+        [subjectId]
+    );
+
+    const [initialTimerState] = useState<{
+        seconds: number;
+        isActive: boolean;
+        startTime: number | null;
+    }>(() => {
+        if (typeof window === "undefined") {
+            return { seconds: 0, isActive: false, startTime: null };
+        }
+
+        const persistedIsRunning = localStorage.getItem(storageKeys.isRunning) === "true";
+        const rawStartTime = localStorage.getItem(storageKeys.startTime);
+        const parsedStartTime = rawStartTime ? Number(rawStartTime) : NaN;
+
+        if (!persistedIsRunning) {
+            localStorage.removeItem(storageKeys.startTime);
+            localStorage.removeItem(storageKeys.isRunning);
+            return { seconds: 0, isActive: false, startTime: null };
+        }
+
+        if (!Number.isFinite(parsedStartTime) || parsedStartTime <= 0 || parsedStartTime > Date.now()) {
+            localStorage.removeItem(storageKeys.startTime);
+            localStorage.removeItem(storageKeys.isRunning);
+            return { seconds: 0, isActive: false, startTime: null };
+        }
+
+        const elapsed = Math.max(0, Math.floor((Date.now() - parsedStartTime) / 1000));
+        return { seconds: elapsed, isActive: true, startTime: parsedStartTime };
+    });
+
+    const [seconds, setSeconds] = useState(initialTimerState.seconds);
+    const [isActive, setIsActive] = useState(initialTimerState.isActive);
+    const [startTime, setStartTime] = useState<number | null>(initialTimerState.startTime);
+
+    const formatTime = (totalSeconds: number) => {
+        const hrs = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        const secs = totalSeconds % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const clearPersistedTimer = useCallback(() => {
+        localStorage.removeItem(storageKeys.startTime);
+        localStorage.removeItem(storageKeys.isRunning);
+    }, [storageKeys.isRunning, storageKeys.startTime]);
+
+    const persistRunningTimer = useCallback((start: number) => {
+        localStorage.setItem(storageKeys.startTime, String(start));
+        localStorage.setItem(storageKeys.isRunning, "true");
+    }, [storageKeys.isRunning, storageKeys.startTime]);
+
     useEffect(() => {
-        let interval: NodeJS.Timeout | null = null;
+        let interval: ReturnType<typeof setInterval> | null = null;
         
-        if (isActive) {
-            const sessionStartTime = Date.now();
-            const initialSeconds = accumulatedSeconds;
-            
+        if (isActive && startTime !== null) {
             interval = setInterval(() => {
-                const now = Date.now();
-                const elapsedSeconds = Math.floor((now - sessionStartTime) / 1000);
-                const currentSeconds = initialSeconds + elapsedSeconds;
+                const currentSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
                 setSeconds(currentSeconds);
                 document.title = ` ${formatTime(currentSeconds)}`;
-            }, 100); // Check every 0.1s for extreme accuracy
+            }, 250);
         } else {
             document.title = "Study App";
         }
@@ -33,42 +83,105 @@ export default function Timer({ subjectId }: { subjectId: string }) {
             if (interval) clearInterval(interval);
             document.title = "Study App";
         };
-    }, [isActive, accumulatedSeconds]);
+    }, [isActive, startTime]);
+
+    // Use a ref to always have the latest state for the unload/visibility handler
+    const stateRef = useRef({ isActive, seconds, subjectId });
+    const hasSavedRef = useRef(false);
+
+    useEffect(() => {
+        stateRef.current = { isActive, seconds, subjectId };
+    }, [isActive, seconds, subjectId]);
+
+    useEffect(() => {
+        const handleBackgroundSave = () => {
+            const { isActive: running, seconds: elapsed, subjectId: sid } = stateRef.current;
+            
+            if (!running || elapsed <= 0 || hasSavedRef.current) return;
+
+            // Prepare data
+            const body = JSON.stringify({ subjectId: sid, duration: elapsed });
+            const url = "/api/study/session";
+
+            // Mark as saved immediately to prevent duplicate runs
+            hasSavedRef.current = true;
+
+            // Clear local storage IMMEDIATELY
+            localStorage.removeItem(storageKeys.startTime);
+            localStorage.removeItem(storageKeys.isRunning);
+
+            // Send to backend
+            if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+                navigator.sendBeacon(url, new Blob([body], { type: "application/json" }));
+            } else {
+                fetch(url, {
+                    method: "POST",
+                    body,
+                    headers: { "Content-Type": "application/json" },
+                    keepalive: true,
+                });
+            }
+        };
+
+        const onVisibilityChange = () => {
+            if (document.visibilityState === "hidden") {
+                handleBackgroundSave();
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBackgroundSave);
+        document.addEventListener("visibilitychange", onVisibilityChange);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBackgroundSave);
+            document.removeEventListener("visibilitychange", onVisibilityChange);
+        };
+    }, [storageKeys.isRunning, storageKeys.startTime]);
 
     const toggle = () => {
         if (isActive) {
-            setAccumulatedSeconds(seconds);
+            setIsActive(false);
+            setStartTime(null);
+            clearPersistedTimer();
+            return;
         }
-        setIsActive(!isActive);
+
+        // Reset hasSaved when starting a new session
+        hasSavedRef.current = false;
+
+        // Start from now, adjusted by already elapsed seconds for pause/resume behavior.
+        const newStartTime = Date.now() - seconds * 1000;
+        setStartTime(newStartTime);
+        setIsActive(true);
+        persistRunningTimer(newStartTime);
     };
     
     const reset = () => {
         setIsActive(false);
+        setStartTime(null);
         setSeconds(0);
-        setAccumulatedSeconds(0);
+        hasSavedRef.current = false;
+        clearPersistedTimer();
     };
 
     const handleFinish = () => {
-        if (seconds === 0) return;
+        if (seconds === 0 || hasSavedRef.current) return;
         
+        hasSavedRef.current = true; // Mark as saved
         setIsActive(false);
+        setStartTime(null);
+        clearPersistedTimer();
         startTransition(async () => {
             const result = await saveStudySession(subjectId, seconds);
             if (result.success) {
                 setSeconds(0);
-                setAccumulatedSeconds(0);
                 toast.success("Study session saved successfully!");
             } else {
+                hasSavedRef.current = false; // Allow retry if it failed? 
+                // Actually if it failed, they might try again.
                 toast.error("Failed to save session.");
             }
         });
-    };
-
-    const formatTime = (totalSeconds: number) => {
-        const hrs = Math.floor(totalSeconds / 3600);
-        const mins = Math.floor((totalSeconds % 3600) / 60);
-        const secs = totalSeconds % 60;
-        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
     return (

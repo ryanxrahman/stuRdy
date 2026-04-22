@@ -7,6 +7,7 @@ import Timer from "./Timer";
 import ProgressChart from "./ProgressChart";
 import ExamsList from "./ExamsList";
 import ExamChart from "./ExamChart";
+import SessionsList from "./SessionsList";
 import { ObjectId } from "mongodb";
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
@@ -85,6 +86,12 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
             <h2 className="text-2xl font-bold mb-2">Study Momentum</h2>
             <p className="opacity-50 text-sm mb-6">Time investment per day</p>
             <ProgressChart data={studyChartData} />
+        </section>
+
+        <section className="bg-base-200 p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+            <h2 className="text-2xl font-bold mb-2">Study Sessions</h2>
+            <p className="opacity-50 text-sm mb-6">History of your focus periods</p>
+            <SessionsList initialSessions={sessions} />
         </section>
     </div>
   );

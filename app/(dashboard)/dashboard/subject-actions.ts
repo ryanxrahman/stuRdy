@@ -195,3 +195,21 @@ export async function deleteExamRecord(subjectId: string, examId: string) {
     return { error: "Failed to delete exam record" };
   }
 }
+export async function deleteSession(sessionId: string) {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const db = await getDb();
+    await db.collection("sessions").deleteOne({
+      _id: new ObjectId(sessionId),
+      userId: session.userId,
+    });
+
+    revalidatePath("/[subject]");
+    return { success: true };
+  } catch (error) {
+    console.error("Delete session error:", error);
+    return { error: "Failed to delete session" };
+  }
+}
