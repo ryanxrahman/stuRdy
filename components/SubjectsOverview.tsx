@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent } from "react";
 import SubjectMiniChart from "./SubjectMiniChart";
-import DeleteSubjectButton from "./DeleteSubjectButton";
 
 type Subject = {
   _id: string;
@@ -73,15 +72,14 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
       </div>
 
       <div className="overflow-x-auto">
-  <table className="table table-sm table-zebra table-pin-rows">
+        <table className="table table-sm table-zebra table-pin-rows">
           <thead>
             <tr>
-              <th>Subject</th>
-              <th>Total Hours</th>
-              <th>Longest Session</th>
-              <th>Last Study</th>
-              <th className="min-w-56">Area Chart</th>
-              <th>Delete</th>
+              <th className="w-auto">Subject</th>
+              <th className="hidden md:table-cell">Total Hours</th>
+              <th className="hidden md:table-cell">Longest Session</th>
+              <th className="hidden md:table-cell">Last Study</th>
+              <th className="hidden md:table-cell min-w-56">Area Chart</th>
             </tr>
           </thead>
           <tbody>
@@ -123,27 +121,21 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
               return (
                 <tr
                   key={sub._id.toString()}
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleNavigate}
                   onKeyDown={handleNavigateKeyDown}
                   className="cursor-pointer hover:bg-base-300/50 focus-visible:outline-2 focus-visible:outline-primary [&>td]:py-2"
                 >
-                  <td className="font-semibold">{sub.name}</td>
-                  <td>
+                  <td className="max-w-40 truncate font-semibold md:max-w-none">{sub.name}</td>
+                  <td className="hidden md:table-cell">
                     <span className="font-medium text-primary">{totalHoursLabel}</span>
                   </td>
-                  <td>{longestHoursLabel}</td>
-                  <td className="text-xs md:text-sm">{lastStudyLabel}</td>
-                  <td>
+                  <td className="hidden md:table-cell">{longestHoursLabel}</td>
+                  <td className="hidden md:table-cell text-xs md:text-sm">{lastStudyLabel}</td>
+                  <td className="hidden md:table-cell">
                     <div className="w-full max-w-72">
                       <SubjectMiniChart sessions={subjectSessions} subjectName={sub.name} />
-                    </div>
-                  </td>
-                  <td>
-                    <div
-                      className="scale-90 origin-center"
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
-                      <DeleteSubjectButton subjectId={sub._id.toString()} subjectName={sub.name} />
                     </div>
                   </td>
                 </tr>

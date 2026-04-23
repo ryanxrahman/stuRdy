@@ -9,6 +9,7 @@ import ExamsList from "./ExamsList";
 import ExamChart from "./ExamChart";
 import SessionsList from "./SessionsList";
 import { ObjectId } from "mongodb";
+import DeleteSubjectButton from "@/components/DeleteSubjectButton";
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
   const { subject: subjectNameEncoded } = await params;
@@ -76,7 +77,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
         </section>
 
         {/* Right Column: Notes */}
-        <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm flex flex-col h-full min-h-[400px]">
+  <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm flex flex-col h-full min-h-100">
           <h2 className="text-2xl font-bold mb-6">Subject Vault</h2>
           <NotesSection subjectId={subject._id.toString()} initialNotes={subject.notes || ""} />
         </section>
@@ -92,6 +93,14 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
             <h2 className="text-2xl font-bold mb-2">Study Sessions</h2>
             <p className="opacity-50 text-sm mb-6">History of your focus periods</p>
             <SessionsList initialSessions={sessions} />
+        </section>
+
+        <section className="bg-base-200 p-8 rounded-[2.5rem] border border-error/30 shadow-sm">
+          <h2 className="text-xl font-bold text-error mb-2">Danger Zone</h2>
+          <p className="opacity-70 text-sm mb-5">
+            Delete this subject and all related data permanently.
+          </p>
+          <DeleteSubjectButton subjectId={subject._id.toString()} subjectName={subject.name} />
         </section>
     </div>
   );
