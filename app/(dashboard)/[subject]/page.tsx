@@ -95,11 +95,13 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
             <SessionsList initialSessions={sessions} />
         </section>
 
-        <section className="bg-base-200 p-8 rounded-[2.5rem] border border-error/30 shadow-sm">
-          <h2 className="text-xl font-bold text-error mb-2">Danger Zone</h2>
-          <p className="opacity-70 text-sm mb-5">
-            Delete this subject and all related data permanently.
-          </p>
+        <section className="bg-base-200 flex items-center justify-between p-6 rounded-[2.5rem] border border-error/30 shadow-sm">
+          <div>
+            <h2 className="text-xl font-bold text-error ">Danger Zone</h2>
+            <p className="opacity-70 text-sm">
+              Delete this subject and all related data permanently.
+            </p>
+          </div>
           <DeleteSubjectButton subjectId={subject._id.toString()} subjectName={subject.name} />
         </section>
     </div>

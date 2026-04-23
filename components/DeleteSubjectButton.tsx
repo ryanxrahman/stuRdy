@@ -21,7 +21,7 @@ export default function DeleteSubjectButton({ subjectId, subjectName }: DeleteSu
     startTransition(async () => {
       const result = await deleteSubject(subjectId);
       if (result?.success) {
-        router.refresh();
+        router.push("/dashboard");
         return;
       }
       alert(result?.error || "Failed to delete subject");
