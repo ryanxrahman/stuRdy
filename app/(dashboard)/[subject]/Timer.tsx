@@ -1,22 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useTransition, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { Play, Pause, RotateCcw, CheckCircle } from "lucide-react";
+import { Play, Pause, RotateCcw, CheckCircle, Hourglass } from "lucide-react";
 import { saveStudySession } from "../dashboard/subject-actions";
 
 export default function Timer({ subjectId }: { subjectId: string }) {
-    const [isPending, startTransition] = useTransition();
+    const [isStopwatchSaving, setIsStopwatchSaving] = useState(false);
+    const [isCountdownSaving, setIsCountdownSaving] = useState(false);
 
     const storageKeys = useMemo(
         () => ({
-            startTime: `study-timer:${subjectId}:startTime`,
-            isRunning: `study-timer:${subjectId}:isRunning`,
+            stopwatchStartTime: `study-timer:${subjectId}:stopwatch:startTime`,
+            stopwatchIsRunning: `study-timer:${subjectId}:stopwatch:isRunning`,
+            countdownIsRunning: `study-timer:${subjectId}:countdown:isRunning`,
+            countdownEndTime: `study-timer:${subjectId}:countdown:endTime`,
+            countdownRemaining: `study-timer:${subjectId}:countdown:remaining`,
+            countdownTotal: `study-timer:${subjectId}:countdown:total`,
         }),
         [subjectId]
     );
 
-    const [initialTimerState] = useState<{
+    const [initialStopwatchState] = useState<{
         seconds: number;
         isActive: boolean;
         startTime: number | null;
@@ -25,19 +30,19 @@ export default function Timer({ subjectId }: { subjectId: string }) {
             return { seconds: 0, isActive: false, startTime: null };
         }
 
-        const persistedIsRunning = localStorage.getItem(storageKeys.isRunning) === "true";
-        const rawStartTime = localStorage.getItem(storageKeys.startTime);
+        const persistedIsRunning = localStorage.getItem(storageKeys.stopwatchIsRunning) === "true";
+        const rawStartTime = localStorage.getItem(storageKeys.stopwatchStartTime);
         const parsedStartTime = rawStartTime ? Number(rawStartTime) : NaN;
 
         if (!persistedIsRunning) {
-            localStorage.removeItem(storageKeys.startTime);
-            localStorage.removeItem(storageKeys.isRunning);
+            localStorage.removeItem(storageKeys.stopwatchStartTime);
+            localStorage.removeItem(storageKeys.stopwatchIsRunning);
             return { seconds: 0, isActive: false, startTime: null };
         }
 
         if (!Number.isFinite(parsedStartTime) || parsedStartTime <= 0 || parsedStartTime > Date.now()) {
-            localStorage.removeItem(storageKeys.startTime);
-            localStorage.removeItem(storageKeys.isRunning);
+            localStorage.removeItem(storageKeys.stopwatchStartTime);
+            localStorage.removeItem(storageKeys.stopwatchIsRunning);
             return { seconds: 0, isActive: false, startTime: null };
         }
 
@@ -45,9 +50,59 @@ export default function Timer({ subjectId }: { subjectId: string }) {
         return { seconds: elapsed, isActive: true, startTime: parsedStartTime };
     });
 
-    const [seconds, setSeconds] = useState(initialTimerState.seconds);
-    const [isActive, setIsActive] = useState(initialTimerState.isActive);
-    const [startTime, setStartTime] = useState<number | null>(initialTimerState.startTime);
+    const [initialCountdownState] = useState<{
+        remainingSeconds: number;
+        totalSeconds: number;
+        isActive: boolean;
+        endTime: number | null;
+    }>(() => {
+        if (typeof window === "undefined") {
+            return { remainingSeconds: 0, totalSeconds: 0, isActive: false, endTime: null };
+        }
+
+        const persistedIsRunning = localStorage.getItem(storageKeys.countdownIsRunning) === "true";
+        const rawEndTime = localStorage.getItem(storageKeys.countdownEndTime);
+        const rawRemaining = localStorage.getItem(storageKeys.countdownRemaining);
+        const rawTotal = localStorage.getItem(storageKeys.countdownTotal);
+
+        const parsedEndTime = rawEndTime ? Number(rawEndTime) : NaN;
+        const parsedRemaining = rawRemaining ? Number(rawRemaining) : NaN;
+        const parsedTotal = rawTotal ? Number(rawTotal) : NaN;
+
+        if (persistedIsRunning && Number.isFinite(parsedEndTime) && parsedEndTime > Date.now()) {
+            const remaining = Math.max(0, Math.ceil((parsedEndTime - Date.now()) / 1000));
+            const total = Number.isFinite(parsedTotal) ? Math.max(parsedTotal, remaining) : remaining;
+            return { remainingSeconds: remaining, totalSeconds: total, isActive: true, endTime: parsedEndTime };
+        }
+
+        if (!persistedIsRunning && Number.isFinite(parsedRemaining) && parsedRemaining > 0) {
+            return {
+                remainingSeconds: Math.floor(parsedRemaining),
+                totalSeconds: Number.isFinite(parsedTotal) ? Math.max(Math.floor(parsedTotal), Math.floor(parsedRemaining)) : Math.floor(parsedRemaining),
+                isActive: false,
+                endTime: null,
+            };
+        }
+
+        localStorage.removeItem(storageKeys.countdownIsRunning);
+        localStorage.removeItem(storageKeys.countdownEndTime);
+        localStorage.removeItem(storageKeys.countdownRemaining);
+        localStorage.removeItem(storageKeys.countdownTotal);
+
+        return { remainingSeconds: 0, totalSeconds: 0, isActive: false, endTime: null };
+    });
+
+    const [stopwatchSeconds, setStopwatchSeconds] = useState(initialStopwatchState.seconds);
+    const [isStopwatchActive, setIsStopwatchActive] = useState(initialStopwatchState.isActive);
+    const [stopwatchStartTime, setStopwatchStartTime] = useState<number | null>(initialStopwatchState.startTime);
+
+    const [countdownSeconds, setCountdownSeconds] = useState(initialCountdownState.remainingSeconds);
+    const [countdownTotalSeconds, setCountdownTotalSeconds] = useState(initialCountdownState.totalSeconds);
+    const [isCountdownActive, setIsCountdownActive] = useState(initialCountdownState.isActive);
+    const [countdownEndTime, setCountdownEndTime] = useState<number | null>(initialCountdownState.endTime);
+    const [customMinutes, setCustomMinutes] = useState("60");
+
+    const countdownCompletedRef = useRef(false);
 
     const formatTime = (totalSeconds: number) => {
         const hrs = Math.floor(totalSeconds / 3600);
@@ -56,163 +111,423 @@ export default function Timer({ subjectId }: { subjectId: string }) {
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const clearPersistedTimer = useCallback(() => {
-        localStorage.removeItem(storageKeys.startTime);
-        localStorage.removeItem(storageKeys.isRunning);
-    }, [storageKeys.isRunning, storageKeys.startTime]);
+    const clearPersistedStopwatch = useCallback(() => {
+        localStorage.removeItem(storageKeys.stopwatchStartTime);
+        localStorage.removeItem(storageKeys.stopwatchIsRunning);
+    }, [storageKeys.stopwatchIsRunning, storageKeys.stopwatchStartTime]);
 
-    const persistRunningTimer = useCallback((start: number) => {
-        localStorage.setItem(storageKeys.startTime, String(start));
-        localStorage.setItem(storageKeys.isRunning, "true");
-    }, [storageKeys.isRunning, storageKeys.startTime]);
+    const persistRunningStopwatch = useCallback((start: number) => {
+        localStorage.setItem(storageKeys.stopwatchStartTime, String(start));
+        localStorage.setItem(storageKeys.stopwatchIsRunning, "true");
+    }, [storageKeys.stopwatchIsRunning, storageKeys.stopwatchStartTime]);
+
+    const clearPersistedCountdown = useCallback(() => {
+        localStorage.removeItem(storageKeys.countdownIsRunning);
+        localStorage.removeItem(storageKeys.countdownEndTime);
+        localStorage.removeItem(storageKeys.countdownRemaining);
+        localStorage.removeItem(storageKeys.countdownTotal);
+    }, [storageKeys.countdownEndTime, storageKeys.countdownIsRunning, storageKeys.countdownRemaining, storageKeys.countdownTotal]);
+
+    const persistRunningCountdown = useCallback((endTime: number, totalSeconds: number) => {
+        localStorage.setItem(storageKeys.countdownIsRunning, "true");
+        localStorage.setItem(storageKeys.countdownEndTime, String(endTime));
+        localStorage.setItem(storageKeys.countdownRemaining, String(Math.max(0, Math.ceil((endTime - Date.now()) / 1000))));
+        localStorage.setItem(storageKeys.countdownTotal, String(totalSeconds));
+    }, [storageKeys.countdownEndTime, storageKeys.countdownIsRunning, storageKeys.countdownRemaining, storageKeys.countdownTotal]);
+
+    const persistPausedCountdown = useCallback((remainingSeconds: number, totalSeconds: number) => {
+        localStorage.setItem(storageKeys.countdownIsRunning, "false");
+        localStorage.removeItem(storageKeys.countdownEndTime);
+        localStorage.setItem(storageKeys.countdownRemaining, String(Math.max(0, remainingSeconds)));
+        localStorage.setItem(storageKeys.countdownTotal, String(Math.max(0, totalSeconds)));
+    }, [storageKeys.countdownEndTime, storageKeys.countdownIsRunning, storageKeys.countdownRemaining, storageKeys.countdownTotal]);
+
+    const saveSession = useCallback(async (durationSeconds: number, successMessage: string) => {
+        const result = await saveStudySession(subjectId, durationSeconds);
+        if (result.success) {
+            toast.success(successMessage);
+            return true;
+        }
+
+        toast.error("Failed to save session.");
+        return false;
+    }, [subjectId]);
 
     useEffect(() => {
         let interval: ReturnType<typeof setInterval> | null = null;
-        
-        if (isActive && startTime !== null) {
+
+        if (isStopwatchActive && stopwatchStartTime !== null) {
             interval = setInterval(() => {
-                const currentSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
-                setSeconds(currentSeconds);
-                document.title = ` ${formatTime(currentSeconds)}`;
+                const currentSeconds = Math.max(0, Math.floor((Date.now() - stopwatchStartTime) / 1000));
+                setStopwatchSeconds(currentSeconds);
             }, 250);
-        } else {
-            document.title = "Study App";
         }
 
         return () => {
             if (interval) clearInterval(interval);
+        };
+    }, [isStopwatchActive, stopwatchStartTime]);
+
+    useEffect(() => {
+        let interval: ReturnType<typeof setInterval> | null = null;
+
+        if (isCountdownActive && countdownEndTime !== null) {
+            countdownCompletedRef.current = false;
+            interval = setInterval(() => {
+                const remaining = Math.max(0, Math.ceil((countdownEndTime - Date.now()) / 1000));
+                setCountdownSeconds(remaining);
+
+                if (remaining <= 0 && !countdownCompletedRef.current) {
+                    countdownCompletedRef.current = true;
+                    setIsCountdownActive(false);
+                    setCountdownEndTime(null);
+                    clearPersistedCountdown();
+
+                    if (countdownTotalSeconds > 0) {
+                        setIsCountdownSaving(true);
+                        saveSession(countdownTotalSeconds, "Countdown completed and saved!")
+                            .then((saved) => {
+                                if (saved) {
+                                    setCountdownSeconds(0);
+                                    setCountdownTotalSeconds(0);
+                                } else {
+                                    countdownCompletedRef.current = false;
+                                }
+                            })
+                            .finally(() => {
+                                setIsCountdownSaving(false);
+                            });
+                    }
+                }
+            }, 250);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [clearPersistedCountdown, countdownEndTime, countdownTotalSeconds, isCountdownActive, saveSession]);
+
+    useEffect(() => {
+        if (isCountdownActive) {
+            document.title = `⏳ ${formatTime(countdownSeconds)}`;
+            return;
+        }
+
+        if (isStopwatchActive) {
+            document.title = `⏱ ${formatTime(stopwatchSeconds)}`;
+            return;
+        }
+
+        document.title = "Study App";
+        return () => {
             document.title = "Study App";
         };
-    }, [isActive, startTime]);
+    }, [countdownSeconds, isCountdownActive, isStopwatchActive, stopwatchSeconds]);
 
     // Use a ref to always have the latest state for the unload/visibility handler
-    const stateRef = useRef({ isActive, seconds, subjectId });
-    const hasSavedRef = useRef(false);
+    const stateRef = useRef({
+        subjectId,
+        isStopwatchActive,
+        stopwatchSeconds,
+        isCountdownActive,
+        countdownSeconds,
+        countdownTotalSeconds,
+    });
+    const stopwatchHasSavedRef = useRef(false);
+    const countdownHasSavedRef = useRef(false);
 
     useEffect(() => {
-        stateRef.current = { isActive, seconds, subjectId };
-    }, [isActive, seconds, subjectId]);
+        stateRef.current = {
+            subjectId,
+            isStopwatchActive,
+            stopwatchSeconds,
+            isCountdownActive,
+            countdownSeconds,
+            countdownTotalSeconds,
+        };
+    }, [countdownSeconds, countdownTotalSeconds, isCountdownActive, isStopwatchActive, stopwatchSeconds, subjectId]);
 
     useEffect(() => {
-        const handleBackgroundSave = () => {
-            const { isActive: running, seconds: elapsed, subjectId: sid } = stateRef.current;
-            
-            if (!running || elapsed <= 0 || hasSavedRef.current) return;
+        const sendDurationToBackend = (duration: number, sid: string) => {
+            if (duration <= 0) return;
 
-            // Prepare data
-            const body = JSON.stringify({ subjectId: sid, duration: elapsed });
+            const body = JSON.stringify({ subjectId: sid, duration });
             const url = "/api/study/session";
 
-            // Mark as saved immediately to prevent duplicate runs
-            hasSavedRef.current = true;
-
-            // Clear local storage IMMEDIATELY
-            localStorage.removeItem(storageKeys.startTime);
-            localStorage.removeItem(storageKeys.isRunning);
-
-            // Send to backend
             if (typeof navigator !== "undefined" && navigator.sendBeacon) {
                 navigator.sendBeacon(url, new Blob([body], { type: "application/json" }));
-            } else {
-                fetch(url, {
-                    method: "POST",
-                    body,
-                    headers: { "Content-Type": "application/json" },
-                    keepalive: true,
-                });
+                return;
             }
+
+            fetch(url, {
+                method: "POST",
+                body,
+                headers: { "Content-Type": "application/json" },
+                keepalive: true,
+            });
         };
 
-        const onVisibilityChange = () => {
-            if (document.visibilityState === "hidden") {
-                handleBackgroundSave();
+        const handleBackgroundSave = () => {
+            const {
+                isStopwatchActive: stopwatchRunning,
+                stopwatchSeconds: elapsedStopwatch,
+                isCountdownActive: countdownRunning,
+                countdownSeconds: remainingCountdown,
+                countdownTotalSeconds: totalCountdown,
+                subjectId: sid,
+            } = stateRef.current;
+
+            if (stopwatchRunning && elapsedStopwatch > 0 && !stopwatchHasSavedRef.current) {
+                stopwatchHasSavedRef.current = true;
+                clearPersistedStopwatch();
+                sendDurationToBackend(elapsedStopwatch, sid);
+            }
+
+            if (countdownRunning && totalCountdown > 0 && !countdownHasSavedRef.current) {
+                const elapsedCountdown = Math.max(0, totalCountdown - remainingCountdown);
+                if (elapsedCountdown > 0) {
+                    countdownHasSavedRef.current = true;
+                    clearPersistedCountdown();
+                    sendDurationToBackend(elapsedCountdown, sid);
+                }
             }
         };
 
         window.addEventListener("beforeunload", handleBackgroundSave);
-        document.addEventListener("visibilitychange", onVisibilityChange);
+        window.addEventListener("pagehide", handleBackgroundSave);
 
         return () => {
             window.removeEventListener("beforeunload", handleBackgroundSave);
-            document.removeEventListener("visibilitychange", onVisibilityChange);
+            window.removeEventListener("pagehide", handleBackgroundSave);
         };
-    }, [storageKeys.isRunning, storageKeys.startTime]);
+    }, [clearPersistedCountdown, clearPersistedStopwatch]);
 
-    const toggle = () => {
-        if (isActive) {
-            setIsActive(false);
-            setStartTime(null);
-            clearPersistedTimer();
+    const toggleStopwatch = () => {
+        if (isStopwatchActive) {
+            setIsStopwatchActive(false);
+            setStopwatchStartTime(null);
+            clearPersistedStopwatch();
             return;
         }
 
-        // Reset hasSaved when starting a new session
-        hasSavedRef.current = false;
+        stopwatchHasSavedRef.current = false;
 
-        // Start from now, adjusted by already elapsed seconds for pause/resume behavior.
-        const newStartTime = Date.now() - seconds * 1000;
-        setStartTime(newStartTime);
-        setIsActive(true);
-        persistRunningTimer(newStartTime);
-    };
-    
-    const reset = () => {
-        setIsActive(false);
-        setStartTime(null);
-        setSeconds(0);
-        hasSavedRef.current = false;
-        clearPersistedTimer();
+        const newStartTime = Date.now() - stopwatchSeconds * 1000;
+        setStopwatchStartTime(newStartTime);
+        setIsStopwatchActive(true);
+        persistRunningStopwatch(newStartTime);
     };
 
-    const handleFinish = () => {
-        if (seconds === 0 || hasSavedRef.current) return;
-        
-        hasSavedRef.current = true; // Mark as saved
-        setIsActive(false);
-        setStartTime(null);
-        clearPersistedTimer();
-        startTransition(async () => {
-            const result = await saveStudySession(subjectId, seconds);
-            if (result.success) {
-                setSeconds(0);
-                toast.success("Study session saved successfully!");
-            } else {
-                hasSavedRef.current = false; // Allow retry if it failed? 
-                // Actually if it failed, they might try again.
-                toast.error("Failed to save session.");
-            }
-        });
+    const resetStopwatch = () => {
+        setIsStopwatchActive(false);
+        setStopwatchStartTime(null);
+        setStopwatchSeconds(0);
+        stopwatchHasSavedRef.current = false;
+        clearPersistedStopwatch();
+    };
+
+    const handleStopwatchFinish = async () => {
+        if (stopwatchSeconds === 0 || stopwatchHasSavedRef.current) return;
+
+        stopwatchHasSavedRef.current = true;
+        setIsStopwatchActive(false);
+        setStopwatchStartTime(null);
+        clearPersistedStopwatch();
+
+        setIsStopwatchSaving(true);
+        const saved = await saveSession(stopwatchSeconds, "Study session saved successfully!");
+        setIsStopwatchSaving(false);
+
+        if (saved) {
+            setStopwatchSeconds(0);
+            return;
+        }
+
+        stopwatchHasSavedRef.current = false;
+    };
+
+    const startCountdown = (durationSeconds: number) => {
+        if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
+            toast.error("Please choose a valid countdown duration.");
+            return;
+        }
+
+        countdownHasSavedRef.current = false;
+        countdownCompletedRef.current = false;
+
+        const endTime = Date.now() + durationSeconds * 1000;
+        setCountdownTotalSeconds(durationSeconds);
+        setCountdownSeconds(durationSeconds);
+        setCountdownEndTime(endTime);
+        setIsCountdownActive(true);
+        persistRunningCountdown(endTime, durationSeconds);
+    };
+
+    const toggleCountdown = () => {
+        if (isCountdownActive && countdownEndTime !== null) {
+            const remaining = Math.max(0, Math.ceil((countdownEndTime - Date.now()) / 1000));
+            setCountdownSeconds(remaining);
+            setIsCountdownActive(false);
+            setCountdownEndTime(null);
+            persistPausedCountdown(remaining, countdownTotalSeconds);
+            return;
+        }
+
+        if (countdownSeconds <= 0) {
+            toast.error("Pick a duration to start the countdown.");
+            return;
+        }
+
+        const endTime = Date.now() + countdownSeconds * 1000;
+        setCountdownEndTime(endTime);
+        setIsCountdownActive(true);
+        persistRunningCountdown(endTime, countdownTotalSeconds || countdownSeconds);
+    };
+
+    const resetCountdown = () => {
+        setIsCountdownActive(false);
+        setCountdownEndTime(null);
+        setCountdownSeconds(0);
+        setCountdownTotalSeconds(0);
+        countdownHasSavedRef.current = false;
+        countdownCompletedRef.current = false;
+        clearPersistedCountdown();
+    };
+
+    const handleCountdownManualSave = async () => {
+        if (countdownTotalSeconds <= 0 || countdownHasSavedRef.current) return;
+
+        const elapsed = Math.max(0, countdownTotalSeconds - countdownSeconds);
+        if (elapsed <= 0) {
+            toast.error("No countdown time to save yet.");
+            return;
+        }
+
+        countdownHasSavedRef.current = true;
+        setIsCountdownActive(false);
+        setCountdownEndTime(null);
+        clearPersistedCountdown();
+
+        setIsCountdownSaving(true);
+        const saved = await saveSession(elapsed, "Countdown session saved!");
+        setIsCountdownSaving(false);
+
+        if (saved) {
+            setCountdownSeconds(0);
+            setCountdownTotalSeconds(0);
+            return;
+        }
+
+        countdownHasSavedRef.current = false;
+    };
+
+    const handleStartCustomCountdown = () => {
+        const minutes = Number(customMinutes);
+        if (!Number.isFinite(minutes) || minutes <= 0) {
+            toast.error("Enter valid custom minutes.");
+            return;
+        }
+
+        startCountdown(Math.floor(minutes * 60));
     };
 
     return (
-        <div className="flex flex-col items-center gap-6 py-8">
-            <div className="text-7xl font-mono font-black tracking-tighter tabular-nums bg-base-100 px-8 py-4 rounded-3xl border border-base-300 shadow-inner">
-                {formatTime(seconds)}
-            </div>
+        <div className="w-full py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                <div className="bg-base-100 rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col items-center gap-5">
+                    <p className="text-sm uppercase tracking-widest opacity-60">Stopwatch</p>
+                    <div className="text-5xl sm:text-6xl font-mono font-black tracking-tighter tabular-nums text-center wrap-break-word">
+                        {formatTime(stopwatchSeconds)}
+                    </div>
 
-            <div className="flex gap-4">
-                <button 
-                    onClick={toggle} 
-                    className={`btn btn-circle btn-lg ${isActive ? 'btn-outline' : 'btn-primary'}`}
-                >
-                    {isActive ? <Pause size={24} /> : <Play size={24} />}
-                </button>
+                    <div className="flex flex-wrap justify-center gap-3">
+                        <button
+                            onClick={toggleStopwatch}
+                            className={`btn btn-circle btn-lg ${isStopwatchActive ? 'btn-outline' : 'btn-primary'}`}
+                        >
+                            {isStopwatchActive ? <Pause size={24} /> : <Play size={24} />}
+                        </button>
 
-                <button 
-                    onClick={reset} 
-                    className="btn btn-circle btn-lg btn-ghost border border-base-300"
-                >
-                    <RotateCcw size={24} />
-                </button>
+                        <button
+                            onClick={resetStopwatch}
+                            className="btn btn-circle btn-lg btn-ghost border border-base-300"
+                        >
+                            <RotateCcw size={24} />
+                        </button>
 
-                <button 
-                    onClick={handleFinish} 
-                    disabled={seconds === 0 || isPending}
-                    className="btn btn-lg btn-success rounded-full px-8 flex items-center gap-2"
-                >
-                    <CheckCircle size={20} />
-                    {isPending ? "Saving..." : "Finish Session"}
-                </button>
+                        <button
+                            onClick={handleStopwatchFinish}
+                            disabled={stopwatchSeconds === 0 || isStopwatchSaving}
+                            className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2"
+                        >
+                            <CheckCircle size={20} />
+                            {isStopwatchSaving ? "Saving..." : "Save"}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="bg-base-100 rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col gap-5">
+                    <div className="flex items-center justify-center">
+                        <p className="text-sm uppercase tracking-widest opacity-60">Countdown</p>
+                    </div>
+
+                    <div className="text-5xl sm:text-6xl text-center font-mono font-black tracking-tighter tabular-nums wrap-break-word">
+                        {formatTime(countdownSeconds)}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 justify-center">
+                        {[25, 60, 120].map((minutes) => (
+                            <button
+                                key={minutes}
+                                onClick={() => startCountdown(minutes * 60)}
+                                className="btn btn-sm btn-outline"
+                            >
+                                {minutes >= 60 ? `${minutes / 60}h` : `${minutes}m`}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="flex gap-2 justify-center">
+                        <input
+                            type="number"
+                            min={1}
+                            step={1}
+                            value={customMinutes}
+                            onChange={(e) => setCustomMinutes(e.target.value)}
+                            className="input input-bordered w-28 text-center"
+                            placeholder="minutes"
+                        />
+                        <button onClick={handleStartCustomCountdown} className="btn btn-primary btn-sm">
+                            Start custom
+                        </button>
+                    </div>
+
+                    <div className="flex flex-wrap justify-center gap-3">
+                        <button
+                            onClick={toggleCountdown}
+                            className={`btn btn-circle btn-lg ${isCountdownActive ? 'btn-outline' : 'btn-primary'}`}
+                            disabled={countdownSeconds === 0 && countdownTotalSeconds === 0}
+                        >
+                            {isCountdownActive ? <Pause size={24} /> : <Play size={24} />}
+                        </button>
+
+                        <button
+                            onClick={resetCountdown}
+                            className="btn btn-circle btn-lg btn-ghost border border-base-300"
+                        >
+                            <RotateCcw size={24} />
+                        </button>
+
+                        <button
+                            onClick={handleCountdownManualSave}
+                            disabled={countdownTotalSeconds === 0 || isCountdownSaving}
+                            className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2"
+                        >
+                            <CheckCircle size={20} />
+                            {isCountdownSaving ? "Saving..." : "Save"}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
