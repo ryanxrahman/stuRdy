@@ -72,14 +72,14 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
       </div>
 
       <div className="overflow-x-auto">
-        <table className="table table-sm table-zebra table-pin-rows">
+        <table className="table table-sm table-zebra table-pin-rows w-full">
           <thead>
             <tr>
-              <th className="w-auto">Subject</th>
+              <th>Subject</th>
               <th className="hidden md:table-cell">Total Hours</th>
               <th className="hidden md:table-cell">Longest Session</th>
               <th className="hidden md:table-cell">Last Study</th>
-              <th className="hidden md:table-cell min-w-56">Area Chart</th>
+              <th className=" min-w-56">Area Chart</th>
             </tr>
           </thead>
           <tbody>
@@ -127,14 +127,14 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
                   onKeyDown={handleNavigateKeyDown}
                   className="cursor-pointer hover:bg-base-300/50 focus-visible:outline-2 focus-visible:outline-primary [&>td]:py-2"
                 >
-                  <td className="max-w-40 truncate font-semibold md:max-w-none">{sub.name}</td>
+                  <td className="font-semibold">{sub.name}</td>
                   <td className="hidden md:table-cell">
                     <span className="font-medium text-primary">{totalHoursLabel}</span>
                   </td>
                   <td className="hidden md:table-cell">{longestHoursLabel}</td>
                   <td className="hidden md:table-cell text-xs md:text-sm">{lastStudyLabel}</td>
-                  <td className="hidden md:table-cell">
-                    <div className="w-full max-w-72">
+                  <td className="">
+                    <div className="w-full">
                       <SubjectMiniChart sessions={subjectSessions} subjectName={sub.name} />
                     </div>
                   </td>
