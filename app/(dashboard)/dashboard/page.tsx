@@ -14,6 +14,7 @@ import SubjectsOverview from "@/components/SubjectsOverview";
 import StudyReward from "@/components/StudyReward";
 import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import AddSubjectHeaderButton from "./AddSubjectHeaderButton";
+import StartStudyHeaderButton from "./StartStudyHeaderButton";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -98,7 +99,15 @@ export default async function Dashboard() {
       {/* Header */}
       <header className="flex items-center justify-between gap-4">
           <h1 className="text-6xl max-md:text-3xl font-black tracking-tighter">Command Center</h1>
-        <AddSubjectHeaderButton />
+        <div className="flex items-center gap-2">
+          <StartStudyHeaderButton
+            subjects={subjects.map((sub: any) => ({
+              _id: String(sub._id),
+              name: String(sub.name || "Untitled"),
+            }))}
+          />
+          <AddSubjectHeaderButton />
+        </div>
       </header>
 
 

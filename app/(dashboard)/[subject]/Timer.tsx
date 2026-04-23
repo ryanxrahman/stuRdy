@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { Play, Pause, RotateCcw, CheckCircle, Hourglass } from "lucide-react";
+import { Play, Pause, RotateCcw, CheckCircle } from "lucide-react";
 import { saveStudySession } from "../dashboard/subject-actions";
+import { useSearchParams } from "next/navigation";
 
 export default function Timer({ subjectId }: { subjectId: string }) {
+    const searchParams = useSearchParams();
     const [isStopwatchSaving, setIsStopwatchSaving] = useState(false);
     const [isCountdownSaving, setIsCountdownSaving] = useState(false);
 
@@ -103,6 +105,7 @@ export default function Timer({ subjectId }: { subjectId: string }) {
     const [customMinutes, setCustomMinutes] = useState("60");
 
     const countdownCompletedRef = useRef(false);
+    const hasHandledAutoStartRef = useRef(false);
 
     const formatTime = (totalSeconds: number) => {
         const hrs = Math.floor(totalSeconds / 3600);
@@ -318,6 +321,16 @@ export default function Timer({ subjectId }: { subjectId: string }) {
         persistRunningStopwatch(newStartTime);
     };
 
+    const startStopwatch = useCallback(() => {
+        if (isStopwatchActive) return;
+
+        stopwatchHasSavedRef.current = false;
+        const newStartTime = Date.now() - stopwatchSeconds * 1000;
+        setStopwatchStartTime(newStartTime);
+        setIsStopwatchActive(true);
+        persistRunningStopwatch(newStartTime);
+    }, [isStopwatchActive, persistRunningStopwatch, stopwatchSeconds]);
+
     const resetStopwatch = () => {
         setIsStopwatchActive(false);
         setStopwatchStartTime(null);
@@ -430,6 +443,25 @@ export default function Timer({ subjectId }: { subjectId: string }) {
 
         startCountdown(Math.floor(minutes * 60));
     };
+
+    useEffect(() => {
+        const shouldAutoStart = searchParams.get("autostart") === "1";
+        if (!shouldAutoStart || hasHandledAutoStartRef.current || isStopwatchActive) return;
+
+        const timerId = window.setTimeout(() => {
+            startStopwatch();
+            toast.success("Timer started");
+
+            hasHandledAutoStartRef.current = true;
+            const nextUrl = new URL(window.location.href);
+            nextUrl.searchParams.delete("autostart");
+            window.history.replaceState({}, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+        }, 0);
+
+        return () => {
+            window.clearTimeout(timerId);
+        };
+    }, [isStopwatchActive, searchParams, startStopwatch]);
 
     return (
         <div className="w-full py-6">
