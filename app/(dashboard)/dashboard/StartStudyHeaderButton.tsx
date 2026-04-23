@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,29 @@ type StartStudyHeaderButtonProps = {
 export default function StartStudyHeaderButton({ subjects }: StartStudyHeaderButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target?.isContentEditable || ["input", "textarea", "select"].includes(target?.tagName?.toLowerCase?.() || "")) {
+        return;
+      }
+
+      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) {
+        return;
+      }
+
+      if (e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const handleStartSubject = (subjectName: string) => {
     setIsOpen(false);
@@ -68,7 +91,7 @@ export default function StartStudyHeaderButton({ subjects }: StartStudyHeaderBut
                       onClick={() => handleStartSubject(subject.name)}
                       className="btn btn-ghost border border-base-300 rounded-xl w-full justify-start"
                     >
-                      <Play size={14} />
+                      <Play size={10} />
                       {subject.name}
                     </button>
                   ))}

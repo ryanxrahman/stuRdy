@@ -111,6 +111,7 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                         <div className="border max-md:hidden space-y-2 text-xs border-base-content/5 rounded-xl p-3 bg-base-300/30">
                             <h1 className="font-bold opacity-50 uppercase tracking-widest text-[10px]">Shortcuts</h1>
                             <p><span className="bg-base-content/10 font-mono px-1 rounded">A</span> to add a subject</p>
+                            <p><span className="bg-base-content/10 font-mono px-1 rounded">S</span> to open start popup</p>
                             <p><span className="bg-base-content/10 font-mono px-1 rounded">D</span> to toggle theme</p>
                         </div>
 
