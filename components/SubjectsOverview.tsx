@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import type { KeyboardEvent } from "react";
 import SubjectMiniChart from "./SubjectMiniChart";
 
@@ -28,6 +29,8 @@ type SubjectsOverviewProps = {
   sessions: Session[];
 };
 
+type SortFilter = "added" | "total-study" | "longest-study" | "last-study" | "name";
+
 function formatTimeAgo(dateInput: string): string {
   const date = new Date(dateInput);
   const diffMs = Date.now() - date.getTime();
@@ -53,6 +56,55 @@ function formatTimeAgo(dateInput: string): string {
 
 export default function SubjectsOverview({ subjects, subjectStats, sessions }: SubjectsOverviewProps) {
   const router = useRouter();
+  const [sortFilter, setSortFilter] = useState<SortFilter>("added");
+
+  const sortedRows = useMemo(() => {
+    const rows = subjects.map((sub, index) => {
+      const stat = subjectStats.find((s) => s.name === sub.name);
+      const subjectSessions = sessions
+        .filter((s) => s.subjectId === sub._id.toString())
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      const totalMinutes = stat?.minutes || 0;
+      const longestSessionMins = subjectSessions.length
+        ? Math.max(...subjectSessions.map((s) => Math.round((s.duration || 0) / 60)))
+        : 0;
+      const lastSession = subjectSessions.at(-1);
+      const lastStudyTs = lastSession ? new Date(lastSession.date).getTime() : 0;
+
+      return {
+        sub,
+        index,
+        subjectSessions,
+        totalMinutes,
+        longestSessionMins,
+        lastStudyTs,
+      };
+    });
+
+    const sorted = [...rows];
+
+    switch (sortFilter) {
+      case "total-study":
+        sorted.sort((a, b) => b.totalMinutes - a.totalMinutes);
+        break;
+      case "longest-study":
+        sorted.sort((a, b) => b.longestSessionMins - a.longestSessionMins);
+        break;
+      case "last-study":
+        sorted.sort((a, b) => b.lastStudyTs - a.lastStudyTs);
+        break;
+      case "name":
+        sorted.sort((a, b) => a.sub.name.localeCompare(b.sub.name));
+        break;
+      case "added":
+      default:
+        sorted.sort((a, b) => a.index - b.index);
+        break;
+    }
+
+    return sorted;
+  }, [subjects, subjectStats, sessions, sortFilter]);
 
   if (subjects.length === 0) {
     return (
@@ -64,11 +116,31 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
 
   return (
     <section className="bg-base-200 rounded-4xl border border-base-300 p-6 md:p-8">
-      <div className="mb-5">
-        <h2 className="text-xl font-bold mb-1">Subjects Overview</h2>
-        <p className="text-xs opacity-50 uppercase tracking-tight font-mono">
-          Click any row to open a subject page
-        </p>
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold mb-1">Subjects Overview</h2>
+          <p className="text-xs opacity-50 uppercase tracking-tight font-mono">
+            Click any row to open a subject page
+          </p>
+        </div>
+
+        <div className="min-w-40">
+          <label className="text-[10px] opacity-60 uppercase tracking-wider font-mono mb-1 block">
+            Sort by
+          </label>
+          <select
+            className="select select-sm select-bordered w-full"
+            value={sortFilter}
+            onChange={(e) => setSortFilter(e.target.value as SortFilter)}
+            aria-label="Sort subjects"
+          >
+            <option value="added">Last Added</option>
+            <option value="total-study">Total Study</option>
+            <option value="longest-study">Longest Study</option>
+            <option value="last-study">Last Study</option>
+            <option value="name">Subject Name (A-Z)</option>
+          </select>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -83,18 +155,9 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
             </tr>
           </thead>
           <tbody>
-            {subjects.map((sub) => {
-              const stat = subjectStats.find((s) => s.name === sub.name);
-              const subjectSessions = sessions
-                .filter((s) => s.subjectId === sub._id.toString())
-                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-              const totalMinutes = stat?.minutes || 0;
+            {sortedRows.map(({ sub, subjectSessions, totalMinutes, longestSessionMins }) => {
               const totalHoursLabel = totalMinutes === 0 ? "0h" : `${(totalMinutes / 60).toFixed(1)}h`;
 
-              const longestSessionMins = subjectSessions.length
-                ? Math.max(...subjectSessions.map((s) => Math.round((s.duration || 0) / 60)))
-                : 0;
               const longestHoursLabel =
                 longestSessionMins === 0
                   ? "—"
