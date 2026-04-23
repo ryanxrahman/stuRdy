@@ -1,6 +1,32 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+type MiniTooltipProps = {
+  active?: boolean;
+  payload?: Array<{ value?: number }>;
+};
+
+function MiniTooltip({ active, payload }: MiniTooltipProps) {
+  if (active && payload && payload.length) {
+    const mins = payload[0].value ?? 0;
+    return (
+      <div className="bg-black text-white px-3 py-1 rounded-lg text-xs shadow-lg">
+        <p>{Math.round(mins)}m</p>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 type Session = {
   date: string;
@@ -15,7 +41,7 @@ type SubjectMiniChartProps = {
 export default function SubjectMiniChart({ sessions, subjectName }: SubjectMiniChartProps) {
   if (sessions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-center opacity-40 text-sm italic h-40">
+      <div className="flex flex-col items-center justify-center p-3 text-center opacity-40 text-xs italic h-16">
         No study sessions yet
       </div>
     );
@@ -45,37 +71,36 @@ export default function SubjectMiniChart({ sessions, subjectName }: SubjectMiniC
   });
 
   const maxMinutes = Math.max(...chartData.map(d => d.minutes), 1);
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const mins = payload[0].value;
-      return (
-        <div className="bg-black text-white px-3 py-1 rounded-lg text-xs shadow-lg">
-          <p>{mins}m</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const chartGradientId = `subject-mini-${subjectName.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase()}`;
 
   return (
-    <div className="w-full h-40 -ml-8">
+    <div className="w-full h-20 -ml-2">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData}>
+        <AreaChart data={chartData} margin={{ top: 6, right: 4, left: -22, bottom: 0 }}>
+          <defs>
+            <linearGradient id={chartGradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05} />
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} vertical={false} />
-          <XAxis 
-            dataKey="date" 
-            tick={{ fontSize: 11, opacity: 0.5 }}
-            axisLine={false}
-          />
+          <XAxis dataKey="date" hide axisLine={false} tickLine={false} />
           <YAxis 
-            tick={{ fontSize: 11, opacity: 0.5 }}
+            hide
             axisLine={false}
+            tickLine={false}
             domain={[0, Math.ceil(maxMinutes / 10) * 10]}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="minutes" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-        </BarChart>
+          <Tooltip content={<MiniTooltip />} />
+          <Area
+            type="monotone"
+            dataKey="minutes"
+            stroke="#8b5cf6"
+            fill={`url(#${chartGradientId})`}
+            strokeWidth={2}
+            activeDot={{ r: 3 }}
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
