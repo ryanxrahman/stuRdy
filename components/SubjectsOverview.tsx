@@ -80,7 +80,6 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
               <th>Total Hours</th>
               <th>Longest Session</th>
               <th>Last Study</th>
-              <th>Tasks Done</th>
               <th className="min-w-56">Area Chart</th>
               <th>Delete</th>
             </tr>
@@ -88,8 +87,6 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
           <tbody>
             {subjects.map((sub) => {
               const stat = subjectStats.find((s) => s.name === sub.name);
-              const completedTodos = sub.todos?.filter((t) => t.completed).length || 0;
-              const totalTodos = sub.todos?.length || 0;
               const subjectSessions = sessions
                 .filter((s) => s.subjectId === sub._id.toString())
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -126,9 +123,6 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
               return (
                 <tr
                   key={sub._id.toString()}
-                  role="button"
-                  tabIndex={0}
-                  onClick={handleNavigate}
                   onKeyDown={handleNavigateKeyDown}
                   className="cursor-pointer hover:bg-base-300/50 focus-visible:outline-2 focus-visible:outline-primary [&>td]:py-2"
                 >
@@ -138,9 +132,6 @@ export default function SubjectsOverview({ subjects, subjectStats, sessions }: S
                   </td>
                   <td>{longestHoursLabel}</td>
                   <td className="text-xs md:text-sm">{lastStudyLabel}</td>
-                  <td>
-                    {completedTodos}/{totalTodos}
-                  </td>
                   <td>
                     <div className="w-full max-w-72">
                       <SubjectMiniChart sessions={subjectSessions} subjectName={sub.name} />
