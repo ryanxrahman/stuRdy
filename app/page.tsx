@@ -122,8 +122,8 @@ export default async function Home() {
   const totalHoursStudied = (totalMinutes / 60).toFixed(1);
 
   return (
-   <main className="max-w-6xl mx-auto w-full ">
-    <section className="flex items-center p-3 max-md:p-1 justify-between">
+   <main className="max-w-7xl mx-auto w-full ">
+    <section className="flex max-w-4xl mx-auto items-center p-4 max-md:p-1 justify-between">
        <div className="flex gap-2">
         <Image src={"/icon.png"} alt="app logo" width={25} height={25}/>
         <div className="font-bold">study by MR</div>
@@ -140,6 +140,22 @@ export default async function Home() {
             <BtnSecond>Sign Up</BtnSecond>
           </Link>
        </div>
+    </section>
+    <section className="my-30 flex flex-col items-center justify-center gap-10">
+      <div className="flex flex-col items-center justify-center gap-2">
+        <p className="text-xs text-primary">
+            opensource study-tracker
+        </p>
+        <h1 className="text-6xl font-bold">  
+            <span className="">Visualize</span> Your <span className="uppercase bg-primary px-2 ">Academic</span> Progress
+        </h1>
+        <p className="text-sm my-5">
+           Turn study data into clear, actionable insights
+        </p>
+      </div>
+      <div >
+          <Image className="rounded-4xl outline-4 outline-gray-400" src={"/hero.png"} alt="app logo" width={1400} height={1400}/>
+      </div>
     </section>
    </main>
   );
