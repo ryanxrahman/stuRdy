@@ -9,6 +9,8 @@ import SubjectBarChart from "@/components/SubjectBarChart";
 import ContributionMap from "@/components/ContributionMap";
 import StudyGoal from "@/components/StudyGoal";
 import BtnPrimary from "@/components/btn/BtnPrimary";
+import BtnSecond from "@/components/btn/BtnSecond";
+import BtnThird from "@/components/btn/BtnThird";
 
 type SessionDoc = {
   _id?: any;
@@ -120,9 +122,20 @@ export default async function Home() {
   const totalHoursStudied = (totalMinutes / 60).toFixed(1);
 
   return (
-   <div>
-    new lading page 
-    <BtnPrimary>hello</BtnPrimary>
-   </div>
+   <main className="max-w-6xl mx-auto w-full ">
+    <section className="flex items-center justify-between">
+       <div>
+        study by mr
+       </div>
+       <div>
+          <a href="">stats</a>
+          <a href="">review</a>
+       </div>
+       <div>
+          <BtnThird>Log in</BtnThird>
+          <BtnSecond>Sign Up</BtnSecond>
+       </div>
+    </section>
+   </main>
   );
 }
