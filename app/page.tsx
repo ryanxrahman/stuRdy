@@ -123,17 +123,22 @@ export default async function Home() {
 
   return (
    <main className="max-w-6xl mx-auto w-full ">
-    <section className="flex items-center justify-between">
-       <div>
-        study by mr
+    <section className="flex items-center p-3 max-md:p-1 justify-between">
+       <div className="flex gap-2">
+        <Image src={"/icon.png"} alt="app logo" width={25} height={25}/>
+        <div className="font-bold">study by MR</div>
        </div>
-       <div>
-          <a href="">stats</a>
-          <a href="">review</a>
+       <div className="flex items-center gap-4">
+          <a className="link link-hover hover:text-primary" href="">stats</a>
+          <a className="link link-hover hover:text-primary" href="">review</a>
        </div>
-       <div>
-          <BtnThird>Log in</BtnThird>
-          <BtnSecond>Sign Up</BtnSecond>
+       <div className="flex gap-4 items-center">
+          <Link href={"/login"}>
+            <BtnThird>Log in</BtnThird>
+          </Link>
+          <Link href={"/register"}>
+            <BtnSecond>Sign Up</BtnSecond>
+          </Link>
        </div>
     </section>
    </main>
