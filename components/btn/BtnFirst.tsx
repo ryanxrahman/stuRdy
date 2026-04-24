@@ -14,7 +14,7 @@ type Props = {
 }
 
 
-export default function BtnPrimary({ children, onClick, className, disabled, type, icon, loading, loadingText }: Props) {
+export default function BtnFirst({ children, onClick, className, disabled, type, icon, loading, loadingText }: Props) {
     const handleClick = async () => {
         try {
             await onClick?.();
@@ -28,7 +28,7 @@ export default function BtnPrimary({ children, onClick, className, disabled, typ
     return (
         <button
             onClick={handleClick}
-            className={`btn rounded-xl btn-success ${className}`}
+            className={`btn btn-success rounded-xl text-white gap-2 ${className}`}
             disabled={disabled || isLoading}
             type={type}
         >
