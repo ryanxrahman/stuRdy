@@ -11,6 +11,8 @@ import StudyGoal from "@/components/StudyGoal";
 import BtnPrimary from "@/components/btn/BtnPrimary";
 import BtnSecond from "@/components/btn/BtnSecond";
 import BtnThird from "@/components/btn/BtnThird";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeToggleForDashboard } from "@/components/ThemeToggleForDashboard";
 
 type SessionDoc = {
   _id?: any;
@@ -149,12 +151,14 @@ export default async function Home() {
           <a className="link link-hover hover:text-primary" href="">review</a>
         </div>
         <div className="flex gap-4 items-center">
+           
           <Link href={"/login"}>
             <BtnThird>Log in</BtnThird>
           </Link>
           <Link href={"/register"}>
             <BtnSecond>Sign Up</BtnSecond>
           </Link>
+          <ThemeToggleForDashboard />
         </div>
       </section>
       <section className="my-30 flex flex-col items-center justify-center gap-10">
@@ -198,6 +202,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      <ThemeToggle />
+     
 
     </main>
   );
