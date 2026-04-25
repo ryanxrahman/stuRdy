@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -13,6 +14,7 @@ import BtnSecond from "@/components/btn/BtnSecond";
 import BtnThird from "@/components/btn/BtnThird";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ThemeToggleForDashboard } from "@/components/ThemeToggleForDashboard";
+import ThemeImage from "@/components/ThemeImage";
 
 type SessionDoc = {
   _id?: any;
@@ -167,14 +169,21 @@ export default async function Home() {
             opensource study-tracker
           </p>
           <h1 className="text-6xl font-bold tracking-tight">
-            <span className="">Visualize</span> Your <span className="uppercase bg-primary px-2 ">Academic</span> Progress
+            <span className="">Visualize</span> Your <span className="uppercase bg-primary px-2 text-white">Academic</span> Progress
           </h1>
           <p className="text-sm my-5">
             Turn study data into clear, actionable insights
           </p>
         </div>
-        <div >
-          <Image className="rounded-4xl outline-4 outline-gray-400" src={"/hero.png"} alt="app logo" width={1400} height={1400} />
+        <div>
+          <ThemeImage 
+            lightSrc="/hero.png" 
+            darkSrc="/studyone.jpeg" 
+            alt="app logo" 
+            width={1400} 
+            height={1400} 
+            className="rounded-4xl outline-4 outline-gray-400"
+          />
         </div>
       </section>
       <section className="space-y-10 my-40">
@@ -202,7 +211,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      <ThemeToggle />
      
 
     </main>

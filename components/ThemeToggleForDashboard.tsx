@@ -2,7 +2,13 @@
 
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
+
+export function Theme() {
+    const { theme, setTheme } = useTheme();
+
+    return theme;
+}
 
 export function ThemeToggleForDashboard() {
   const { theme, setTheme } = useTheme()
