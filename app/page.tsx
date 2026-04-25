@@ -167,7 +167,7 @@ export default async function Home() {
         </div>
         <div className="flex gap-4 items-center">
            
-          <Link href={"/login"}>
+          <Link className="max-sm:hidden" href={"/login"}>
             <BtnThird>Log in</BtnThird>
           </Link>
           <Link href={"/register"}>
