@@ -36,7 +36,7 @@ function ThemeHotkey() {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider attribute="data-theme" defaultTheme="dark">
+    <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
       <ThemeHotkey />
       {children}
       <Toaster

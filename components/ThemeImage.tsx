@@ -34,7 +34,7 @@ export default function ThemeImage({
         src={resolvedTheme === 'dark' ? darkSrc : lightSrc}
         alt={alt}
         {...props}
-        className={`${props.className || ''} transition-all duration-700`}
+        className={`${props.className || ''} transition-all duration-500 ease-in-out`}
       />
     </div>
   )

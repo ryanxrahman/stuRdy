@@ -177,8 +177,8 @@ export default async function Home() {
         </div>
         <div>
           <ThemeImage 
-            lightSrc="/hero.png" 
-            darkSrc="/studyone.jpeg" 
+            lightSrc="/herolight.png" 
+            darkSrc="/herodark.png" 
             alt="app logo" 
             width={1400} 
             height={1400} 
