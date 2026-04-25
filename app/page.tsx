@@ -1,8 +1,7 @@
-
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BarChart3, BookOpen, Clock, Flame, ArrowRight } from "lucide-react";
+import { BarChart3, BookOpen, Clock, Flame, ArrowRight, Check, Cross, X } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import ProgressChart from "./(dashboard)/[subject]/ProgressChart";
@@ -15,6 +14,7 @@ import BtnThird from "@/components/btn/BtnThird";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ThemeToggleForDashboard } from "@/components/ThemeToggleForDashboard";
 import ThemeImage from "@/components/ThemeImage";
+import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 
 type SessionDoc = {
   _id?: any;
@@ -124,6 +124,18 @@ export default async function Home() {
     Math.floor((todayStart.getTime() - journeyStartDate.getTime()) / MS_PER_DAY)
   );
   const totalHoursStudied = (totalMinutes / 60).toFixed(1);
+  const totalHoursStudiedNum = parseFloat(totalHoursStudied);
+
+  const areaChartSubjects = rawSubjects.map((sub: any) => ({
+    _id: String(sub._id),
+    name: typeof sub.name === "string" ? sub.name : "Untitled",
+  }));
+
+  const areaChartSessions = sessions.map((s: any) => ({
+    date: String(s.date),
+    duration: Number(s.duration || 0),
+    subjectId: String(s.subjectId || ""),
+  }));
 
   const otherStudyTracker = [
     "no charts no graphs no data",
@@ -182,7 +194,7 @@ export default async function Home() {
             alt="app logo" 
             width={1400} 
             height={1400} 
-            className="rounded-4xl outline-4 outline-gray-400"
+            className="rounded-4xl outline-4 outline-base-300"
           />
         </div>
       </section>
@@ -190,7 +202,7 @@ export default async function Home() {
         <div className="text-center">
           <p className="text-sm text-violet-400 mt-4">smart insights help you grow</p>
             <h1 className="text-6xl tracking-tight text-center font-bold">
-               <span className="text-5xl">Progress you can see,</span> <br /> <span className="uppercase text-primary">results</span> you can feel!
+               <span className="text-5xl">Progress you can see,</span> <br /> <span className="uppercase text-white bg-primary px-2">results</span> you can feel!
             </h1>
             
           </div>
@@ -201,16 +213,55 @@ export default async function Home() {
             <p className="text-sm opacity-50 mb-6">Subject-wise focus time from real timer sessions.</p>
             <SubjectBarChart data={subjectStats} />
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <ContributionMap sessions={contributionSessions} />
+           
             <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
               <h2 className="text-2xl font-black mb-1">Study Momentum</h2>
               <p className="text-sm opacity-50 mb-6">Same chart style I use inside each subject page.</p>
               <ProgressChart data={studyChartData} />
             </section>
-          </div>
         </div>
       </section>
+
+
+      <section className="max-w-7xl mx-auto my-20 flex flex-col gap-8">
+        <div className="max-w-5xl mx-auto space-y-10">
+          <div className="text-center space-y-8">
+             <p className="text-violet-400 text-sm">feel the impact</p>
+            <h1 className="text-7xl font-bold tracking-tight text-center">
+             See the <span className="text-primary bg-primary dark:text-white px-2">Charts</span>
+            </h1>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+              <ContributionMap sessions={contributionSessions} />
+              <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+                <h2 className="text-2xl font-bold mb-1">Weekly stats of mr</h2>
+                <p className="text-sm opacity-50 mb-6 uppercase tracking-tight font-mono">Real-time update from my sessions</p>
+                 <div className="grid grid-cols-2 gap-4">
+                 {[
+            { icon: Clock, label: "Total Study", value: totalHoursStudiedNum < 1 ? `${totalMinutes}m` : `${(totalHoursStudiedNum)}h`, color: "text-violet-400" },
+            { icon: BookOpen, label: "Subjects", value: totalSubjects, color: "text-cyan-400" },
+            { icon: Check, label: "Tasks Done", value: totalSessions, color: "text-emerald-400" },
+            { icon: Flame, label: "Sessions", value: totalSessions, color: "text-amber-400" },
+          ].map(({ icon: Icon, label, value, color }) => (
+            <div key={label} className="bg-base-100 rounded-3xl border border-base-300 p-5 flex items-center gap-4">
+              <div className={`${color} opacity-80`}>
+                <Icon size={14} />
+              </div>
+              <div>
+                <p className="text-lg font-black">{value}</p>
+                <p className="text-[10px] opacity-50 font-mono tracking-tight uppercase">{label}</p>
+              </div>
+            </div>
+          ))}
+                 </div>
+              </section>
+            </div>
+        </div>
+         
+            <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
+      </section>
+
+    
      
 
     </main>
