@@ -121,42 +121,84 @@ export default async function Home() {
   );
   const totalHoursStudied = (totalMinutes / 60).toFixed(1);
 
+  const otherStudyTracker = [
+    "no charts no graphs no data",
+    "just tasks no real insights",
+    "no clear progress tracking",
+    "boring plain study experience",
+    "no motivation to improve"
+  ];
+
+  const studyTrackerByMR = [
+    "beautiful charts show your progress",
+    "insightful graphs reveal study patterns",
+    "actionable data improves your consistency",
+    "clear tracking keeps you focused",
+    "smart insights help you grow"
+  ];
+
   return (
-   <main className="max-w-7xl mx-auto w-full ">
-    <section className="flex max-w-4xl mx-auto items-center p-4 max-md:p-1 justify-between">
-       <div className="flex gap-2">
-        <Image src={"/icon.png"} alt="app logo" width={25} height={25}/>
-        <div className="font-bold">study by MR</div>
-       </div>
-       <div className="flex items-center gap-4">
+    <main className="max-w-7xl mx-auto w-full ">
+      <section className="flex max-w-4xl mx-auto items-center p-4 max-md:p-1 justify-between">
+        <div className="flex gap-2">
+          <Image src={"/icon.png"} alt="app logo" width={25} height={25} />
+          <div className="font-bold">study by MR</div>
+        </div>
+        <div className="flex items-center gap-4">
           <a className="link link-hover hover:text-primary" href="">stats</a>
           <a className="link link-hover hover:text-primary" href="">review</a>
-       </div>
-       <div className="flex gap-4 items-center">
+        </div>
+        <div className="flex gap-4 items-center">
           <Link href={"/login"}>
             <BtnThird>Log in</BtnThird>
           </Link>
           <Link href={"/register"}>
             <BtnSecond>Sign Up</BtnSecond>
           </Link>
-       </div>
-    </section>
-    <section className="my-30 flex flex-col items-center justify-center gap-10">
-      <div className="flex flex-col items-center justify-center gap-2">
-        <p className="text-xs text-primary">
+        </div>
+      </section>
+      <section className="my-30 flex flex-col items-center justify-center gap-10">
+        <div className="flex flex-col items-center justify-center gap-2">
+          <p className="text-xs text-primary">
             opensource study-tracker
-        </p>
-        <h1 className="text-6xl font-bold">  
+          </p>
+          <h1 className="text-6xl font-bold tracking-tight">
             <span className="">Visualize</span> Your <span className="uppercase bg-primary px-2 ">Academic</span> Progress
-        </h1>
-        <p className="text-sm my-5">
-           Turn study data into clear, actionable insights
-        </p>
-      </div>
-      <div >
-          <Image className="rounded-4xl outline-4 outline-gray-400" src={"/hero.png"} alt="app logo" width={1400} height={1400}/>
-      </div>
-    </section>
-   </main>
+          </h1>
+          <p className="text-sm my-5">
+            Turn study data into clear, actionable insights
+          </p>
+        </div>
+        <div >
+          <Image className="rounded-4xl outline-4 outline-gray-400" src={"/hero.png"} alt="app logo" width={1400} height={1400} />
+        </div>
+      </section>
+      <section className="space-y-10 my-40">
+        <div className="text-center">
+          <p className="text-sm text-violet-400 mt-4">smart insights help you grow</p>
+            <h1 className="text-6xl tracking-tight text-center font-bold">
+               <span className="text-5xl">Progress you can see,</span> <br /> <span className="uppercase text-primary">results</span> you can feel!
+            </h1>
+            
+          </div>
+        <div className="max-w-5xl mx-auto my-20 flex flex-col gap-8">
+          
+          <div className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+            <h2 className="text-2xl font-black mb-1">Realtime stats of mr</h2>
+            <p className="text-sm opacity-50 mb-6">Subject-wise focus time from real timer sessions.</p>
+            <SubjectBarChart data={subjectStats} />
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <ContributionMap sessions={contributionSessions} />
+            <section className="bg-base-200 text-base-content p-8 md:p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
+              <h2 className="text-2xl font-black mb-1">Study Momentum</h2>
+              <p className="text-sm opacity-50 mb-6">Same chart style I use inside each subject page.</p>
+              <ProgressChart data={studyChartData} />
+            </section>
+          </div>
+        </div>
+      </section>
+
+    </main>
   );
 }
