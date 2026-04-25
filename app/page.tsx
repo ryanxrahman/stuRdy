@@ -15,6 +15,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { ThemeToggleForDashboard } from "@/components/ThemeToggleForDashboard";
 import ThemeImage from "@/components/ThemeImage";
 import SubjectsAreaChart from "@/components/SubjectsAreaChart";
+import BtnFirst from "@/components/btn/BtnFirst";
 
 type SessionDoc = {
   _id?: any;
@@ -259,6 +260,53 @@ export default async function Home() {
         </div>
          
             <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
+      </section>
+
+      <section  className=" max-w-4xl mx-auto items-center p-4 my-30">
+        <div className="flex items-baseline justify-between gap-10 max-md:flex-col">
+          <div className="flex flex-col gap-2 items-start">
+               <div className="flex gap-2 items-center">
+          <Image src={"/icon.png"} alt="app logo" width={25} height={25} />
+          <div className="font-bold">study by MR</div>
+        </div>
+         <div className="text-sm">
+          <p>Empowering your study journey with data-driven insights.</p>
+          <p className="text-sm">Turn study data into clear, actionable insights</p>
+         </div>
+         <div className="flex items-center gap-2">
+          <Link href={"/register"}>
+            <BtnFirst>Start Studying</BtnFirst>
+          </Link>
+          <Link href={"/login"}>
+            <BtnSecond>Log in</BtnSecond>
+          </Link>
+          <ThemeToggleForDashboard />
+         </div>
+          </div>
+          <div className="flex flex-col items-start gap-2">
+            <h1 className="font-bold">by the maker:</h1>
+
+           <div className="flex flex-col gap-2 text-sm">
+             { [
+                { icon: "booksofme", link: "https://booksofme.com" },
+                { icon: "elevatepr", link: "https://elevatepr.com" },
+                { icon: "xrahman", link: "https://xrahman.com" },
+              ].map(({ icon, link }) => (
+                <Link
+                  key={icon}
+                  href={link}
+                  className="link link-hover hover:text-primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {icon}
+                </Link>
+              ))
+             }
+           </div>
+          </div>
+
+        </div>
       </section>
 
     
