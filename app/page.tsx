@@ -155,13 +155,13 @@ export default async function Home() {
   ];
 
   return (
-    <main className="max-w-7xl mx-auto w-full ">
-      <section className="flex max-w-4xl mx-auto items-center p-4 max-md:p-1 justify-between">
+    <main className="max-w-7xl mx-auto w-full max-md:p-4">
+      <section className="flex max-w-4xl mx-auto items-center p-4 justify-between">
         <div className="flex gap-2">
           <Image src={"/icon.png"} alt="app logo" width={25} height={25} />
           <div className="font-bold">study by MR</div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-md:hidden">
           <a className="link link-hover hover:text-primary" href="">stats</a>
           <a className="link link-hover hover:text-primary" href="">review</a>
         </div>
@@ -176,13 +176,13 @@ export default async function Home() {
           <ThemeToggleForDashboard />
         </div>
       </section>
-      <section className="my-30 flex flex-col items-center justify-center gap-10">
+      <section className="my-30 space-y-10 mx-auto">
         <div className="flex flex-col items-center justify-center gap-2">
           <p className="text-xs text-primary">
             opensource study-tracker
           </p>
-          <h1 className="text-6xl font-bold tracking-tight">
-            <span className="">Visualize</span> Your <span className="uppercase bg-primary px-2 text-white">Academic</span> Progress
+          <h1 className="text-6xl font-bold tracking-tight text-center max-md:text-4xl">
+            <span className="">Visualize</span> Your <br className="md:hidden"/> <span className="uppercase bg-primary px-2 text-white">Academic</span> Progress
           </h1>
           <p className="text-sm my-5">
             Turn study data into clear, actionable insights
@@ -202,8 +202,8 @@ export default async function Home() {
       <section className="space-y-10 my-40">
         <div className="text-center">
           <p className="text-sm text-violet-400 mt-4">smart insights help you grow</p>
-            <h1 className="text-6xl tracking-tight text-center font-bold">
-               <span className="text-5xl">Progress you can see,</span> <br /> <span className="uppercase text-white bg-primary px-2">results</span> you can feel!
+            <h1 className="text-6xl max-md:text-4xl tracking-tight text-center font-bold">
+               <span className="text-5xl max-md:text-2xl">Progress you can see,</span> <br /> <span className="uppercase text-white bg-primary px-2">results</span> you can feel!
             </h1>
             
           </div>
@@ -226,9 +226,9 @@ export default async function Home() {
 
       <section className="max-w-7xl mx-auto my-20 flex flex-col gap-8">
         <div className="max-w-5xl mx-auto space-y-10">
-          <div className="text-center space-y-8">
+          <div className="text-center space-y-4">
              <p className="text-violet-400 text-sm">feel the impact</p>
-            <h1 className="text-7xl font-bold tracking-tight text-center">
+            <h1 className="text-7xl max-md:text-4xl font-bold tracking-tight text-center">
              See the <span className="text-primary bg-primary dark:text-white px-2">Charts</span>
             </h1>
           </div>
@@ -263,13 +263,13 @@ export default async function Home() {
       </section>
 
       <section  className=" max-w-4xl mx-auto items-center p-4 my-30">
-        <div className="flex items-baseline justify-between gap-10 max-md:flex-col">
-          <div className="flex flex-col gap-2 items-start">
+        <div className="flex items-baseline justify-between gap-10 max-md:flex-col max-md:justify-center max-md:items-center">
+          <div className="flex flex-col gap-2 items-start max-md:items-center max-md:gap-5">
                <div className="flex gap-2 items-center">
           <Image src={"/icon.png"} alt="app logo" width={25} height={25} />
           <div className="font-bold">study by MR</div>
         </div>
-         <div className="text-sm">
+         <div className="text-sm max-md:text-center">
           <p>Empowering your study journey with data-driven insights.</p>
           <p className="text-sm">Turn study data into clear, actionable insights</p>
          </div>
@@ -283,7 +283,7 @@ export default async function Home() {
           <ThemeToggleForDashboard />
          </div>
           </div>
-          <div className="flex flex-col items-start gap-2">
+          <div className="flex max-md:items-center flex-col items-start gap-2">
             <h1 className="font-bold">by the maker:</h1>
 
            <div className="flex flex-col gap-2 text-sm">
