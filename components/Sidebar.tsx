@@ -48,8 +48,8 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
         <>
             <aside className="bg-base-200/50 backdrop-blur-xl h-screen w-64 text-base-content border-r border-base-content/5 flex flex-col">
                 <div className="p-6 flex items-center border-b border-base-content/5 mb-8">
-                    <Image src="/study.jpeg" alt="Logo" width={32} height={32} className="inline-block mr-2" />
-                    <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">STUDY</Link>
+                    <Image src="/icon.png" alt="Logo" width={32} height={32} className="inline-block mr-2" />
+                    <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">Study</Link>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-4 py-2">
