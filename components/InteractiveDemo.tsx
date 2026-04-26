@@ -48,7 +48,7 @@ export default function InteractiveDemo({
   const weekendPct = totalSessions > 0 ? Math.round((isWeekendStudy / totalSessions) * 100) : 0;
 
   return (
-    <section className="my-32">
+    <section className="my-32 max-md:p-4">
 
       {/* Chart Grid Section */}
       <div className="w-full max-w-6xl mx-auto mt-16">
@@ -61,7 +61,7 @@ export default function InteractiveDemo({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* Bar Chart - Subject Distribution */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Subject Distribution</h4>
               <BarChart3 size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -75,7 +75,7 @@ export default function InteractiveDemo({
                       <span className="opacity-60 truncate">{subject.name}</span>
                       <span className="font-bold text-primary">{pct}%</span>
                     </div>
-                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-base-300 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-linear-to-r from-primary to-violet-500 transition-all"
                         style={{ width: `${pct}%` }}
@@ -88,7 +88,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Line Chart - Time Trend */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Activity Trend</h4>
               <LineChart size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -110,7 +110,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Area Chart - Cumulative Progress */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Total Growth</h4>
               <TrendingUp size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -136,7 +136,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Daily Breakdown */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Daily Avg</h4>
               <Activity size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -160,7 +160,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Heat Map Style */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Intensity Map</h4>
               <Flame size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -184,7 +184,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Time Distribution */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Time Split</h4>
               <Clock size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -200,7 +200,7 @@ export default function InteractiveDemo({
                     <span className="opacity-60">{time.label}</span>
                     <span className="font-bold">{time.pct}%</span>
                   </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-base-300 rounded-full overflow-hidden">
                     <div 
                       className={`h-full ${time.color} transition-all`}
                       style={{ width: `${time.pct}%` }}
@@ -212,7 +212,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Streak Counter */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Streaks</h4>
               <Flame size={16} className="text-orange-400 opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -226,7 +226,7 @@ export default function InteractiveDemo({
                 {[1,1,1,0,1,1,1].map((val, i) => (
                   <div 
                     key={i}
-                    className={`w-3 rounded-t ${val ? 'bg-orange-400 h-10' : 'bg-white/5 h-3'} transition-all`}
+                    className={`w-3 rounded-t ${val ? 'bg-orange-400 h-10' : 'bg-base-300 h-3'} transition-all`}
                   />
                 ))}
               </div>
@@ -234,7 +234,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Focus Score */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Focus Score</h4>
               <Star size={16} className="text-yellow-400 opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -264,7 +264,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Goal Progress */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Goal Progress</h4>
               <Award size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -274,7 +274,7 @@ export default function InteractiveDemo({
                 <span className="opacity-60">Monthly Target</span>
                 <span className="font-bold text-emerald-400">{Math.min(100, Math.round((totalHoursNum / 100) * 100))}%</span>
               </div>
-              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+              <div className="h-2 bg-base-300 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-linear-to-r from-emerald-400 to-green-500 transition-all"
                   style={{ width: `${Math.min(100, Math.round((totalHoursNum / 100) * 100))}%` }}
@@ -288,14 +288,14 @@ export default function InteractiveDemo({
           </div>
 
           {/* Subject Mastery */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Top Subjects</h4>
               <TrendingUp size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
             </div>
             <div className="space-y-2">
               {subjectStats.slice(0, 3).map((subject, idx) => (
-                <div key={idx} className="flex items-center justify-between text-[10px] p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all">
+                <div key={idx} className="flex items-center justify-between text-[10px] p-2 rounded-lg bg-base-300 hover:bg-base-400 transition-all">
                   <span className="opacity-60 truncate flex-1">{idx + 1}. {subject.name}</span>
                   <span className="font-bold text-primary ml-2">{Math.round(subject.minutes / 60)}h</span>
                 </div>
@@ -304,7 +304,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Performance Badges */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Achievements</h4>
               <Award size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
@@ -323,7 +323,7 @@ export default function InteractiveDemo({
                   className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all ${
                     badge.unlocked 
                       ? 'bg-yellow-500/20 border border-yellow-500/30' 
-                      : 'bg-white/5 border border-white/5 opacity-40'
+                      : 'bg-base-300 border border-base-300 opacity-40'
                   }`}
                 >
                   <div className="text-xl mb-1">{badge.emoji}</div>
@@ -334,7 +334,7 @@ export default function InteractiveDemo({
           </div>
 
           {/* Weekly Comparison */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
+          <div className="bg-base-200 rounded-3xl p-6 border border-base-300 hover:bg-base-300 transition-all group">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Week vs Avg</h4>
               <BarChart3 size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />

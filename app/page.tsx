@@ -291,13 +291,15 @@ export default async function Home() {
         />
       </section>
 
-      <InteractiveDemo 
-        totalMinutes={totalMinutes}
-        totalSessions={totalSessions}
-        totalSubjects={totalSubjects}
-        subjectStats={subjectStats}
-        sessions={sessions}
-      />
+      <section className="w-screen h-auto max-md:h-auto relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]\ bg-base-300  py-5 max-md:py-4">
+          <InteractiveDemo
+            totalMinutes={totalMinutes}
+            totalSessions={totalSessions}
+            totalSubjects={totalSubjects}
+            subjectStats={subjectStats}
+            sessions={sessions}
+          />
+      </section>
 
       <section  className=" max-w-4xl mx-auto items-center p-4 my-30">
         <div className="flex items-baseline justify-between gap-10 max-md:flex-col max-md:justify-center max-md:items-center">
