@@ -89,6 +89,8 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
     setIsAdding(false);
   };
 
+  const currentEditedItem = sorted.find(i => i.id === editingId);
+
   const handleDelete = async (id: string) => {
     setIsLoading(true);
     const result = await deleteRewardLevel(id);
@@ -153,11 +155,11 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
         </div>
       )}
 
-      {/* Add / Edit form */}
-      {formOpen && (
+      {/* Add form (Only for new items) */}
+      {isAdding && (
         <div className="bg-base-300/30 border border-base-300 rounded-3xl p-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
           <p className="text-[10px] uppercase tracking-widest opacity-40 mb-4 font-mono">
-            {editingId ? 'Modify Milestone' : 'New Milestone'}
+            New Milestone
           </p>
           <div className="flex flex-wrap gap-3">
             <input
@@ -172,14 +174,14 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
               type="text"
               value={rewardInput}
               onChange={(e) => setRewardInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && (editingId ? handleSaveEdit() : handleAdd())}
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               placeholder="Reward: e.g. One piece of pizza"
               className="study-reward-input flex-1 min-w-50 bg-base-200 border-base-300"
             />
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={editingId ? handleSaveEdit : handleAdd}
+                onClick={handleAdd}
                 className="btn btn-sm bg-emerald-500 hover:bg-emerald-600 text-white border-none rounded-xl gap-1 px-4"
                 disabled={isLoading}
               >
@@ -200,9 +202,9 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
 
       {/* Level Card Table */}
       <div className="overflow-x-auto">
-        <table className="table w-full border-separate border-spacing-y-2">
+        <table className="table w-full border-separate border-spacing-y-0">
           <thead>
-            <tr className="text-[10px] uppercase tracking-widest opacity-30 border-none [&>th]:font-black [&>th]:pb-2">
+            <tr className="text-[10px] uppercase tracking-widest opacity-30 border-none [&>th]:font-black [&>th]:pb-4 [&>th]:px-4">
               <th className="w-16">LVL</th>
               <th className="w-20">Target</th>
               <th className="min-w-40">Reward</th>
@@ -211,14 +213,6 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
             </tr>
           </thead>
           <tbody>
-            {sorted.length === 0 && (
-              <tr>
-                <td colSpan={5} className="text-center py-12 bg-base-300/20 rounded-4xl border border-dashed border-base-300">
-                  <p className="opacity-30 text-sm font-mono uppercase tracking-widest">No milestones defined</p>
-                </td>
-              </tr>
-            )}
-
             {sorted.map((item, i) => {
               const isUnlocked = totalStudyHours >= item.targetHours;
               const isCurrent = !isUnlocked && nextReward?.id === item.id;
@@ -228,32 +222,67 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
                 ? 100
                 : Math.max(0, Math.min(100, ((totalStudyHours - prevTarget) / segSize) * 100));
 
+              const isEditing = editingId === item.id;
+
               return (
                 <tr
                   key={item.id}
-                  className={`group transition-all ${
+                  className={`group transition-all border-b border-base-300/50 last:border-none ${
                     isUnlocked
                       ? "bg-emerald-500/5 hover:bg-emerald-500/10 border-l-4 border-l-emerald-500"
                       : isCurrent
-                      ? "bg-violet-500/5 hover:bg-violet-500/10 border-l-4 border-l-violet-500 shadow-lg shadow-violet-500/5"
-                      : "bg-base-300/30 hover:bg-base-300/50 border-l-4 border-l-transparent opacity-60"
-                  } [&>td]:py-3 [&>td]:px-4 first:[&>td]:rounded-l-2xl last:[&>td]:rounded-r-2xl border-none`}
+                      ? "bg-violet-500/5 hover:bg-violet-500/10 border-l-4 border-l-violet-500"
+                      : "hover:bg-base-300/30 border-l-4 border-l-transparent opacity-60"
+                  } ${isEditing ? 'ring-2 ring-primary ring-inset z-10 relative' : ''} [&>td]:py-4 [&>td]:px-4`}
                 >
                   <td className="font-black text-xs opacity-50">{i + 1}</td>
-                  <td className="font-black text-sm">{item.targetHours}h</td>
                   <td>
-                    <div className="flex items-center gap-2">
-                      {isUnlocked ? (
-                         <Check size={14} className="text-emerald-500 shrink-0" />
-                      ) : isCurrent ? (
-                         <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse shrink-0" />
-                      ) : (
-                         <div className="w-2 h-2 rounded-full bg-base-content/20 shrink-0" />
-                      )}
-                      <span className={`text-sm font-bold truncate ${isUnlocked ? "text-emerald-500" : ""}`}>
-                        {item.reward}
-                      </span>
-                    </div>
+                    {isEditing ? (
+                      <input
+                        type="number"
+                        min={1}
+                        value={hourInput}
+                        onChange={(e) => setHourInput(e.target.value)}
+                        className="w-16 bg-base-100 border border-base-300 rounded-lg px-2 py-1 text-sm font-black focus:outline-primary"
+                        autoFocus
+                      />
+                    ) : (
+                      <button 
+                        onClick={() => handleStartEdit(item)}
+                        className="font-black text-sm hover:text-primary transition-colors"
+                      >
+                        {item.targetHours}h
+                      </button>
+                    )}
+                  </td>
+                  <td>
+                    {isEditing ? (
+                      <div className="flex items-center gap-2">
+                         <input
+                          type="text"
+                          value={rewardInput}
+                          onChange={(e) => setRewardInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
+                          className="flex-1 min-w-40 bg-base-100 border border-base-300 rounded-lg px-3 py-1 text-sm font-bold focus:outline-primary"
+                        />
+                      </div>
+                    ) : (
+                      <div 
+                        className="flex items-center gap-2 cursor-pointer group/text"
+                        onClick={() => handleStartEdit(item)}
+                      >
+                        {isUnlocked ? (
+                          <Check size={14} className="text-emerald-500 shrink-0" />
+                        ) : isCurrent ? (
+                          <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse shrink-0" />
+                        ) : (
+                          <div className="w-2 h-2 rounded-full bg-base-content/20 shrink-0" />
+                        )}
+                        <span className={`text-sm font-bold truncate group-hover/text:text-primary transition-colors ${isUnlocked ? "text-emerald-500" : ""}`}>
+                          {item.reward}
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="hidden md:table-cell w-48">
                     <div className="flex items-center gap-3">
@@ -274,22 +303,45 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
                   </td>
                   <td>
                     <div className="flex justify-end gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleStartEdit(item)}
-                        className="btn btn-xs btn-ghost hover:bg-base-300 rounded-lg p-1"
-                        disabled={isLoading}
-                      >
-                        <Pencil size={11} className="opacity-50 group-hover:opacity-100" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(item.id)}
-                        className="btn btn-xs btn-ghost hover:bg-rose-500/10 text-rose-500 rounded-lg p-1"
-                        disabled={isLoading}
-                      >
-                        <Trash2 size={11} className="opacity-50 group-hover:opacity-100" />
-                      </button>
+                      {isEditing ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={handleSaveEdit}
+                            className="btn btn-xs btn-circle bg-emerald-500 hover:bg-emerald-600 text-white border-none"
+                            disabled={isLoading}
+                          >
+                            <Check size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={resetForm}
+                            className="btn btn-xs btn-circle bg-base-300 hover:bg-base-400 border-none"
+                            disabled={isLoading}
+                          >
+                            <X size={12} />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleStartEdit(item)}
+                            className="btn btn-xs btn-ghost hover:bg-base-300 rounded-lg p-1"
+                            disabled={isLoading}
+                          >
+                            <Pencil size={11} className="opacity-50 group-hover:opacity-100" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(item.id)}
+                            className="btn btn-xs btn-ghost hover:bg-rose-500/10 text-rose-500 rounded-lg p-1"
+                            disabled={isLoading}
+                          >
+                            <Trash2 size={11} className="opacity-50 group-hover:opacity-100" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
