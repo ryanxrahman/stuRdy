@@ -33,6 +33,15 @@ export default async function DashboardLayout({
   const subjects = JSON.parse(JSON.stringify(rawSubjects));
   const sessions = JSON.parse(JSON.stringify(rawSessions));
 
+  // Today's study goal progress
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todaySeconds = sessions.filter((s: any) => {
+    const sDate = new Date(s.date);
+    return sDate >= today;
+  }).reduce((acc: number, s: any) => acc + (s.duration || 0), 0);
+  const todayMinutes = Math.round(todaySeconds / 60);
+
   const sidebarSubjects = subjects.map((subject: any) => {
     const subjectIdStr = subject._id;
     const totalSeconds = sessions
@@ -53,7 +62,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-base-100">
       <SidebarMobile>
-        <Sidebar subjects={sidebarSubjects} user={sidebarUser} />
+        <Sidebar subjects={sidebarSubjects} user={sidebarUser} todayMinutes={todayMinutes} />
       </SidebarMobile>
       <main className="flex-1 lg:ml-64 p-4 lg:p-8 w-full overflow-x-hidden pt-20 lg:pt-8">
         <div className="max-w-6xl mx-auto">

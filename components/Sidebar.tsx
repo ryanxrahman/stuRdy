@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { logoutAction } from "@/app/login/actions";
@@ -11,13 +11,40 @@ import SidebarRoulette from "./SidebarRoulette";
 import Image from "next/image";
 import AddSubjectForm from "@/app/(dashboard)/dashboard/AddSubjectForm";
 
+const STUDY_GOAL_KEY = 'study-goal';
+const STUDY_GOAL_EVENT = 'study-goal-change';
+
+function readStoredGoal() {
+  if (typeof window === 'undefined') return 120;
+  const savedGoal = localStorage.getItem(STUDY_GOAL_KEY);
+  const parsed = savedGoal ? parseInt(savedGoal, 10) : NaN;
+  return Number.isNaN(parsed) || parsed <= 0 ? 120 : parsed;
+}
+
+function subscribeToGoalStore(onStoreChange: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  const onStorage = () => onStoreChange();
+  const onCustom = () => onStoreChange();
+  window.addEventListener('storage', onStorage);
+  window.addEventListener(STUDY_GOAL_EVENT, onCustom);
+  return () => {
+    window.removeEventListener('storage', onStorage);
+    window.removeEventListener(STUDY_GOAL_EVENT, onCustom);
+  };
+}
+
 type Subject = {
     _id: string;
     name: string;
     totalMinutes?: number;
 };
 
-export default function Sidebar({ subjects = [], user }: { subjects?: Subject[], user?: { email?: string } | null | Record<string, unknown> }) {
+export default function Sidebar({ subjects = [], user, todayMinutes = 0 }: { 
+    subjects?: Subject[], 
+    user?: { email?: string } | null | Record<string, unknown>,
+    todayMinutes?: number 
+}) {
+    const goal = useSyncExternalStore(subscribeToGoalStore, readStoredGoal, () => 120);
     const isValidSubject = (sub: Subject): sub is Subject & { _id: { toString(): string } | string; name: string } => {
         return Boolean(sub?._id) && typeof sub?.name === "string";
     };
@@ -113,6 +140,20 @@ export default function Sidebar({ subjects = [], user }: { subjects?: Subject[],
                             <p><span className="bg-base-content/10 font-mono px-1 rounded">A</span> to add a subject</p>
                             <p><span className="bg-base-content/10 font-mono px-1 rounded">S</span> to open start popup</p>
                             <p><span className="bg-base-content/10 font-mono px-1 rounded">D</span> to toggle theme</p>
+                        </div>
+
+                        {/* Daily Progress */}
+                        <div className="bg-base-300/30 border border-base-content/5 rounded-xl p-3">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="font-bold opacity-50 uppercase tracking-widest text-[10px]">Daily Mission</span>
+                                <span className="text-[10px] font-black opacity-30">{todayMinutes}/{goal}m</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-base-100 rounded-full overflow-hidden">
+                                <div 
+                                    className={`h-full transition-all duration-1000 ${todayMinutes >= goal ? 'bg-emerald-500' : 'bg-primary'}`}
+                                    style={{ width: `${Math.min(100, (todayMinutes / goal) * 100)}%` }}
+                                />
+                            </div>
                         </div>
 
                         <ThemeToggle />
