@@ -15,6 +15,7 @@ import StudyReward from "@/components/StudyReward";
 import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import AddSubjectHeaderButton from "./AddSubjectHeaderButton";
 import StartStudyHeaderButton from "./StartStudyHeaderButton";
+import DashboardCalendar from "./DashboardCalendar";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -139,6 +140,19 @@ export default async function Dashboard() {
       <section>
         <ContributionMap sessions={sessions} />
       </section>
+
+      <DashboardCalendar 
+        sessions={sessions.map((s: any) => ({
+          _id: String(s._id),
+          date: String(s.date),
+          duration: Number(s.duration),
+          subjectId: String(s.subjectId)
+        }))}
+        subjects={subjects.map((s: any) => ({
+          _id: String(s._id),
+          name: String(s.name)
+        }))} 
+      />
 
       {/* Analytics Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
