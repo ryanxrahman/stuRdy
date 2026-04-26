@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { createSubject } from "@/app/(dashboard)/dashboard/subject-actions";
 import BtnPrimary from "@/components/btn/BtnPrimary";
 import toast from "react-hot-toast";
+import BtnFirst from "@/components/btn/BtnFirst";
 
 
 export default function AddSubjectForm({active}: {active?: boolean}) {
@@ -41,9 +42,9 @@ export default function AddSubjectForm({active}: {active?: boolean}) {
                 />
                 {state?.error && <p className="text-error text-xs mt-1">{state.error}</p>}
             </div>
-            <BtnPrimary type="submit" disabled={isPending}>
+            <BtnFirst type="submit" disabled={isPending}>
                 {isPending ? "Adding..." : "Add Subject"}
-            </BtnPrimary>
+            </BtnFirst>
         </form>
     );
 }
