@@ -22,6 +22,7 @@ type InteractiveDemoProps = {
   totalSubjects: number;
   subjectStats: { name: string; minutes: number }[];
   sessions: any[];
+  dashboard?: boolean;
 };
 
 export default function InteractiveDemo({ 
@@ -29,7 +30,8 @@ export default function InteractiveDemo({
   totalSessions, 
   totalSubjects, 
   subjectStats,
-  sessions
+  sessions,
+  dashboard,
 }: InteractiveDemoProps) {
   
   const totalHours = (totalMinutes / 60).toFixed(1);
@@ -47,16 +49,21 @@ export default function InteractiveDemo({
   }).length;
   const weekendPct = totalSessions > 0 ? Math.round((isWeekendStudy / totalSessions) * 100) : 0;
 
+  const dashboardFalse = !dashboard; // Just to avoid "dashboard is never used" warning, can be removed later
+
   return (
-    <section className="my-32 max-md:p-4">
+    <section className={`${dashboardFalse ? 'my-32 mb-50 max-md:my-10' : ''}  max-md:p-4`}>
 
       {/* Chart Grid Section */}
       <div className="w-full max-w-6xl mx-auto mt-16">
-        <div className="flex flex-col items-center text-center mb-12">
+       {dashboardFalse ? <div className="flex flex-col items-center text-center mb-12">
           <p className="text-sm text-violet-400 my-4">deep insights</p>
           <h3 className="text-4xl md:text-6xl font-black tracking-tight mb-4">Advanced Analytics <span className="bg-primary text-white px-2">Suite</span></h3>
           <p className="opacity-50 max-w-lg text-sm md:text-base">Multiple visualization styles showcasing different study patterns</p>
-        </div>
+        </div> : 
+
+          <h3 className="text-4xl md:text-2xl text-center font-black tracking-tight mb-4">Advanced Analytics <span className="bg-primary text-white px-2">Suite</span></h3>
+        }
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           
