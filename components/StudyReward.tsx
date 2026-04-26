@@ -198,126 +198,105 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
         </div>
       )}
 
-      {/* Level cards */}
-      <div className="flex flex-col gap-3">
-        {sorted.length === 0 && (
-          <div className="text-center py-16 bg-base-300/20 rounded-4xl border border-dashed border-base-300">
-            <p className="opacity-30 text-sm font-mono uppercase tracking-widest">No milestones defined</p>
-          </div>
-        )}
+      {/* Level Card Table */}
+      <div className="overflow-x-auto">
+        <table className="table w-full border-separate border-spacing-y-2">
+          <thead>
+            <tr className="text-[10px] uppercase tracking-widest opacity-30 border-none [&>th]:font-black [&>th]:pb-2">
+              <th className="w-16">LVL</th>
+              <th className="w-20">Target</th>
+              <th className="min-w-40">Reward</th>
+              <th className="hidden md:table-cell">Progress</th>
+              <th className="w-24 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.length === 0 && (
+              <tr>
+                <td colSpan={5} className="text-center py-12 bg-base-300/20 rounded-4xl border border-dashed border-base-300">
+                  <p className="opacity-30 text-sm font-mono uppercase tracking-widest">No milestones defined</p>
+                </td>
+              </tr>
+            )}
 
-        {sorted.map((item, i) => {
-          const isUnlocked = totalStudyHours >= item.targetHours;
-          const isCurrent = !isUnlocked && nextReward?.id === item.id;
-          const prevTarget = i > 0 ? sorted[i - 1].targetHours : 0;
-          const segSize = Math.max(1, item.targetHours - prevTarget);
-          const pct = isUnlocked
-            ? 100
-            : Math.max(0, Math.min(100, ((totalStudyHours - prevTarget) / segSize) * 100));
+            {sorted.map((item, i) => {
+              const isUnlocked = totalStudyHours >= item.targetHours;
+              const isCurrent = !isUnlocked && nextReward?.id === item.id;
+              const prevTarget = i > 0 ? sorted[i - 1].targetHours : 0;
+              const segSize = Math.max(1, item.targetHours - prevTarget);
+              const pct = isUnlocked
+                ? 100
+                : Math.max(0, Math.min(100, ((totalStudyHours - prevTarget) / segSize) * 100));
 
-          return (
-            <div
-              key={item.id}
-              className={`study-reward-card border-2 ${
-                isUnlocked
-                  ? 'study-reward-card-unlocked'
-                  : isCurrent
-                  ? 'study-reward-card-current shadow-xl shadow-violet-500/5'
-                  : 'study-reward-card-locked opacity-60'
-              }`}
-            >
-              <div className="flex items-stretch">
-                {/* Badge column */}
-                <div
-                  className={`w-20 shrink-0 flex flex-col items-center justify-center gap-1.5 py-6 border-r-2 ${
+              return (
+                <tr
+                  key={item.id}
+                  className={`group transition-all ${
                     isUnlocked
-                      ? 'border-emerald-500/10'
+                      ? "bg-emerald-500/5 hover:bg-emerald-500/10 border-l-4 border-l-emerald-500"
                       : isCurrent
-                      ? 'border-violet-500/10'
-                      : 'border-base-300'
-                  }`}
+                      ? "bg-violet-500/5 hover:bg-violet-500/10 border-l-4 border-l-violet-500 shadow-lg shadow-violet-500/5"
+                      : "bg-base-300/30 hover:bg-base-300/50 border-l-4 border-l-transparent opacity-60"
+                  } [&>td]:py-3 [&>td]:px-4 first:[&>td]:rounded-l-2xl last:[&>td]:rounded-r-2xl border-none`}
                 >
-                  <span className="text-[9px] uppercase tracking-tighter opacity-30 font-black">
-                    LV {i + 1}
-                  </span>
-                  <div
-                    className={`study-reward-badge ${
-                      isUnlocked
-                        ? 'study-reward-badge-unlocked'
-                        : isCurrent
-                        ? 'study-reward-badge-current shadow-lg shadow-violet-500/20'
-                        : 'study-reward-badge-locked'
-                    }`}
-                  >
-                    {isUnlocked ? '✓' : isCurrent ? '◎' : '◇'}
-                  </div>
-                  <span className="text-sm font-black">{item.targetHours}h</span>
-                </div>
-
-                {/* Body */}
-                <div className="flex-1 px-6 py-5 flex flex-col gap-4 min-w-0">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="text-[9px] uppercase tracking-widest opacity-30 mb-0.5 font-bold">Reward</p>
-                      <p className={`text-base font-bold truncate ${isUnlocked ? 'text-emerald-400' : ''}`}>
+                  <td className="font-black text-xs opacity-50">{i + 1}</td>
+                  <td className="font-black text-sm">{item.targetHours}h</td>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      {isUnlocked ? (
+                         <Check size={14} className="text-emerald-500 shrink-0" />
+                      ) : isCurrent ? (
+                         <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse shrink-0" />
+                      ) : (
+                         <div className="w-2 h-2 rounded-full bg-base-content/20 shrink-0" />
+                      )}
+                      <span className={`text-sm font-bold truncate ${isUnlocked ? "text-emerald-500" : ""}`}>
                         {item.reward}
-                      </p>
+                      </span>
                     </div>
-                    <div className="flex gap-1 shrink-0">
+                  </td>
+                  <td className="hidden md:table-cell w-48">
+                    <div className="flex items-center gap-3">
+                      <div className="h-1.5 flex-1 bg-base-300 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-1000 ${
+                            isUnlocked
+                              ? "bg-emerald-500"
+                              : isCurrent
+                              ? "bg-violet-500"
+                              : "bg-base-content/10"
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-black opacity-40 w-8">{Math.round(pct)}%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex justify-end gap-1">
                       <button
                         type="button"
                         onClick={() => handleStartEdit(item)}
-                        className="btn btn-xs bg-base-300 hover:bg-base-400 border-none rounded-lg p-1"
-                        aria-label="Edit"
+                        className="btn btn-xs btn-ghost hover:bg-base-300 rounded-lg p-1"
                         disabled={isLoading}
                       >
-                        <Pencil size={11} />
+                        <Pencil size={11} className="opacity-50 group-hover:opacity-100" />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(item.id)}
-                        className="btn btn-xs bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border-none rounded-lg p-1"
-                        aria-label="Delete"
+                        className="btn btn-xs btn-ghost hover:bg-rose-500/10 text-rose-500 rounded-lg p-1"
                         disabled={isLoading}
                       >
-                        <Trash2 size={11} />
+                        <Trash2 size={11} className="opacity-50 group-hover:opacity-100" />
                       </button>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <div className="study-reward-progress flex-1 bg-base-300 h-2">
-                      <div
-                        className={`study-reward-progress-bar h-full ${
-                          isUnlocked
-                            ? 'bg-emerald-500'
-                            : isCurrent
-                            ? 'bg-violet-500 shadow-lg shadow-violet-500/40'
-                            : 'bg-base-content/10'
-                        }`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] opacity-40 font-black w-8 text-right">
-                      {pct === 100 ? '100' : pct.toFixed(0)}%
-                    </span>
-                    <span
-                      className={`study-reward-status-badge py-1 px-3 ${
-                        isUnlocked
-                          ? 'study-reward-status-cleared'
-                          : isCurrent
-                          ? 'study-reward-status-in-progress shadow-inner shadow-violet-500/10'
-                          : 'study-reward-status-locked'
-                      }`}
-                    >
-                      {isUnlocked ? 'CLEARED' : isCurrent ? 'IN PROGRESS' : 'LOCKED'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </section>
   );
