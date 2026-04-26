@@ -14,6 +14,7 @@ import ThemeImage from "@/components/ThemeImage";
 import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import BtnFirst from "@/components/btn/BtnFirst";
 import DashboardCalendar from "./(dashboard)/dashboard/DashboardCalendar";
+import InteractiveDemo from "@/components/InteractiveDemo";
 
 type SessionDoc = {
   _id?: any;
@@ -230,10 +231,11 @@ export default async function Home() {
       <section className="max-w-7xl mx-auto my-20 flex flex-col gap-8">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-4">
-             <p className="text-violet-400 text-sm">feel the impact</p>
-            <h1 className="text-7xl max-md:text-4xl font-bold tracking-tight text-center">
+             <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4 inline-block">feel the impact</span>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-center mb-4">
              See the <span className="text-primary bg-primary dark:text-white px-2">Charts</span>
             </h1>
+            <p className="opacity-50 max-w-lg mx-auto text-sm md:text-base">Visualize your study progress with real-time analytics</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
               <ContributionMap sessions={contributionSessions} />
@@ -267,11 +269,11 @@ export default async function Home() {
 
       <section className="my-40 max-w-5xl mx-auto space-y-10">
         <div className="text-center space-y-4">
-          <p className="text-violet-400 text-sm">consistency over time</p>
-          <h1 className="text-7xl max-md:text-4xl font-bold tracking-tight text-center">
+          <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4 inline-block">consistency over time</span>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-center mb-4">
             The <span className="text-primary bg-primary dark:text-white px-2">Global</span> Study Log
           </h1>
-          <p className="opacity-50 text-sm">Real-time breakdown of my study distribution</p>
+          <p className="opacity-50 max-w-lg mx-auto text-sm md:text-base">Real-time breakdown of my study distribution</p>
         </div>
         
         <DashboardCalendar 
@@ -287,6 +289,14 @@ export default async function Home() {
           }))} 
         />
       </section>
+
+      <InteractiveDemo 
+        totalMinutes={totalMinutes}
+        totalSessions={totalSessions}
+        totalSubjects={totalSubjects}
+        subjectStats={subjectStats}
+        sessions={sessions}
+      />
 
       <section  className=" max-w-4xl mx-auto items-center p-4 my-30">
         <div className="flex items-baseline justify-between gap-10 max-md:flex-col max-md:justify-center max-md:items-center">
