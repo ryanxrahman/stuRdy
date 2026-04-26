@@ -53,8 +53,8 @@ export default function InteractiveDemo({
       {/* Chart Grid Section */}
       <div className="w-full max-w-6xl mx-auto mt-16">
         <div className="flex flex-col items-center text-center mb-12">
-          <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4 inline-block">deep insights</span>
-          <h3 className="text-4xl md:text-5xl font-black tracking-tight mb-4">Advanced Analytics Suite</h3>
+          <p className="text-sm text-violet-400 my-4">deep insights</p>
+          <h3 className="text-4xl md:text-6xl font-black tracking-tight mb-4">Advanced Analytics <span className="bg-primary text-white px-2">Suite</span></h3>
           <p className="opacity-50 max-w-lg text-sm md:text-base">Multiple visualization styles showcasing different study patterns</p>
         </div>
 

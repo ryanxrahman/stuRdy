@@ -188,7 +188,7 @@ export default async function Home() {
           <h1 className="text-6xl font-bold tracking-tight text-center max-md:text-4xl">
             <span className="">Visualize</span> Your <br className="md:hidden"/> <span className="uppercase bg-primary px-2 text-white">Academic</span> Progress
           </h1>
-          <p className="text-sm my-5">
+          <p className="opacity-60 max-w-lg mx-auto my-5 text-sm md:text-base">
             Turn study data into clear, actionable insights
           </p>
         </div>
@@ -209,6 +209,7 @@ export default async function Home() {
             <h1 className="text-6xl max-md:text-4xl tracking-tight text-center font-bold">
                <span className="text-5xl max-md:text-2xl">Progress you can see,</span> <br /> <span className="uppercase text-white bg-primary px-2">results</span> you can feel!
             </h1>
+            <p className="opacity-60 max-w-lg mx-auto text-sm md:text-base my-5">Track your study sessions and see the impact on your learning journey.</p>
             
           </div>
         <div className="max-w-5xl mx-auto my-20 flex flex-col gap-8">
@@ -230,12 +231,12 @@ export default async function Home() {
 
       <section className="max-w-7xl mx-auto my-20 flex flex-col gap-8">
         <div className="max-w-5xl mx-auto space-y-10">
-          <div className="text-center space-y-4">
-             <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4 inline-block">feel the impact</span>
+          <div className="text-center space-y-8">
+             <p className="text-sm text-violet-400 my-4">feel the impact</p>
             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-center mb-4">
              See the <span className="text-primary bg-primary dark:text-white px-2">Charts</span>
             </h1>
-            <p className="opacity-50 max-w-lg mx-auto text-sm md:text-base">Visualize your study progress with real-time analytics</p>
+            <p className="opacity-60 max-w-lg mx-auto text-sm md:text-base">Visualize your study progress with real-time analytics</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
               <ContributionMap sessions={contributionSessions} />
@@ -269,7 +270,7 @@ export default async function Home() {
 
       <section className="my-40 max-w-5xl mx-auto space-y-10">
         <div className="text-center space-y-4">
-          <span className="bg-primary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4 inline-block">consistency over time</span>
+          <p className="text-sm text-violet-400 my-4">consistency over time</p>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-center mb-4">
             The <span className="text-primary bg-primary dark:text-white px-2">Global</span> Study Log
           </h1>
