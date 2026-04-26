@@ -141,18 +141,7 @@ export default async function Dashboard() {
         <ContributionMap sessions={sessions} />
       </section>
 
-      <DashboardCalendar 
-        sessions={sessions.map((s: any) => ({
-          _id: String(s._id),
-          date: String(s.date),
-          duration: Number(s.duration),
-          subjectId: String(s.subjectId)
-        }))}
-        subjects={subjects.map((s: any) => ({
-          _id: String(s._id),
-          name: String(s.name)
-        }))} 
-      />
+    
 
       {/* Analytics Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -195,6 +184,19 @@ export default async function Dashboard() {
         subjects={subjects} 
         subjectStats={subjectStats}
         sessions={sessions}
+      />
+
+        <DashboardCalendar 
+        sessions={sessions.map((s: any) => ({
+          _id: String(s._id),
+          date: String(s.date),
+          duration: Number(s.duration),
+          subjectId: String(s.subjectId)
+        }))}
+        subjects={subjects.map((s: any) => ({
+          _id: String(s._id),
+          name: String(s.name)
+        }))} 
       />
 
     

@@ -47,7 +47,7 @@ export default function DashboardCalendar({ sessions, subjects }: { sessions: Se
 
   // Assign fixed colors to subjects
   const subjectColors = [
-    'bg-violet-500', 'bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 
+    'bg-violet-500', 'bg-emerald-500', 'bg-blue-500', 'bg-primary', 
     'bg-rose-500', 'bg-cyan-500', 'bg-indigo-500', 'bg-orange-500'
   ];
 
@@ -62,26 +62,50 @@ export default function DashboardCalendar({ sessions, subjects }: { sessions: Se
 
   const calculateStreak = () => {
     if (sessions.length === 0) return 0;
-    const dates = sessions.map(s => format(parseISO(s.date), 'yyyy-MM-dd'));
+    
+    // Ensure we filter out invalid dates before formatting
+    const dates = sessions
+      .map(s => {
+        try {
+          const d = typeof s.date === 'string' ? parseISO(s.date) : new Date(s.date);
+          return isFinite(d.getTime()) ? format(d, 'yyyy-MM-dd') : null;
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter((d): d is string => !!d);
+
+    if (dates.length === 0) return 0;
+
     const uniqueDates = Array.from(new Set(dates)).sort((a, b) => b.localeCompare(a));
     let streak = 0;
     let today = new Date();
     today.setHours(0, 0, 0, 0);
+    
     let lastDate = parseISO(uniqueDates[0]);
     lastDate.setHours(0, 0, 0, 0);
+
     if (differenceInDays(today, lastDate) > 1) return 0;
+    
     streak = 1;
     for (let i = 0; i < uniqueDates.length - 1; i++) {
-      const d1 = parseISO(uniqueDates[i]);
-      const d2 = parseISO(uniqueDates[i+1]);
-      if (differenceInDays(d1, d2) === 1) streak++;
-      else break;
+        const d1 = parseISO(uniqueDates[i]);
+        const d2 = parseISO(uniqueDates[i+1]);
+        if (differenceInDays(d1, d2) === 1) streak++;
+        else break;
     }
     return streak;
   };
 
   const dayData = (day: Date) => {
-    const daySessions = sessions.filter(s => isSameDay(parseISO(s.date), day));
+    const daySessions = sessions.filter(s => {
+      try {
+        const d = typeof s.date === 'string' ? parseISO(s.date) : new Date(s.date);
+        return isSameDay(d, day);
+      } catch (e) {
+        return false;
+      }
+    });
     const sessionsBySubject: Record<string, number> = {};
     daySessions.forEach(s => {
       sessionsBySubject[s.subjectId] = (sessionsBySubject[s.subjectId] || 0) + (s.duration / 60);
@@ -90,7 +114,14 @@ export default function DashboardCalendar({ sessions, subjects }: { sessions: Se
   };
 
   const totalMonthlyMinutes = sessions
-    .filter(s => isSameMonth(parseISO(s.date), currentMonth))
+    .filter(s => {
+      try {
+        const d = typeof s.date === 'string' ? parseISO(s.date) : new Date(s.date);
+        return isSameMonth(d, currentMonth);
+      } catch (e) {
+        return false;
+      }
+    })
     .reduce((acc, s) => acc + (s.duration / 60), 0);
 
   return (
@@ -120,12 +151,12 @@ export default function DashboardCalendar({ sessions, subjects }: { sessions: Se
         </div>
       </div>
 
-      <div className="flex items-center justify-between bg-base-100 p-4 rounded-3xl border border-base-300">
-        <button onClick={onPrevMonth} className="hover:text-primary transition-colors p-1">
+      <div className="flex items-center justify-between  bg-base-100 p-4 rounded-3xl border border-base-300">
+        <button onClick={onPrevMonth} className="hover:text-primary cursor-pointer transition-colors p-1">
           <ChevronLeft size={24} />
         </button>
         <span className="font-bold text-lg uppercase tracking-tight">{format(currentMonth, 'MMMM yyyy')}</span>
-        <button onClick={onNextMonth} className="hover:text-primary transition-colors p-1">
+        <button onClick={onNextMonth} className="hover:text-primary cursor-pointer transition-colors p-1">
           <ChevronRight size={24} />
         </button>
       </div>
@@ -143,13 +174,13 @@ export default function DashboardCalendar({ sessions, subjects }: { sessions: Se
             <div 
               key={idx} 
               className={`
-                aspect-square rounded-2xl flex flex-col items-center justify-center relative transition-all group
+                aspect-square rounded-2xl flex flex-col items-center cursor-help justify-center relative transition-all group
                 ${!isSelectedMonth ? 'opacity-20 italic' : ''}
                 ${hasSessions ? 'bg-base-100/30' : 'bg-base-100/50 border border-base-300'}
                 ${isSameDay(day, new Date()) ? 'ring-2 ring-primary ring-offset-2 ring-offset-base-200' : ''}
               `}
             >
-              <span className={`text-xs font-bold z-10 ${hasSessions ? 'text-white drop-shadow-md' : 'opacity-40'}`}>
+              <span className={`text-xs font-bold z-10 ${hasSessions ? 'text-base-content drop-shadow-sm' : 'opacity-40'}`}>
                 {format(day, 'd')}
               </span>
               
@@ -170,7 +201,7 @@ export default function DashboardCalendar({ sessions, subjects }: { sessions: Se
                 <div className="hidden group-hover:flex absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-base-300 border border-base-100 rounded-2xl shadow-2xl z-50 min-w-40 flex-col">
                   <p className="text-[10px] font-bold opacity-50 mb-2 uppercase border-b border-base-100 pb-1">{format(day, 'MMM d, yyyy')}</p>
                   {stats.map((stat, i) => (
-                    <div key={i} className="flex items-center justify-between gap-4 text-xs mb-1 last:mb-0 text-white">
+                    <div key={i} className="flex items-center text-base-content justify-between gap-4 text-xs mb-1 last:mb-0">
                       <div className="flex items-center gap-1.5 overflow-hidden">
                          <div className={`w-2 h-2 rounded-full shrink-0 ${getSubjectColor(stat.id)}`} />
                          <span className="font-medium truncate">{getSubjectName(stat.id)}</span>

@@ -13,6 +13,7 @@ import { ThemeToggleForDashboard } from "@/components/ThemeToggleForDashboard";
 import ThemeImage from "@/components/ThemeImage";
 import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import BtnFirst from "@/components/btn/BtnFirst";
+import DashboardCalendar from "./(dashboard)/dashboard/DashboardCalendar";
 
 type SessionDoc = {
   _id?: any;
@@ -262,6 +263,29 @@ export default async function Home() {
         </div>
          
             <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
+      </section>
+
+      <section className="my-40 max-w-5xl mx-auto space-y-10">
+        <div className="text-center space-y-4">
+          <p className="text-violet-400 text-sm">consistency over time</p>
+          <h1 className="text-7xl max-md:text-4xl font-bold tracking-tight text-center">
+            The <span className="text-primary bg-primary dark:text-white px-2">Global</span> Study Log
+          </h1>
+          <p className="opacity-50 text-sm">Real-time breakdown of my study distribution</p>
+        </div>
+        
+        <DashboardCalendar 
+          sessions={sessions.map((s: any) => ({
+            _id: String(s._id),
+            date: s.date instanceof Date ? s.date.toISOString() : String(s.date),
+            duration: Number(s.duration),
+            subjectId: String(s.subjectId)
+          }))}
+          subjects={rawSubjects.map((s: any) => ({
+            _id: String(s._id),
+            name: String(s.name)
+          }))} 
+        />
       </section>
 
       <section  className=" max-w-4xl mx-auto items-center p-4 my-30">
