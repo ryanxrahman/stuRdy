@@ -10,6 +10,7 @@ import ExamChart from "./ExamChart";
 import SessionsList from "./SessionsList";
 import { ObjectId } from "mongodb";
 import DeleteSubjectButton from "@/components/DeleteSubjectButton";
+import SubjectCalendar from "./SubjectCalendar";
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
   const { subject: subjectNameEncoded } = await params;
@@ -94,6 +95,8 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
             <p className="opacity-50 text-sm mb-6">History of your focus periods</p>
             <SessionsList initialSessions={sessions} />
         </section>
+
+        <SubjectCalendar sessions={sessions} />
 
         <section className="bg-base-200 flex items-center justify-between p-6 rounded-[2.5rem] border border-error/30 shadow-sm">
           <div>
