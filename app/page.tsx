@@ -297,7 +297,12 @@ export default async function Home() {
             totalSessions={totalSessions}
             totalSubjects={totalSubjects}
             subjectStats={subjectStats}
-            sessions={sessions}
+            sessions={sessions.map((s: any) => ({
+              _id: String(s._id),
+              date: s.date instanceof Date ? s.date.toISOString() : String(s.date),
+              duration: Number(s.duration || 0),
+              subjectId: String(s.subjectId || "")
+            }))}
           />
       </section>
 

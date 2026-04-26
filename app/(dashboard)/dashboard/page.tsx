@@ -16,6 +16,7 @@ import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import AddSubjectHeaderButton from "./AddSubjectHeaderButton";
 import StartStudyHeaderButton from "./StartStudyHeaderButton";
 import DashboardCalendar from "./DashboardCalendar";
+import InteractiveDemo from "@/components/InteractiveDemo";
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -198,6 +199,16 @@ export default async function Dashboard() {
           name: String(s.name)
         }))} 
       />
+
+      <section className="w-screen h-auto relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-base-300 py-5 max-md:py-4 -mx-8 max-md:-mx-2">
+        <InteractiveDemo 
+          totalMinutes={Math.round(totalStudyMinutes)}
+          totalSessions={totalSessions}
+          totalSubjects={totalSubjects}
+          subjectStats={subjectStats}
+          sessions={sessions}
+        />
+      </section>
 
     
     </div>
