@@ -109,37 +109,6 @@ export default function InteractiveDemo({
             <div className="text-center text-[10px] opacity-30 mt-4 font-mono">Mon-Sun</div>
           </div>
 
-          {/* Pie Chart - Sessions Distribution */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group flex flex-col items-center justify-center">
-            <div className="flex items-center justify-between mb-4 w-full">
-              <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Session Mix</h4>
-              <PieChart size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
-            </div>
-            <div className="relative w-24 h-24">
-              {/* Simple pie visual */}
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                <circle 
-                  cx="50" cy="50" r="40" fill="none" 
-                  stroke="url(#gradient1)" 
-                  strokeWidth="8"
-                  strokeDasharray={`${weekendPct * 2.51} 251`}
-                  strokeLinecap="round"
-                />
-                <defs>
-                  <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#ec4899" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center flex-col">
-                <div className="font-black text-lg text-primary">{weekendPct}%</div>
-                <div className="text-[8px] opacity-40">Weekend</div>
-              </div>
-            </div>
-          </div>
-
           {/* Area Chart - Cumulative Progress */}
           <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
             <div className="flex items-center justify-between mb-4">
@@ -212,34 +181,6 @@ export default function InteractiveDemo({
               ))}
             </div>
             <div className="text-center text-[10px] opacity-30 mt-3 font-mono">Weekly Heat</div>
-          </div>
-
-          {/* Conversion Funnel */}
-          <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/8 transition-all hover:border-white/10 group">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="font-black text-sm uppercase tracking-wider opacity-70">Completion Rate</h4>
-              <Award size={16} className="opacity-30 group-hover:opacity-60 transition-opacity" />
-            </div>
-            <div className="space-y-2">
-              {[
-                { label: 'Started', val: 100 },
-                { label: 'Ongoing', val: 87 },
-                { label: 'Completed', val: 72 },
-              ].map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex justify-between text-[10px]">
-                    <span className="opacity-60">{item.label}</span>
-                    <span className="font-bold text-primary">{item.val}%</span>
-                  </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-linear-to-r from-cyan-400 to-blue-600 transition-all"
-                      style={{ width: `${item.val}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Time Distribution */}
@@ -410,29 +351,6 @@ export default function InteractiveDemo({
                 </div>
               </div>
               <div className="text-[9px] opacity-40 text-center">+12% vs average</div>
-            </div>
-          </div>
-
-          {/* Summary Stats Box */}
-          <div className="bg-linear-to-br from-primary/10 to-violet-500/10 rounded-3xl p-6 border border-primary/20 hover:border-primary/40 transition-all group lg:col-span-4 md:col-span-2">
-            <div className="flex items-center justify-between mb-6">
-              <h4 className="font-black text-lg uppercase tracking-wider">Performance Summary</h4>
-              <Zap size={20} className="text-primary opacity-40 group-hover:opacity-60 transition-opacity" />
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { label: 'Total Hours', value: totalHours, color: 'from-primary' },
-                { label: 'Sessions', value: totalSessions, color: 'from-emerald-500' },
-                { label: 'Subjects', value: totalSubjects, color: 'from-cyan-400' },
-                { label: 'Consistency', value: `${Math.min(100, Math.round((totalSessions / 50) * 100))}%`, color: 'from-amber-400' },
-              ].map((stat, idx) => (
-                <div key={idx} className="bg-white/5 rounded-2xl p-4 text-center border border-white/5 hover:bg-white/10 transition-all">
-                  <div className={`text-2xl font-black bg-linear-to-r ${stat.color} to-transparent bg-clip-text text-transparent mb-1`}>
-                    {stat.value}
-                  </div>
-                  <div className="text-[9px] uppercase opacity-40 font-bold tracking-wider">{stat.label}</div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
