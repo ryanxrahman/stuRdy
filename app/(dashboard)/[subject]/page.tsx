@@ -70,19 +70,17 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
           <Timer subjectId={subject._id.toString()} />
         </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Todo List */}
-        <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm">
-          <h2 className="text-2xl font-bold mb-6">Daily Quests</h2>
-          <TodoList subjectId={subject._id.toString()} initialTodos={subject.todos || []} />
-        </section>
+      {/* Daily Quests */}
+      <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm">
+        <h2 className="text-2xl font-bold mb-6">Daily Quests</h2>
+        <TodoList subjectId={subject._id.toString()} initialTodos={subject.todos || []} />
+      </section>
 
-        {/* Right Column: Notes */}
-  <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm flex flex-col h-full min-h-100">
-          <h2 className="text-2xl font-bold mb-6">Subject Vault</h2>
-          <NotesSection subjectId={subject._id.toString()} initialNotes={subject.notes || ""} />
-        </section>
-      </div>
+      {/* Subject Vault */}
+      <section className="bg-base-200 p-8 rounded-[2.5rem] border border-base-300 shadow-sm flex flex-col h-full min-h-100">
+        <h2 className="text-2xl font-bold mb-6">Subject Vault</h2>
+        <NotesSection subjectId={subject._id.toString()} initialNotes={subject.notes || ""} />
+      </section>
 
         <section className="bg-base-200 p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
             <h2 className="text-2xl font-bold mb-2">Study Momentum</h2>
