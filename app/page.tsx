@@ -137,22 +137,6 @@ export default async function Home() {
     subjectId: String(s.subjectId || ""),
   }));
 
-  const otherStudyTracker = [
-    "no charts no graphs no data",
-    "just tasks no real insights",
-    "no clear progress tracking",
-    "boring plain study experience",
-    "no motivation to improve"
-  ];
-
-  const studyTrackerByMR = [
-    "beautiful charts show your progress",
-    "insightful graphs reveal study patterns",
-    "actionable data improves your consistency",
-    "clear tracking keeps you focused",
-    "smart insights help you grow"
-  ];
-
   return (
     <main className="max-w-7xl mx-auto w-full max-md:p-4">
       <section className="flex max-w-4xl mx-auto items-center p-4 justify-between">
