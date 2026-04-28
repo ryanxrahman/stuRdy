@@ -10,16 +10,26 @@ type Todo = {
     completed: boolean;
 }
 
+const MAX_TODOS = 30;
+
 export default function TodoList({ subjectId, initialTodos }: { subjectId: string, initialTodos: Todo[] }) {
     const [todos, setTodos] = useState(initialTodos);
     const [inputValue, setInputValue] = useState("");
     const [pasteValue, setPasteValue] = useState("");
     const [showPasteInput, setShowPasteInput] = useState(false);
+    const [loadingProgress, setLoadingProgress] = useState(0);
+    const [isLoadingPaste, setIsLoadingPaste] = useState(false);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
 
     const handleAddTodo = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!inputValue.trim()) return;
+        
+        if (todos.length >= MAX_TODOS) {
+            alert(`You can only have up to ${MAX_TODOS} tasks.`);
+            return;
+        }
 
         const text = inputValue.trim();
         setInputValue("");
@@ -46,18 +56,34 @@ export default function TodoList({ subjectId, initialTodos }: { subjectId: strin
 
         if (items.length === 0) return;
 
+        const availableSlots = MAX_TODOS - todos.length;
+        if (availableSlots <= 0) {
+            alert(`You can only have up to ${MAX_TODOS} tasks. You've reached the limit.`);
+            return;
+        }
+
+        const itemsToAdd = items.slice(0, availableSlots);
+        if (itemsToAdd.length < items.length) {
+            alert(`Only ${itemsToAdd.length} out of ${items.length} items can be added (limit: ${MAX_TODOS} tasks total).`);
+        }
+
         setPasteValue("");
         setShowPasteInput(false);
+        setIsLoadingPaste(true);
 
         startTransition(async () => {
             const newTodos = [];
-            for (const text of items) {
+            for (let i = 0; i < itemsToAdd.length; i++) {
+                const text = itemsToAdd[i];
                 const result = await addTodo(subjectId, text);
                 if (result.success) {
                     newTodos.push({ id: Math.random().toString(), text, completed: false });
+                    setLoadingProgress(Math.round(((i + 1) / itemsToAdd.length) * 100));
                 }
             }
             setTodos([...todos, ...newTodos]);
+            setIsLoadingPaste(false);
+            setLoadingProgress(0);
         });
     };
 
@@ -69,38 +95,70 @@ export default function TodoList({ subjectId, initialTodos }: { subjectId: strin
     }
 
     const handleDelete = (todoId: string) => {
-        if (!confirm("Are you sure you want to delete this task?")) return;
-        startTransition(async () => {
-            await deleteTodoAction(subjectId, todoId);
-            setTodos(todos.filter(t => t.id !== todoId));
-        });
+        if (pendingDeleteId === todoId) {
+            // Second click - confirm delete
+            setPendingDeleteId(null);
+            startTransition(async () => {
+                await deleteTodoAction(subjectId, todoId);
+                setTodos(todos.filter(t => t.id !== todoId));
+            });
+        } else {
+            // First click - mark for deletion
+            setPendingDeleteId(todoId);
+            // Reset after 3 seconds if not clicked again
+            setTimeout(() => {
+                setPendingDeleteId(prev => prev === todoId ? null : prev);
+            }, 3000);
+        }
     }
 
     return (
         <div className="flex flex-col gap-4">
-            <form onSubmit={handleAddTodo} className="flex gap-2">
-                <div className="relative flex-1">
-                    <input 
-                        type="text" 
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="What needs to be done?" 
-                        className="input input-sm w-full pl-8"
-                    />
-                    <Plus size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 opacity-30" />
-                </div>
-                <button type="submit" className="btn btn-sm btn-primary" disabled={isPending}>
-                    {isPending ? "..." : "Add"}
-                </button>
-                <button 
-                    type="button"
-                    onClick={() => setShowPasteInput(!showPasteInput)}
-                    className="btn btn-sm btn-secondary"
-                    title="Bulk add from paragraph"
-                >
-                    <Copy size={16} />
-                </button>
-            </form>
+            <div className="flex items-center justify-between gap-2">
+                <form onSubmit={handleAddTodo} className="flex gap-2 flex-1">
+                    <div className="relative flex-1">
+                        <input 
+                            type="text" 
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder="What needs to be done?" 
+                            className="input input-sm w-full pl-8"
+                            disabled={todos.length >= MAX_TODOS}
+                        />
+                        <Plus size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 opacity-30" />
+                    </div>
+                    <button 
+                        type="submit" 
+                        className="btn btn-sm btn-primary" 
+                        disabled={isPending || todos.length >= MAX_TODOS}
+                    >
+                        {isPending ? "..." : "Add"}
+                    </button>
+                </form>
+                
+                {isLoadingPaste ? (
+                    <div className="w-16 h-2 bg-base-300 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full bg-secondary transition-all duration-300"
+                            style={{ width: `${loadingProgress}%` }}
+                        />
+                    </div>
+                ) : (
+                    <button 
+                        type="button"
+                        onClick={() => setShowPasteInput(!showPasteInput)}
+                        className="btn btn-sm btn-secondary"
+                        title="Bulk add from paragraph"
+                        disabled={todos.length >= MAX_TODOS}
+                    >
+                        <Copy size={16} />
+                    </button>
+                )}
+            </div>
+
+            <div className="text-xs opacity-60">
+                Tasks: <span className={todos.length >= MAX_TODOS ? 'text-error font-bold' : ''}>{todos.length}</span> / {MAX_TODOS}
+            </div>
 
             {showPasteInput && (
                 <form onSubmit={handlePasteAndParse} className="flex flex-col gap-2">
@@ -114,9 +172,9 @@ export default function TodoList({ subjectId, initialTodos }: { subjectId: strin
                         <button 
                             type="submit" 
                             className="btn btn-sm btn-secondary flex-1"
-                            disabled={isPending}
+                            disabled={isLoadingPaste}
                         >
-                            {isPending ? "..." : "Parse & Add"}
+                            {isLoadingPaste ? "..." : "Parse & Add"}
                         </button>
                         <button 
                             type="button"
@@ -146,7 +204,12 @@ export default function TodoList({ subjectId, initialTodos }: { subjectId: strin
                         </span>
                         <button 
                             onClick={() => handleDelete(todo.id)}
-                            className="btn btn-ghost btn-circle btn-xs text-error opacity-0 group-hover/item:opacity-100 transition-opacity"
+                            className={`btn btn-ghost btn-circle btn-xs opacity-0 group-hover/item:opacity-100 transition-opacity ${
+                                pendingDeleteId === todo.id 
+                                    ? 'text-error bg-error/20' 
+                                    : 'text-error'
+                            }`}
+                            title={pendingDeleteId === todo.id ? "Click again to confirm delete" : "Double-click to delete"}
                         >
                             <Trash2 size={14} />
                         </button>
