@@ -35,6 +35,15 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
         return result;
     }, [sessionMap]);
 
+    // Group days into week columns (each week is up to 7 days) so we render columns left-to-right
+    const weeks = useMemo(() => {
+        const cols: { date: string; minutes: number }[][] = [];
+        for (let i = 0; i < days.length; i += 7) {
+            cols.push(days.slice(i, i + 7));
+        }
+        return cols;
+    }, [days]);
+
     const getColor = (minutes: number) => {
         if (minutes === 0) return "bg-base-300 opacity-20";
         if (minutes < 30) return "bg-primary opacity-30";
@@ -50,14 +59,18 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
                 <span className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last 365 Days)</span>
             </h3>
 
-            <div className="flex flex-wrap gap-[3px] justify-start">
-                {days.map((day) => (
-                    <div 
-                        key={day.date}
-                        className={`w-[12px] h-[12px] rounded-sm cursor-help transition-all hover:ring-2 hover:ring-primary/50 ${getColor(day.minutes)}`}
-                        onMouseEnter={() => setHoveredDay(day)}
-                        onMouseLeave={() => setHoveredDay(null)}
-                    />
+            <div className="flex gap-[6px] items-start">
+                {weeks.map((week, wi) => (
+                    <div key={wi} className="flex flex-col gap-[3px]">
+                        {week.map((day) => (
+                            <div
+                                key={day.date}
+                                className={`w-[12px] h-[12px] rounded-sm cursor-help transition-all hover:ring-2 hover:ring-primary/50 ${getColor(day.minutes)}`}
+                                onMouseEnter={() => setHoveredDay(day)}
+                                onMouseLeave={() => setHoveredDay(null)}
+                            />
+                        ))}
+                    </div>
                 ))}
             </div>
 
