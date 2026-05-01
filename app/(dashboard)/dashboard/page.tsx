@@ -135,7 +135,13 @@ export default async function Dashboard() {
       </div>
 
       {/* Study Trend Graph */}
-      <StudyTrend sessions={sessions} />
+      <StudyTrend
+        sessions={sessions}
+        subjects={subjects.map((sub: any) => ({
+          _id: String(sub._id),
+          name: String(sub.name || "Untitled"),
+        }))}
+      />
 
       {/* Contribution Heatmap */}
       <section>

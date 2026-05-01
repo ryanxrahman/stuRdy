@@ -1,6 +1,7 @@
 "use client";
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useMemo, useState } from "react";
+import { ComposedChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 type Session = {
   date: string;
@@ -8,11 +9,84 @@ type Session = {
   subjectId: string;
 };
 
-type StudyTrendProps = {
-  sessions: Session[];
+type Subject = {
+  _id: string;
+  name: string;
 };
 
-export default function StudyTrend({ sessions }: StudyTrendProps) {
+type StudyTrendProps = {
+  sessions: Session[];
+  subjects: Subject[];
+};
+
+type TooltipPayload = {
+  value?: number;
+};
+
+type CustomTooltipProps = {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+  subjectsByDate?: Record<string, { name: string; minutes: number }[]>;
+  subjectColors?: Record<string, string>;
+};
+
+function CustomTooltip({ active, payload, label, subjectsByDate, subjectColors }: CustomTooltipProps) {
+  if (active && payload && payload.length) {
+    const mins = payload.find((item) => item?.value !== undefined)?.value ?? 0;
+    const subjects = (label && subjectsByDate?.[label]) || [];
+    return (
+      <div className="bg-[#11161d] text-white px-5 py-4 rounded-2xl text-sm shadow-2xl border border-white/5">
+        <p className="text-[11px] uppercase tracking-widest opacity-50 mb-2">
+          {label || ""}
+        </p>
+        <div className="flex flex-col gap-2">
+          {subjects.length > 0 ? (
+            subjects.map((subject) => (
+              <div key={subject.name} className="flex items-center justify-between gap-10">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: subjectColors?.[subject.name] || "#f08a6c" }}
+                  />
+                  <span className="font-semibold">{subject.name}</span>
+                </div>
+                <span className="font-black text-base">{subject.minutes}m</span>
+              </div>
+            ))
+          ) : (
+            <div className="flex items-center justify-between gap-10">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#f08a6c]" />
+                <span className="font-semibold">Study</span>
+              </div>
+              <span className="font-black text-base">{mins}m</span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
+export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const subjectNameById = useMemo(() => {
+    return subjects.reduce<Record<string, string>>((acc, subject) => {
+      acc[subject._id] = subject.name;
+      return acc;
+    }, {});
+  }, [subjects]);
+
+  const subjectColors = useMemo(() => {
+    const palette = ["#22c55e", "#6366f1", "#f43f5e", "#06b6d4", "#f59e0b", "#a855f7"];
+    return subjects.reduce<Record<string, string>>((acc, subject, index) => {
+      acc[subject.name] = palette[index % palette.length];
+      return acc;
+    }, {});
+  }, [subjects]);
   if (sessions.length === 0) {
     return (
       <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
@@ -26,39 +100,37 @@ export default function StudyTrend({ sessions }: StudyTrendProps) {
   }
 
   // Prepare data for chart - last 14 days
-  const chartData: { date: string; minutes: number }[] = [];
-  const last14Days: { [key: string]: number } = {};
+  const chartData: { date: string; minutes: number; barMinutes: number }[] = [];
+  const last14Days: { [key: string]: { total: number; subjects: Record<string, number> } } = {};
 
   for (let i = 13; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    last14Days[dateStr] = 0;
+    last14Days[dateStr] = { total: 0, subjects: {} };
   }
 
   sessions.forEach(s => {
     const d = new Date(s.date);
     const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     if (dateStr in last14Days) {
-      last14Days[dateStr] += s.duration / 60;
+  const subjectName = subjectNameById[s.subjectId] || "Unknown";
+      const minutes = s.duration / 60;
+      last14Days[dateStr].total += minutes;
+      last14Days[dateStr].subjects[subjectName] = (last14Days[dateStr].subjects[subjectName] || 0) + minutes;
     }
   });
 
-  Object.entries(last14Days).forEach(([date, minutes]) => {
-    chartData.push({ date, minutes: Math.round(minutes) });
-  });
+  const subjectsByDate: Record<string, { name: string; minutes: number }[]> = {};
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const mins = payload[0].value;
-      return (
-        <div className="bg-black text-white px-4 py-2 rounded-xl text-sm shadow-2xl">
-          <p className="opacity-80">{mins}m</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  Object.entries(last14Days).forEach(([date, data]) => {
+    const rounded = Math.round(data.total);
+    chartData.push({ date, minutes: rounded, barMinutes: rounded });
+    subjectsByDate[date] = Object.entries(data.subjects)
+      .map(([name, mins]) => ({ name, minutes: Math.round(mins) }))
+      .filter((entry) => entry.minutes > 0)
+      .sort((a, b) => b.minutes - a.minutes);
+  });
 
   return (
     <div className="flex flex-col gap-5 bg-base-200 rounded-4xl border border-base-300 p-8">
@@ -66,35 +138,63 @@ export default function StudyTrend({ sessions }: StudyTrendProps) {
         <h2 className="text-xl font-bold mb-1">Study Trend</h2>
         <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last 14 Days)</p>
       </div>
-      <div className="w-full h-62.5 -ml-8 outline-none **:outline-none">
+      <div className="w-full h-72 -ml-6 outline-none **:outline-none">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} tabIndex={-1}>
+          <ComposedChart
+            data={chartData}
+            tabIndex={-1}
+            onMouseMove={(state) => {
+              const index = typeof state?.activeTooltipIndex === "number" ? state.activeTooltipIndex : null;
+              setHoveredIndex(index);
+            }}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <defs>
-              <linearGradient id="colorMinutes" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+              <linearGradient id="trendArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#9bd3ff" stopOpacity={0.35} />
+                <stop offset="90%" stopColor="#9bd3ff" stopOpacity={0.05} />
+                <stop offset="100%" stopColor="#9bd3ff" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.15} />
+            <CartesianGrid strokeDasharray="4 6" stroke="#4b5563" opacity={0.25} />
             <XAxis 
               dataKey="date" 
               tick={{ fontSize: 12, opacity: 0.6 }}
               axisLine={false}
+              tickLine={false}
             />
             <YAxis 
               tick={{ fontSize: 12, opacity: 0.6 }}
               axisLine={false}
+              tickLine={false}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip subjectsByDate={subjectsByDate} subjectColors={subjectColors} />} />
+            <Bar
+              dataKey="barMinutes"
+              barSize={20}
+              radius={[8, 8, 0, 0]}
+              fill="#f08a6c"
+              opacity={0.9}
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`bar-${entry.date}`}
+                  className="transition-all duration-500"
+                  fillOpacity={hoveredIndex !== null && index !== hoveredIndex ? 0.3 : 1}
+                />
+              ))}
+            </Bar>
             <Area 
               type="monotone" 
               dataKey="minutes" 
-              stroke="#8b5cf6" 
-              strokeWidth={2}
+              stroke="#9bd3ff" 
+              strokeWidth={3}
               fillOpacity={1} 
-              fill="url(#colorMinutes)" 
+              fill="url(#trendArea)" 
+              dot={false}
+              activeDot={{ r: 5, fill: "#9bd3ff", stroke: "#0f172a", strokeWidth: 2 }}
             />
-          </AreaChart>
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </div>
