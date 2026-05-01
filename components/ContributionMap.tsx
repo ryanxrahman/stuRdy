@@ -24,7 +24,7 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
     const days = useMemo(() => {
         const result = [];
         const today = new Date();
-        for (let i = 365; i >= 0; i--) {
+        for (let i = 375; i >= 0; i--) {
             const d = new Date(today);
             d.setDate(today.getDate() - i);
             const dateStr = d.toISOString().split('T')[0];
@@ -45,15 +45,15 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
     }, [days]);
 
     const getColor = (minutes: number) => {
-        if (minutes === 0) return "bg-base-300 opacity-20";
-        if (minutes < 30) return "bg-primary opacity-30";
-        if (minutes < 60) return "bg-primary opacity-60";
-        if (minutes < 120) return "bg-primary opacity-80";
-        return "bg-primary opacity-100";
+        if (minutes === 0) return "bg-gray-500 opacity-20";
+        if (minutes < 30) return "bg-success opacity-30";
+        if (minutes < 60) return "bg-success opacity-60";
+        if (minutes < 120) return "bg-success opacity-80";
+        return "bg-sucess opacity-100";
     };
 
     return (
-        <div className="relative w-full overflow-hidden p-6 bg-base-200 rounded-[2.5rem] border border-base-300">
+        <div className="relative w-full overflow-hidden p-8 bg-base-200 rounded-[2.5rem] border border-base-300">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                 Study Contributions
                 <span className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last 365 Days)</span>
