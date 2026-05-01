@@ -125,7 +125,8 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
 
   Object.entries(last14Days).forEach(([date, data]) => {
     const rounded = Math.round(data.total);
-    chartData.push({ date, minutes: rounded, barMinutes: rounded, areaMinutes: rounded + 5 });
+    const gap = 50;
+    chartData.push({ date, minutes: rounded, barMinutes: rounded, areaMinutes: rounded + gap });
     subjectsByDate[date] = Object.entries(data.subjects)
       .map(([name, mins]) => ({ name, minutes: Math.round(mins) }))
       .filter((entry) => entry.minutes > 0)
@@ -191,7 +192,7 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
             </Bar>
             <Area 
               type="monotone" 
-              dataKey="minutes" 
+              dataKey="areaMinutes" 
               stroke="#9bd3ff" 
               strokeWidth={3}
               fillOpacity={1} 
