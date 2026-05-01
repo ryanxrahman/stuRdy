@@ -36,31 +36,31 @@ function CustomTooltip({ active, payload, label, subjectsByDate, subjectColors }
     const mins = payload.find((item) => item?.value !== undefined)?.value ?? 0;
     const subjects = (label && subjectsByDate?.[label]) || [];
     return (
-      <div className="bg-[#11161d] text-white px-5 py-4 rounded-2xl text-sm shadow-2xl border border-white/5">
-        <p className="text-[11px] uppercase tracking-widest opacity-50 mb-2">
+      <div className="bg-base-300 border border-base-100 rounded-2xl shadow-2xl z-50 min-w-40 flex flex-col p-3">
+        <p className="text-[10px] font-bold opacity-50 mb-2 uppercase border-b border-base-100 pb-1">
           {label || ""}
         </p>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           {subjects.length > 0 ? (
-            subjects.map((subject) => (
-              <div key={subject.name} className="flex items-center justify-between gap-10">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
+            subjects.map((subject, i) => (
+              <div key={subject.name} className="flex items-center text-base-content justify-between gap-4 text-xs mb-1 last:mb-0">
+                <div className="flex items-center gap-1.5 overflow-hidden">
+                  <div
+                    className="w-2 h-2 rounded-full shrink-0"
                     style={{ backgroundColor: subjectColors?.[subject.name] || "#f08a6c" }}
                   />
-                  <span className="font-semibold">{subject.name}</span>
+                  <span className="font-medium truncate">{subject.name}</span>
                 </div>
-                <span className="font-black text-base">{subject.minutes}m</span>
+                <span className="font-bold shrink-0">{subject.minutes}m</span>
               </div>
             ))
           ) : (
-            <div className="flex items-center justify-between gap-10">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#f08a6c]" />
-                <span className="font-semibold">Study</span>
+            <div className="flex items-center text-base-content justify-between gap-4 text-xs">
+              <div className="flex items-center gap-1.5 overflow-hidden">
+                <div className="w-2 h-2 rounded-full shrink-0 bg-[#f08a6c]" />
+                <span className="font-medium">Study</span>
               </div>
-              <span className="font-black text-base">{mins}m</span>
+              <span className="font-bold shrink-0">{mins}m</span>
             </div>
           )}
         </div>
