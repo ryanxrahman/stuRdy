@@ -145,10 +145,6 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
             data={chartData}
             margin={{ top: 10, right: 30, left: -20, bottom: 0 }}
             tabIndex={-1}
-            onMouseMove={(state) => {
-              const index = typeof state?.activeTooltipIndex === "number" ? state.activeTooltipIndex : null;
-              setHoveredIndex(index);
-            }}
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <defs>
@@ -180,13 +176,14 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
               barSize={24}
               radius={[6, 6, 0, 0]}
               fill="#10b981"
-              opacity={0.9}
             >
               {chartData.map((entry, index) => (
                 <Cell
                   key={`bar-${entry.date}`}
-                  className="transition-all duration-500"
-                  fillOpacity={hoveredIndex !== null && index !== hoveredIndex ? 0.3 : 1}
+                  className="transition-opacity duration-800"
+                  style={{ transition: 'fill-opacity 800ms' }}
+                  fillOpacity={hoveredIndex === null ? 1 : hoveredIndex === index ? 1 : 0.3}
+                  onMouseEnter={() => setHoveredIndex(index)}
                 />
               ))}
             </Bar>
