@@ -100,7 +100,7 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
   }
 
   // Prepare data for chart - last 14 days
-  const chartData: { date: string; minutes: number; barMinutes: number }[] = [];
+  const chartData: { date: string; minutes: number; barMinutes: number; areaMinutes: number }[] = [];
   const last14Days: { [key: string]: { total: number; subjects: Record<string, number> } } = {};
 
   for (let i = 13; i >= 0; i--) {
@@ -125,7 +125,7 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
 
   Object.entries(last14Days).forEach(([date, data]) => {
     const rounded = Math.round(data.total);
-    chartData.push({ date, minutes: rounded, barMinutes: rounded });
+    chartData.push({ date, minutes: rounded, barMinutes: rounded, areaMinutes: rounded + 5 });
     subjectsByDate[date] = Object.entries(data.subjects)
       .map(([name, mins]) => ({ name, minutes: Math.round(mins) }))
       .filter((entry) => entry.minutes > 0)
@@ -176,9 +176,9 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
             <Tooltip content={<CustomTooltip subjectsByDate={subjectsByDate} subjectColors={subjectColors} />} />
             <Bar
               dataKey="barMinutes"
-              barSize={20}
-              radius={[8, 8, 0, 0]}
-              fill="#f08a6c"
+              barSize={24}
+              radius={[6, 6, 0, 0]}
+              fill="#10b981"
               opacity={0.9}
             >
               {chartData.map((entry, index) => (
