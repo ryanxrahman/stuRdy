@@ -138,10 +138,11 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
         <h2 className="text-xl font-bold mb-1">Study Trend</h2>
         <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last 14 Days)</p>
       </div>
-      <div className="w-full h-72 -ml-6 outline-none **:outline-none">
+      <div className="w-full h-72 outline-none **:outline-none">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={chartData}
+            margin={{ top: 10, right: 30, left: -20, bottom: 0 }}
             tabIndex={-1}
             onMouseMove={(state) => {
               const index = typeof state?.activeTooltipIndex === "number" ? state.activeTooltipIndex : null;
@@ -158,16 +159,20 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
             </defs>
             <CartesianGrid strokeDasharray="2 4" stroke="#4b5563" opacity={0.20} vertical={false} />
             <XAxis 
-              dataKey="date" 
-              tick={{ fontSize: 12, opacity: 0.6 }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis 
-              tick={{ fontSize: 12, opacity: 0.6 }}
-              axisLine={false}
-              tickLine={false}
-            />
+  dataKey="date"
+  padding={{ left: 0, right: 0 }}
+  domain={['dataMin', 'dataMax']}
+  tick={{ fontSize: 12, opacity: 0.6 }}
+  axisLine={false}
+  tickLine={false}
+/>
+
+<YAxis 
+  width={45}   // reduce this (default is bigger → causes left gap)
+  tick={{ fontSize: 12, opacity: 0.6 }}
+  axisLine={false}
+  tickLine={false}
+/>
             <Tooltip content={<CustomTooltip subjectsByDate={subjectsByDate} subjectColors={subjectColors} />} />
             <Bar
               dataKey="barMinutes"
