@@ -156,7 +156,7 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
                 <stop offset="100%" stopColor="#9bd3ff" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="4 6" stroke="#4b5563" opacity={0.25} />
+            <CartesianGrid strokeDasharray="2 4" stroke="#4b5563" opacity={0.20} vertical={false} />
             <XAxis 
               dataKey="date" 
               tick={{ fontSize: 12, opacity: 0.6 }}
