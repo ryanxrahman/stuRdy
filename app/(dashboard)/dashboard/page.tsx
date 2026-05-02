@@ -174,10 +174,7 @@ export default async function Dashboard() {
 
         <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
 
-                    {/* Daily Study Goal */}
-      <StudyGoal
-        totalStudyMinutes={Math.round(dailyStudyMinutes)}
-      />
+
 
       <StudyReward 
         totalStudyHours={totalStudyHours} 
