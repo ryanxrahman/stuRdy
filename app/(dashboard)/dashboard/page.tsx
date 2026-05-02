@@ -172,14 +172,25 @@ export default async function Dashboard() {
         <SubjectBarChart data={subjectStats} />
       </div>
 
-        <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
 
-
-
-      <StudyReward 
-        totalStudyHours={totalStudyHours} 
-        initialRewards={rewardLevels} 
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <StudyReward
+          totalStudyHours={totalStudyHours}
+          initialRewards={rewardLevels}
+        />
+         <DashboardCalendar
+          sessions={sessions.map((s: any) => ({
+            _id: String(s._id),
+            date: String(s.date),
+            duration: Number(s.duration),
+            subjectId: String(s.subjectId)
+          }))}
+          subjects={subjects.map((s: any) => ({
+            _id: String(s._id),
+            name: String(s.name)
+          }))}
+        />
+      </div>
 
       <AddSubjectForm />
 
@@ -190,18 +201,7 @@ export default async function Dashboard() {
         sessions={sessions}
       />
 
-        <DashboardCalendar 
-        sessions={sessions.map((s: any) => ({
-          _id: String(s._id),
-          date: String(s.date),
-          duration: Number(s.duration),
-          subjectId: String(s.subjectId)
-        }))}
-        subjects={subjects.map((s: any) => ({
-          _id: String(s._id),
-          name: String(s.name)
-        }))} 
-      />
+       
 
         <InteractiveDemo 
           totalMinutes={Math.round(totalStudyMinutes)}

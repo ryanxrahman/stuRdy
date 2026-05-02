@@ -126,20 +126,6 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
         </button>
       </div>
 
-      {/* Stats row */}
-      <div className="study-reward-stats mb-8">
-        {[
-          { label: 'Total studied', value: `${totalStudyHours.toFixed(1)}h`, cls: '' },
-          { label: 'Levels cleared', value: `${unlockedCount} / ${sorted.length}`, cls: 'text-emerald-400' },
-          { label: 'Remaining', value: hoursLeft ? `${hoursLeft}h` : '—', cls: 'text-violet-400' },
-        ].map((s) => (
-          <div key={s.label} className="bg-base-300/50 rounded-3xl p-5 border border-base-300">
-            <p className="text-[10px] uppercase tracking-widest opacity-40 mb-1 font-mono">{s.label}</p>
-            <p className={`text-2xl font-black ${s.cls}`}>{s.value}</p>
-          </div>
-        ))}
-      </div>
-
       {/* Next reward banner */}
       {sorted.length > 0 && (
         <div className="flex items-center justify-between gap-3 bg-violet-500/5 border border-violet-500/10 rounded-3xl px-6 py-4 mb-8 flex-wrap">
