@@ -203,15 +203,6 @@ export default async function Dashboard() {
 
        
 
-        <InteractiveDemo 
-          totalMinutes={Math.round(totalStudyMinutes)}
-          totalSessions={totalSessions}
-          totalSubjects={totalSubjects}
-          subjectStats={subjectStats}
-          sessions={sessions}
-          dashboard={true}
-        />
-
     
     </div>
   );
