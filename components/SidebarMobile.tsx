@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { ThemeToggleFixed } from './ThemeToggle';
 
 interface SidebarMobileProps {
     children: React.ReactNode;
@@ -31,6 +32,15 @@ export default function SidebarMobile({ children }: SidebarMobileProps) {
             >
                 {isOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
+             <button 
+                className="lg:hidden fixed top-4 left-16 z-50 "
+                aria-label="Toggle Menu"
+            >
+               <ThemeToggleFixed />
+            </button>
+
+
+
 
             {/* Backdrop for mobile */}
             {isOpen && (
