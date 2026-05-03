@@ -73,10 +73,10 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
                     <span className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last {isSmallScreen ? '365' : '365'} Days)</span>
                 </h3>
 
-                <div className="overflow-x-auto pb-2">
-                    <div className={`flex ${gap} items-start min-w-max`}>
+                <div className={`overflow-x-auto pb-2 ${isSmallScreen ? '-mx-6 px-6' : '-mx-8 px-8'}`}>
+                    <div className={`flex ${gap} items-start ${isSmallScreen ? 'min-w-max' : 'w-full flex-wrap'}`}>
                         {weeks.map((week, wi) => (
-                            <div key={wi} className={`flex flex-col ${gap}`}>
+                            <div key={wi} className={`flex flex-col ${gap} ${isSmallScreen ? '' : 'flex-1'}`}>
                                 {week.map((day) => (
                                     <div
                                         key={day.date}
@@ -98,14 +98,14 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
                     </div>
                 )}
 
-                <div className="mt-4 md:mt-6 flex items-center gap-2 text-xs">
+                <div className=" flex items-center gap-2 text-xs">
                     <span className="text-[10px] opacity-40 uppercase font-bold tracking-widest">Less</span>
                     <div className={`flex ${gap}`}>
-                        <div className="w-2 h-2 rounded-sm bg-gray-500 opacity-20" />
-                        <div className="w-2 h-2 rounded-sm bg-success opacity-30" />
-                        <div className="w-2 h-2 rounded-sm bg-success opacity-60" />
-                        <div className="w-2 h-2 rounded-sm bg-success opacity-80" />
-                        <div className="w-2 h-2 rounded-sm bg-success opacity-100" />
+                        <div className="w-2 h-2 rounded  bg-gray-500 opacity-20" />
+                        <div className="w-2 h-2 rounded  bg-success opacity-30" />
+                        <div className="w-2 h-2 rounded  bg-success opacity-60" />
+                        <div className="w-2 h-2 rounded  bg-success opacity-80" />
+                        <div className="w-2 h-2 rounded  bg-success opacity-100" />
                     </div>
                     <span className="text-[10px] opacity-40 uppercase font-bold tracking-widest">More</span>
                 </div>
