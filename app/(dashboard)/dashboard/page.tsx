@@ -99,9 +99,9 @@ export default async function Dashboard() {
   return (
     <div className="flex flex-col gap-10 p-8 max-md:p-2 max-w-6xl mx-auto pb-20 ">
       {/* Header */}
-      <header className="flex items-center justify-between gap-4">
-          <h1 className="text-6xl max-md:text-3xl font-black tracking-tighter">Command Center</h1>
-        <div className="flex items-center gap-2 max-sm:flex-col ">
+      <header className="flex w-full max-md:flex-col items-center md:justify-between gap-4">
+          <h1 className="text-6xl max-md:text-4xl font-black tracking-tighter">Command Center</h1>
+        <div className="flex items-center gap-2 ">
           <StartStudyHeaderButton
             subjects={subjects.map((sub: any) => ({
               _id: String(sub._id),
