@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ComposedChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 type Session = {
@@ -72,6 +72,14 @@ function CustomTooltip({ active, payload, label, subjectsByDate, subjectColors }
 
 export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsSmallScreen(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const subjectNameById = useMemo(() => {
     return subjects.reduce<Record<string, string>>((acc, subject) => {
@@ -99,31 +107,32 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
     );
   }
 
-  // Prepare data for chart - last 14 days
+  // Prepare data for chart - last 14 days on desktop, last 4 days on mobile
+  const daysToShow = isSmallScreen ? 4 : 13; // 4 days (0-3) or 14 days (0-13)
   const chartData: { date: string; minutes: number; barMinutes: number; areaMinutes: number }[] = [];
-  const last14Days: { [key: string]: { total: number; subjects: Record<string, number> } } = {};
+  const lastNDays: { [key: string]: { total: number; subjects: Record<string, number> } } = {};
 
-  for (let i = 13; i >= 0; i--) {
+  for (let i = daysToShow; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    last14Days[dateStr] = { total: 0, subjects: {} };
+    lastNDays[dateStr] = { total: 0, subjects: {} };
   }
 
   sessions.forEach(s => {
     const d = new Date(s.date);
     const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    if (dateStr in last14Days) {
+    if (dateStr in lastNDays) {
   const subjectName = subjectNameById[s.subjectId] || "Unknown";
       const minutes = s.duration / 60;
-      last14Days[dateStr].total += minutes;
-      last14Days[dateStr].subjects[subjectName] = (last14Days[dateStr].subjects[subjectName] || 0) + minutes;
+      lastNDays[dateStr].total += minutes;
+      lastNDays[dateStr].subjects[subjectName] = (lastNDays[dateStr].subjects[subjectName] || 0) + minutes;
     }
   });
 
   const subjectsByDate: Record<string, { name: string; minutes: number }[]> = {};
 
-  Object.entries(last14Days).forEach(([date, data]) => {
+  Object.entries(lastNDays).forEach(([date, data]) => {
     const rounded = Math.round(data.total);
     const gap = 50;
     chartData.push({ date, minutes: rounded, barMinutes: rounded, areaMinutes: rounded + gap });
@@ -137,7 +146,7 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
     <div className="flex flex-col gap-5 bg-base-200 rounded-4xl border border-base-300 p-8">
       <div>
         <h2 className="text-xl font-bold mb-1">Study Trend</h2>
-        <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last 14 Days)</p>
+        <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last {isSmallScreen ? '5' : '14'} Days)</p>
       </div>
       <div className="w-full h-72 outline-none **:outline-none">
         <ResponsiveContainer width="100%" height="100%">
