@@ -167,7 +167,7 @@ export default async function Dashboard() {
 
       {/* Subject Leaderboard */}
       <div className="bg-base-200 rounded-4xl border border-base-300 p-8">
-        <h2 className="text-xl font-bold mb-1">Study Leaderboard</h2>
+        <h2 className="text-xl font-bold mb-1">Study Leaderboard 1</h2>
         <p className="text-xs opacity-50 mb-6 uppercase tracking-tight font-mono">Ranked by time invested</p>
         <SubjectBarChart data={subjectStats} />
       </div>
