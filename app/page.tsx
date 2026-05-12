@@ -15,6 +15,7 @@ import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import BtnFirst from "@/components/btn/BtnFirst";
 import DashboardCalendar from "./(dashboard)/dashboard/DashboardCalendar";
 import InteractiveDemo from "@/components/InteractiveDemo";
+import StudyTrend from "@/components/StudyTrend";
 
 type SessionDoc = {
   _id?: any;
@@ -312,8 +313,13 @@ export default async function Home() {
         </div>
       </section>
 
-    
-     
+      <section className="max-w-full h-10 pointer-events-none mx-auto my-20">
+        <StudyTrend 
+          sessions={areaChartSessions} 
+          subjects={areaChartSubjects} 
+          landing={true}
+        />
+      </section>
 
     </main>
   );

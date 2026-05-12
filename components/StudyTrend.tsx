@@ -17,6 +17,7 @@ type Subject = {
 type StudyTrendProps = {
   sessions: Session[];
   subjects: Subject[];
+  landing?: boolean;
 };
 
 type TooltipPayload = {
@@ -35,14 +36,15 @@ function CustomTooltip({ active, payload, label, subjectsByDate, subjectColors }
   if (active && payload && payload.length) {
     const mins = payload.find((item) => item?.value !== undefined)?.value ?? 0;
     const subjects = (label && subjectsByDate?.[label]) || [];
+    
     return (
       <div className="bg-base-300 border border-base-100 rounded-2xl shadow-2xl z-50 min-w-40 flex flex-col p-3">
         <p className="text-[10px] font-bold opacity-50 mb-2 uppercase border-b border-base-100 pb-1">
           {label || ""}
         </p>
         <div className="flex flex-col">
-          {subjects.length > 0 ? (
-            subjects.map((subject, i) => (
+          {subjects && subjects.length > 0 ? (
+            subjects.map((subject: any) => (
               <div key={subject.name} className="flex items-center text-base-content justify-between gap-4 text-xs mb-1 last:mb-0">
                 <div className="flex items-center gap-1.5 overflow-hidden">
                   <div
@@ -70,7 +72,7 @@ function CustomTooltip({ active, payload, label, subjectsByDate, subjectColors }
   return null;
 }
 
-export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
+export default function StudyTrend({ sessions, subjects, landing }: StudyTrendProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -142,17 +144,18 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
       .sort((a, b) => b.minutes - a.minutes);
   });
 
+
   return (
-    <div className="flex flex-col gap-5 bg-base-200 rounded-4xl border border-base-300 p-8">
-      <div>
+    <div className={`flex flex-col gap-5 ${!landing ? 'bg-base-200 rounded-4xl border border-base-300 p-8' : ''}`}>
+      {!landing && <div>
         <h2 className="text-xl font-bold mb-1">Study Trend</h2>
         <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last {isSmallScreen ? '5' : '14'} Days)</p>
-      </div>
-      <div className="w-full h-72 outline-none **:outline-none">
+      </div>}
+      <div className={`w-full ${landing ? 'h-96' : 'h-72'} outline-none **:outline-none`}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={chartData}
-            margin={{ top: 10, right: 30, left: -20, bottom: 0 }}
+            margin={landing ? { top: 0, right: 0, left: 0, bottom: 0 } : { top: 10, right: 30, left: -20, bottom: 0 }}
             tabIndex={-1}
             onMouseLeave={() => setHoveredIndex(null)}
           >
@@ -163,23 +166,26 @@ export default function StudyTrend({ sessions, subjects }: StudyTrendProps) {
                 <stop offset="100%" stopColor="#9bd3ff" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="2 4" stroke="#4b5563" opacity={0.20} vertical={false} />
-            <XAxis 
-  dataKey="date"
-  padding={{ left: 0, right: 0 }}
-  domain={['dataMin', 'dataMax']}
-  tick={{ fontSize: 12, opacity: 0.6 }}
-  axisLine={false}
-  tickLine={false}
-/>
-
-<YAxis 
-  width={45}   // reduce this (default is bigger → causes left gap)
-  tick={{ fontSize: 12, opacity: 0.6 }}
-  axisLine={false}
-  tickLine={false}
-/>
-            <Tooltip content={<CustomTooltip subjectsByDate={subjectsByDate} subjectColors={subjectColors} />} />
+            {!landing && <CartesianGrid strokeDasharray="2 4" stroke="#4b5563" opacity={0.20} vertical={false} />}
+            {!landing && <XAxis 
+              dataKey="date"
+              padding={{ left: 0, right: 0 }}
+              domain={['dataMin', 'dataMax']}
+              tick={{ fontSize: 12, opacity: 0.6 }}
+              axisLine={false}
+              tickLine={false}
+            />}
+            {!landing && <YAxis 
+              width={45}
+              tick={{ fontSize: 12, opacity: 0.6 }}
+              axisLine={false}
+              tickLine={false}
+            />}
+            <Tooltip 
+              content={<CustomTooltip subjectsByDate={subjectsByDate} subjectColors={subjectColors} />}
+              cursor={false}
+              wrapperStyle={{ outline: 'none' }}
+            />
             <Bar
               dataKey="barMinutes"
               barSize={24}
