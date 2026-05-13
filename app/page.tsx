@@ -313,7 +313,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="max-w-full h-10 pointer-events-none mx-auto my-20">
+      <section className="max-w-full pointer-events-none mx-auto mt-20">
         <StudyTrend 
           sessions={areaChartSessions} 
           subjects={areaChartSubjects} 
