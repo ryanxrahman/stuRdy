@@ -193,15 +193,17 @@ export default function TodoList({ subjectId, initialTodos }: { subjectId: strin
                 )}
                 {todos.map((todo) => (
                     <li key={todo.id} className="flex items-center gap-3 p-3 bg-base-100 rounded-xl group/item">
-                        <input 
-                            type="checkbox" 
-                            checked={todo.completed} 
-                            onChange={() => handleToggle(todo.id, todo.completed)}
-                            className="checkbox checkbox-primary checkbox-sm" 
-                        />
-                        <span className={`text-sm flex-1 ${todo.completed ? 'line-through opacity-50' : ''}`}>
-                            {todo.text}
-                        </span>
+                        <div onClick={() => handleToggle(todo.id, todo.completed)} className="flex cursor-pointer items-center gap-3 flex-1">
+                            <input
+                                type="checkbox"
+                                checked={todo.completed}
+                                onChange={() => handleToggle(todo.id, todo.completed)}
+                                className="checkbox checkbox-primary checkbox-sm"
+                            />
+                            <span className={`text-sm flex-1 ${todo.completed ? 'line-through opacity-50' : ''}`}>
+                                {todo.text}
+                            </span>
+                        </div>
                         <button 
                             onClick={() => handleDelete(todo.id)}
                             className={`btn btn-ghost btn-circle btn-xs opacity-0 group-hover/item:opacity-100 transition-opacity ${
