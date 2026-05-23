@@ -22,8 +22,12 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
     const sessionMap = useMemo(() => {
         const map: Record<string, number> = {};
         sessions.forEach(s => {
-            const d = new Date(s.date).toISOString().split('T')[0];
-            map[d] = (map[d] || 0) + s.duration;
+            const d = new Date(s.date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            const dateStr = `${year}-${month}-${day}`;
+            map[dateStr] = (map[dateStr] || 0) + s.duration;
         });
         return map;
     }, [sessions]);
@@ -36,7 +40,10 @@ export default function ContributionMap({ sessions }: { sessions: Session[] }) {
         for (let i = daysToShow; i >= 0; i--) {
             const d = new Date(today);
             d.setDate(today.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, "0");
+            const dayNum = String(d.getDate()).padStart(2, "0");
+            const dateStr = `${year}-${month}-${dayNum}`;
             const duration = sessionMap[dateStr] || 0;
             const minutes = Math.floor(duration / 60);
             result.push({ date: dateStr, minutes });

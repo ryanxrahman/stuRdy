@@ -105,9 +105,11 @@ export default function SubjectsAreaChart({
     const days: string[] = [];
     for (let i = 20; i >= 0; i--) {
       const d = new Date();
-      d.setHours(0, 0, 0, 0);
       d.setDate(d.getDate() - i);
-      days.push(d.toISOString().split("T")[0]);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      days.push(`${year}-${month}-${day}`);
     }
 
     days.forEach((day) => {
@@ -115,7 +117,12 @@ export default function SubjectsAreaChart({
     });
 
     sessions.forEach((session) => {
-      const sessionDay = new Date(session.date).toISOString().split("T")[0];
+      const d = new Date(session.date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      const sessionDay = `${year}-${month}-${day}`;
+
       if (!minutesByDateAndSubject[sessionDay]) return;
 
       const subjectId = session.subjectId;

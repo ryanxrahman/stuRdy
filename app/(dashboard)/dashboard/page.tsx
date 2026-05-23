@@ -201,6 +201,11 @@ export default async function Dashboard() {
         sessions={sessions}
       />
 
+      <SubjectsAreaChart
+        subjects={areaChartSubjects}
+        sessions={areaChartSessions}
+      />
+
        
 
     
