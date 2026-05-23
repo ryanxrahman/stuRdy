@@ -202,11 +202,7 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
             {sorted.map((item, i) => {
               const isUnlocked = totalStudyHours >= item.targetHours;
               const isCurrent = !isUnlocked && nextReward?.id === item.id;
-              const prevTarget = i > 0 ? sorted[i - 1].targetHours : 0;
-              const segSize = Math.max(1, item.targetHours - prevTarget);
-              const pct = isUnlocked
-                ? 100
-                : Math.max(0, Math.min(100, ((totalStudyHours - prevTarget) / segSize) * 100));
+              const pct = Math.max(0, Math.min(100, (totalStudyHours / item.targetHours) * 100));
 
               const isEditing = editingId === item.id;
 
@@ -277,9 +273,7 @@ export default function StudyReward({ totalStudyHours, initialRewards = [] }: St
                           className={`h-full transition-all duration-1000 ${
                             isUnlocked
                               ? "bg-emerald-500"
-                              : isCurrent
-                              ? "bg-violet-500"
-                              : "bg-base-content/10"
+                              : "bg-violet-500"
                           }`}
                           style={{ width: `${pct}%` }}
                         />
