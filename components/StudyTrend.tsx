@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { ChevronDown } from 'lucide-react';
 import { ComposedChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 type Session = {
@@ -75,6 +76,8 @@ function CustomTooltip({ active, payload, label, subjectsByDate, subjectColors }
 export default function StudyTrend({ sessions, subjects, landing }: StudyTrendProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [selectedDays, setSelectedDays] = useState(14);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerWidth < 768);
@@ -109,8 +112,8 @@ export default function StudyTrend({ sessions, subjects, landing }: StudyTrendPr
     );
   }
 
-  // Prepare data for chart - last 14 days on desktop, last 4 days on mobile
-  const daysToShow = isSmallScreen ? 4 : 13; // 4 days (0-3) or 14 days (0-13)
+  // Prepare data for chart - last N days
+  const daysToShow = selectedDays - 1;
   const chartData: { date: string; minutes: number; barMinutes: number; areaMinutes: number }[] = [];
   const lastNDays: { [key: string]: { total: number; subjects: Record<string, number> } } = {};
 
@@ -149,7 +152,33 @@ export default function StudyTrend({ sessions, subjects, landing }: StudyTrendPr
     <div className={`flex flex-col gap-5 ${!landing ? 'bg-base-200 rounded-4xl border border-base-300 p-8' : ''}`}>
       {!landing && <div>
         <h2 className="text-xl font-bold mb-1">Study Trend</h2>
-        <p className="text-xs font-normal opacity-50 font-mono tracking-tighter uppercase">(Last {isSmallScreen ? '5' : '14'} Days)</p>
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="text-xs font-normal opacity-50 font-mono cursor-pointer tracking-tighter uppercase hover:opacity-70 transition-opacity flex items-center gap-1"
+          >
+            Last {selectedDays} Days {selectedDays === 30 ? '(Monthly)' : ''}
+            <ChevronDown className="inline-block" size={14} style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 200ms' }} />
+          </button>
+          {isDropdownOpen && (
+            <div className="absolute flex flex-col top-full mt-2 bg-base-200 border border-base-100 rounded-lg shadow-lg z-50 min-w-32">
+              {[7, 14, 30].map((days) => (
+                <button
+                  key={days}
+                  onClick={() => {
+                    setSelectedDays(days);
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`w-40 px-4 py-2 cursor-pointer text-xs text-left hover:bg-base-300 transition-colors ${
+                    selectedDays === days ? ' bg-base-200 font-bold' : ''
+                  } ${days === 7 ? 'rounded-t-lg' : ''} ${days === 30 ? 'rounded-b-lg' : ''}`}
+                >
+                  Last {days} Days {days === 30 ? '(Monthly)' : ''}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>}
       <div className={`w-full ${landing ? 'h-96' : 'h-72'} outline-none **:outline-none`}>
         <ResponsiveContainer width="100%" height="100%">
