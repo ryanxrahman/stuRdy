@@ -466,7 +466,7 @@ export default function Timer({ subjectId }: { subjectId: string }) {
     return (
         <div className="w-full py-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-                <div className="bg-base-100 rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col items-center gap-5">
+                <div className="bg-base-100 flex flex-col justify-center items-center rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col items-center gap-5">
                     <p className="text-sm uppercase tracking-widest opacity-60">Stopwatch</p>
                     <div className="text-5xl sm:text-6xl font-mono font-black tracking-tighter tabular-nums text-center wrap-break-word">
                         {formatTime(stopwatchSeconds)}
