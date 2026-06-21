@@ -76,7 +76,7 @@ export default function Sidebar({ subjects = [], user, todayMinutes = 0 }: {
             <aside className="bg-base-200/50 backdrop-blur-xl h-screen w-64 text-base-content border-r border-base-content/5 flex flex-col">
                 <div className="p-6 flex items-center border-b border-base-content/5 mb-8">
                     <Image src="/icon.png" alt="Logo" width={32} height={32} className="inline-block mr-2" />
-                    <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">Study</Link>
+                    <Link href="/dashboard" className="text-2xl font-black hover:text-primary transition-colors">Sturdy</Link>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-4 py-2">
