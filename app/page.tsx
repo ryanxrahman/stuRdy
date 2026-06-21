@@ -142,7 +142,7 @@ export default async function Home() {
       <section className="flex max-w-4xl mx-auto items-center p-4 justify-between">
         <div className="flex gap-2">
           <Image src={"/icon.png"} alt="app logo" width={25} height={25} />
-          <div className="font-bold">sturdy</div>
+          <div className="font-bold">stuRdy</div>
         </div>
         <div className="flex items-center gap-4 max-md:hidden">
           <a className="link link-hover hover:text-primary" href="">stats</a>
@@ -256,7 +256,7 @@ export default async function Home() {
           <div className="flex flex-col gap-2 items-start max-md:items-center max-md:gap-5">
                <div className="flex gap-2 items-center">
           <Image src={"/icon.png"} alt="app logo" width={25} height={25} />
-          <div className="font-bold">sturdy</div>
+          <div className="font-bold">stuRdy</div>
         </div>
          <div className="text-sm max-md:text-center">
           <p>Empowering your study journey with data-driven insights.</p>
