@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { Play, Pause, RotateCcw, CheckCircle, Expand, Shrink } from "lucide-react";
 import { saveStudySession } from "../dashboard/subject-actions";
 import { useSearchParams } from "next/navigation";
+import { createPortal } from "react-dom";
 
 export default function Timer({ subjectId }: { subjectId: string }) {
     const searchParams = useSearchParams();
@@ -471,74 +472,129 @@ export default function Timer({ subjectId }: { subjectId: string }) {
         };
     }, [isStopwatchActive, searchParams, startStopwatch]);
 
-    return (
-        <div className={`w-full ${isStopwatchFullscreen || isCountdownFullscreen ? 'py-0' : 'py-6'}`}>
-            <div className={`${isStopwatchFullscreen || isCountdownFullscreen ? 'flex flex-col' : 'grid grid-cols-1 lg:grid-cols-2'} gap-6 w-full`}>
-                <div ref={stopwatchContainerRef} className={`bg-base-100 relative rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col items-center gap-5 justify-center ${isStopwatchFullscreen ? 'fixed top-0 left-0 w-full h-full z-50 rounded-none border-0' : ''} ${isCountdownFullscreen ? 'hidden' : ''}`}>
-                    <button 
-                        onClick={() => toggleFullscreen(stopwatchContainerRef, isStopwatchFullscreen, setIsStopwatchFullscreen)}
-                        className="absolute top-4 right-4 cursor-pointer rounded-md p-1 text-primary hover:bg-base-300 transition-colors"
-                    >
-                        {isStopwatchFullscreen ? <Shrink size={18} /> : <Expand size={18} />}
+  return (
+    <div className="w-full py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            {/* Stopwatch card */}
+            <div className="bg-base-100 relative rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col items-center gap-5 justify-center">
+                <button
+                    onClick={() => setIsStopwatchFullscreen(true)}
+                    className="absolute top-4 right-4 cursor-pointer rounded-md p-1 text-primary hover:bg-base-300 transition-colors"
+                >
+                    <Expand size={18} />
+                </button>
+                <p className="text-sm uppercase tracking-widest opacity-60 mt-2">Stopwatch</p>
+                <div className="text-5xl sm:text-6xl font-mono font-black tracking-tighter tabular-nums text-center wrap-break-word">
+                    {formatTime(stopwatchSeconds)}
+                </div>
+                <div className="flex flex-wrap justify-center gap-3">
+                    <button onClick={toggleStopwatch} className={`btn btn-circle btn-lg ${isStopwatchActive ? 'btn-outline' : 'btn-primary'}`}>
+                        {isStopwatchActive ? <Pause size={24} /> : <Play size={24} />}
                     </button>
-                    <p className="text-sm uppercase tracking-widest opacity-60 mt-2">Stopwatch</p>
-                    <div className="text-5xl sm:text-6xl font-mono font-black tracking-tighter tabular-nums text-center wrap-break-word">
+                    <button onClick={resetStopwatch} className="btn btn-circle btn-lg btn-ghost border border-base-300">
+                        <RotateCcw size={24} />
+                    </button>
+                    <button onClick={handleStopwatchFinish} disabled={stopwatchSeconds === 0 || isStopwatchSaving} className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2">
+                        <CheckCircle size={20} />
+                        {isStopwatchSaving ? "Saving..." : "Save"}
+                    </button>
+                </div>
+            </div>
+
+            {/* Countdown card */}
+            <div className="bg-base-100 relative rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col gap-5 items-center justify-center">
+                <button
+                    onClick={() => setIsCountdownFullscreen(true)}
+                    className="absolute top-4 right-4 cursor-pointer rounded-md p-1 text-primary hover:bg-base-300 transition-colors"
+                >
+                    <Expand size={18} />
+                </button>
+                <p className="text-sm uppercase tracking-widest opacity-60">Countdown</p>
+                <div className="text-5xl sm:text-6xl text-center font-mono font-black tracking-tighter tabular-nums wrap-break-word">
+                    {formatTime(countdownSeconds)}
+                </div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                    {[25, 60, 120].map((minutes) => (
+                        <button key={minutes} onClick={() => startCountdown(minutes * 60)} className="btn btn-sm btn-outline">
+                            {minutes >= 60 ? `${minutes / 60}h` : `${minutes}m`}
+                        </button>
+                    ))}
+                </div>
+                <div className="flex gap-2 justify-center">
+                    <input
+                        type="number"
+                        min={1}
+                        step={1}
+                        value={customMinutes}
+                        onChange={(e) => setCustomMinutes(e.target.value)}
+                        className="input input-bordered w-28 text-center"
+                        placeholder="minutes"
+                    />
+                    <button onClick={handleStartCustomCountdown} className="btn btn-primary btn-sm">
+                        Start custom
+                    </button>
+                </div>
+                <div className="flex flex-wrap justify-center gap-3">
+                    <button onClick={toggleCountdown} className={`btn btn-circle btn-lg ${isCountdownActive ? 'btn-outline' : 'btn-primary'}`} disabled={countdownSeconds === 0 && countdownTotalSeconds === 0}>
+                        {isCountdownActive ? <Pause size={24} /> : <Play size={24} />}
+                    </button>
+                    <button onClick={resetCountdown} className="btn btn-circle btn-lg btn-ghost border border-base-300">
+                        <RotateCcw size={24} />
+                    </button>
+                    <button onClick={handleCountdownManualSave} disabled={countdownTotalSeconds === 0 || isCountdownSaving} className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2">
+                        <CheckCircle size={20} />
+                        {isCountdownSaving ? "Saving..." : "Save"}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {/* Stopwatch portal */}
+        {isStopwatchFullscreen && createPortal(
+            <div className="fixed top-0 left-0 w-full h-full  z-[9999] bg-base-100 flex flex-col items-center justify-center gap-5">
+                <button onClick={() => setIsStopwatchFullscreen(false)} className="absolute top-4 right-4 cursor-pointer rounded-md p-1 text-primary hover:bg-base-300 transition-colors">
+                    <Shrink size={18} />
+                </button>
+                <div className="flex flex-col items-center scale-200 gap-5">
+                    <p className="text-sm uppercase tracking-widest opacity-60">Stopwatch</p>
+                    <div className="text-5xl sm:text-6xl font-mono font-black tracking-tighter tabular-nums text-center">
                         {formatTime(stopwatchSeconds)}
                     </div>
-
                     <div className="flex flex-wrap justify-center gap-3">
-                        <button
-                            onClick={toggleStopwatch}
-                            className={`btn btn-circle btn-lg ${isStopwatchActive ? 'btn-outline' : 'btn-primary'}`}
-                        >
+                        <button onClick={toggleStopwatch} className={`btn btn-circle btn-lg ${isStopwatchActive ? 'btn-outline' : 'btn-primary'}`}>
                             {isStopwatchActive ? <Pause size={24} /> : <Play size={24} />}
                         </button>
-
-                        <button
-                            onClick={resetStopwatch}
-                            className="btn btn-circle btn-lg btn-ghost border border-base-300"
-                        >
+                        <button onClick={resetStopwatch} className="btn btn-circle btn-lg btn-ghost border border-base-300">
                             <RotateCcw size={24} />
                         </button>
-
-                        <button
-                            onClick={handleStopwatchFinish}
-                            disabled={stopwatchSeconds === 0 || isStopwatchSaving}
-                            className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2"
-                        >
+                        <button onClick={handleStopwatchFinish} disabled={stopwatchSeconds === 0 || isStopwatchSaving} className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2">
                             <CheckCircle size={20} />
                             {isStopwatchSaving ? "Saving..." : "Save"}
                         </button>
                     </div>
                 </div>
+            </div>,
+            document.body
+        )}
 
-                <div ref={countdownContainerRef} className={`bg-base-100 relative rounded-3xl border border-base-300 shadow-inner p-6 flex flex-col gap-5 items-center justify-center ${isCountdownFullscreen ? 'fixed top-0 left-0 w-full h-full z-50 rounded-none border-0' : ''} ${isStopwatchFullscreen ? 'hidden' : ''}`}>
-                    <button 
-                        onClick={() => toggleFullscreen(countdownContainerRef, isCountdownFullscreen, setIsCountdownFullscreen)}
-                        className="absolute top-4 right-4 cursor-pointer rounded-md p-1 text-primary hover:bg-base-300 transition-colors"
-                    >
-                        {isCountdownFullscreen ? <Shrink size={18} /> : <Expand size={18} />}
-                    </button>
-                    <div className="flex items-center justify-center">
-                        <p className="text-sm uppercase tracking-widest opacity-60">Countdown</p>
-                    </div>
-
-                    <div className="text-5xl sm:text-6xl text-center font-mono font-black tracking-tighter tabular-nums wrap-break-word">
+        {/* Countdown portal */}
+        {isCountdownFullscreen && createPortal(
+            <div className="fixed top-0 left-0 w-full h-full z-[9999] bg-base-100 flex flex-col items-center justify-center gap-5">
+                <button onClick={() => setIsCountdownFullscreen(false)} className="absolute top-4 right-4 cursor-pointer rounded-md p-1 text-primary hover:bg-base-300 transition-colors">
+                    <Shrink size={18} />
+                </button>
+                <div className="flex flex-col items-center scale-200 gap-5">
+                    <p className="text-sm uppercase tracking-widest opacity-60">Countdown</p>
+                    <div className="text-5xl sm:text-6xl text-center font-mono font-black tracking-tighter tabular-nums">
                         {formatTime(countdownSeconds)}
                     </div>
-
                     <div className="flex flex-wrap gap-2 justify-center">
                         {[25, 60, 120].map((minutes) => (
-                            <button
-                                key={minutes}
-                                onClick={() => startCountdown(minutes * 60)}
-                                className="btn btn-sm btn-outline"
-                            >
+                            <button key={minutes} onClick={() => startCountdown(minutes * 60)} className="btn btn-sm btn-outline">
                                 {minutes >= 60 ? `${minutes / 60}h` : `${minutes}m`}
                             </button>
                         ))}
                     </div>
-
                     <div className="flex gap-2 justify-center">
                         <input
                             type="number"
@@ -553,34 +609,22 @@ export default function Timer({ subjectId }: { subjectId: string }) {
                             Start custom
                         </button>
                     </div>
-
                     <div className="flex flex-wrap justify-center gap-3">
-                        <button
-                            onClick={toggleCountdown}
-                            className={`btn btn-circle btn-lg ${isCountdownActive ? 'btn-outline' : 'btn-primary'}`}
-                            disabled={countdownSeconds === 0 && countdownTotalSeconds === 0}
-                        >
+                        <button onClick={toggleCountdown} className={`btn btn-circle btn-lg ${isCountdownActive ? 'btn-outline' : 'btn-primary'}`} disabled={countdownSeconds === 0 && countdownTotalSeconds === 0}>
                             {isCountdownActive ? <Pause size={24} /> : <Play size={24} />}
                         </button>
-
-                        <button
-                            onClick={resetCountdown}
-                            className="btn btn-circle btn-lg btn-ghost border border-base-300"
-                        >
+                        <button onClick={resetCountdown} className="btn btn-circle btn-lg btn-ghost border border-base-300">
                             <RotateCcw size={24} />
                         </button>
-
-                        <button
-                            onClick={handleCountdownManualSave}
-                            disabled={countdownTotalSeconds === 0 || isCountdownSaving}
-                            className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2"
-                        >
+                        <button onClick={handleCountdownManualSave} disabled={countdownTotalSeconds === 0 || isCountdownSaving} className="btn btn-lg btn-success rounded-full px-6 flex items-center gap-2">
                             <CheckCircle size={20} />
                             {isCountdownSaving ? "Saving..." : "Save"}
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
-    );
+            </div>,
+            document.body
+        )}
+    </div>
+);
 }
