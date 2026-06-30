@@ -222,7 +222,9 @@ export default async function Home() {
             </h1>
             <p className="opacity-60 max-w-lg mx-auto text-sm md:text-base">Visualize your study progress with real-time analytics</p>
           </div>
-              <ContributionMap sessions={contributionSessions} />
+              <div className="max-lg:hidden">
+                <ContributionMap sessions={contributionSessions} />
+              </div>
         </div>
          
             <SubjectsAreaChart sessions={areaChartSessions} subjects={areaChartSubjects} />
