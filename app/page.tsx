@@ -51,14 +51,7 @@ export default async function Home() {
   const totalMinutes = Math.round(
     sessions.reduce((acc, s) => acc + ((s.duration || 0) / 60), 0)
   );
-
-  const totalSessions = sessions.length;
-  const totalSubjects = rawSubjects.length;
-
-  const uniqueDays = new Set(
-    sessions.map((s) => new Date(s.date).toDateString())
-  ).size;
-
+  
   const minutesBySubjectId: Record<string, number> = {};
   sessions.forEach((s) => {
     const subjectKey = s.subjectId?.toString();
@@ -79,7 +72,6 @@ export default async function Home() {
     .filter((s) => s.minutes > 0)
     .sort((a, b) => b.minutes - a.minutes);
 
-  const topSubject = subjectStats[0]?.name || "Not enough data yet";
 
   const studyChartDataMap: Record<string, number> = {};
   sessions.forEach((s) => {
@@ -100,14 +92,6 @@ export default async function Home() {
     duration: s.duration || 0
   }));
 
-  const todaySessions = sessions.filter(s => {
-    const sDate = new Date(s.date);
-    const now = new Date();
-    return sDate.getDate() === now.getDate() &&
-      sDate.getMonth() === now.getMonth() &&
-      sDate.getFullYear() === now.getFullYear();
-  });
-  const todayMinutes = Math.round(todaySessions.reduce((acc, s) => acc + ((s.duration || 0) / 60), 0));
 
   const journeyStart = new Date("2026-04-07T00:00:00");
   const today = new Date();

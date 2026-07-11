@@ -14,22 +14,6 @@ interface Session {
 export default function SessionsList({ initialSessions }: { initialSessions: Session[] }) {
     const [isPending, startTransition] = useTransition();
 
-    const formatDuration = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        if (mins === 0) return `${secs}s`;
-        return `${mins}m ${secs}s`;
-    };
-
-    const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    };
-
     const handleDelete = (sessionId: string) => {
         if (!confirm("Are you sure you want to delete this session?")) return;
 

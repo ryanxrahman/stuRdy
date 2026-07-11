@@ -67,12 +67,6 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
     minutes: Math.round(minutes)
   }));
 
-  // Prepare exam chart data
-  const examChartData = (subject.exams || []).map((e: any) => ({
-    name: e.name,
-    score: e.score
-  }));
-
   return (
     <div className="flex flex-col min-h-screen p-8 max-md:p-2 max-w-6xl mx-auto gap-12">
       <header>

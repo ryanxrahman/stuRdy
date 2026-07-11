@@ -8,7 +8,6 @@ import { ObjectId } from "mongodb";
 import SubjectMasteryRadar from "@/components/SubjectMasteryRadar";
 import TimeAllocationDonut from "@/components/TimeAllocationDonut";
 import SubjectBarChart from "@/components/SubjectBarChart";
-import StudyGoal from "@/components/StudyGoal";
 import StudyTrend from "@/components/StudyTrend";
 import SubjectsOverview from "@/components/SubjectsOverview";
 import StudyReward from "@/components/StudyReward";
@@ -16,7 +15,6 @@ import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import AddSubjectHeaderButton from "./AddSubjectHeaderButton";
 import StartStudyHeaderButton from "./StartStudyHeaderButton";
 import DashboardCalendar from "./DashboardCalendar";
-import InteractiveDemo from "@/components/InteractiveDemo";
 
 export default async function Dashboard() {
   const session = await getSession();
