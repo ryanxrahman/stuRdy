@@ -67,12 +67,13 @@ export default  function SecuritySettingsPage() {
     };
 
   return (
-    <main>
-        <div className={`flex flex-col gap-5 bg-base-200 rounded-4xl border border-base-300 p-8 mt-20`}>
-            <div className="">
+    <main className="flex flex-col mt-20 gap-5">
+         <div className="">
               <h1 className="text-4xl max-md:text-2xl font-bold">Security Settings</h1>
               <p>Manage your security settings here.</p>
             </div>
+        <div className={`flex flex-col gap-5 bg-base-200 rounded-4xl border border-base-300 p-8 `}>
+           
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <h1 className="flex gap-2 items-center "><LockIcon size="15"/>Change Your Password here</h1>
                 <div className="flex flex-col">
