@@ -4,7 +4,7 @@ import { useMemo, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { logoutAction } from "@/app/login/actions";
-import { LayoutDashboard, BookOpen, LogOut, Plus, X } from "lucide-react";
+import { LayoutDashboard, BookOpen, LogOut, Plus, X, Settings } from "lucide-react";
 import SidebarLink from "./SidebarLink";
 import { ThemeToggle } from "./ThemeToggle";
 import SidebarRoulette from "./SidebarRoulette";
@@ -158,9 +158,17 @@ export default function Sidebar({ subjects = [], user, todayMinutes = 0 }: {
 
                         <ThemeToggle />
 
-                        <div className="px-1 overflow-hidden">
-                            <p className="text-[10px] opacity-40 uppercase tracking-widest font-bold">Logged in as</p>
-                            <p className="text-xs font-bold truncate">{userEmail}</p>
+                        <div className="px-1 overflow-hidden flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] opacity-40 uppercase tracking-widest font-bold">Logged in as</p>
+                                <p className="text-xs font-bold truncate">{userEmail}</p>
+                            </div>
+                            <div>
+                                <Link href="/dashboard/settings" className="opacity-50 hover:opacity-100 transition-opacity">
+                                    <Settings size={20} />
+                                  
+                                </Link>
+                            </div>
                         </div>
 
                         <form action={logoutAction} className="w-full">
