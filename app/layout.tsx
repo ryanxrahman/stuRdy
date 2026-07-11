@@ -14,8 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "sturdy",
-  description: "A minimalist study timer and analytics dashboard to help you stay focused and track your progress.",
+  title: {
+    default: "stuRdy",
+    template: "%s | stuRdy",
+  },
 };
 
 export default function RootLayout({

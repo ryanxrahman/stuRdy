@@ -13,7 +13,6 @@ import ThemeImage from "@/components/ThemeImage";
 import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import BtnFirst from "@/components/btn/BtnFirst";
 import DashboardCalendar from "./(dashboard)/dashboard/DashboardCalendar";
-import InteractiveDemo from "@/components/InteractiveDemo";
 import StudyTrend from "@/components/StudyTrend";
 
 type SessionDoc = {
