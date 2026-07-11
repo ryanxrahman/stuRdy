@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import BtnPrimary from "@/components/btn/BtnPrimary";
-import { LockIcon } from "lucide-react";
+import { LockIcon, Eye, EyeOff } from "lucide-react";
+
 
 
 
@@ -10,6 +11,8 @@ export default  function SecuritySettingsPage() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
 
 
 
@@ -73,12 +76,22 @@ export default  function SecuritySettingsPage() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <h1 className="flex gap-2 items-center "><LockIcon size="15"/>Change Your Password here</h1>
                 <div className="flex flex-col">
-                    <label className="text-sm" htmlFor="current-password">Current Password</label>
-                    <input required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="input focus:input-success rounded-xl w-full " type="password" id="current-password" />
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm" htmlFor="current-password">Current Password</label>
+                        <button type="button" className="cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
+                            {showPassword ? <Eye size="12" /> : <EyeOff size="12" />}
+                        </button>
+                    </div>
+                    <input required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="input focus:input-success rounded-xl w-full " type={showPassword ? "text" : "password"} id="current-password" />
                 </div>
                 <div className="flex flex-col">
-                    <label className="text-sm" htmlFor="new-password">New Password</label>
-                    <input required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="input focus:input-success rounded-xl w-full" type="password" id="new-password" />
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm" htmlFor="new-password">New Password</label>
+                        <button type="button" className="cursor-pointer" onClick={() => setShowNewPassword(!showNewPassword)}>
+                            {showNewPassword ? <Eye size="12" /> : <EyeOff size="12" />}
+                        </button>
+                    </div>
+                    <input required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="input focus:input-success rounded-xl w-full" type={showNewPassword ? "text" : "password"} id="new-password" />
                 </div>
                 <div className="flex flex-col">
                     <label className="text-sm" htmlFor="confirm-password">Confirm New Password</label>
