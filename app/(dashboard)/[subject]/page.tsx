@@ -5,12 +5,26 @@ import TodoList from "./TodoList";
 import NotesSection from "./NotesSection";
 import Timer from "./Timer";
 import ProgressChart from "./ProgressChart";
-import ExamsList from "./ExamsList";
-import ExamChart from "./ExamChart";
 import SessionsList from "./SessionsList";
 import { ObjectId } from "mongodb";
 import DeleteSubjectButton from "@/components/DeleteSubjectButton";
 import SubjectCalendar from "./SubjectCalendar";
+import type { Metadata } from "next";
+
+
+type Props = {
+  params: Promise<{ subject: string }>;
+};
+
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { subject: subjectNameEncoded } = await params;
+  const subjectName = decodeURIComponent(subjectNameEncoded);
+  return {
+    title: `${subjectName}`,
+    description: "View and manage your subject details, including study sessions, notes, and exams.",
+  };
+};
 
 export default async function SubjectPage({ params }: { params: Promise<{ subject: string }> }) {
   const { subject: subjectNameEncoded } = await params;
@@ -108,3 +122,4 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
     </div>
   );
 }
+
