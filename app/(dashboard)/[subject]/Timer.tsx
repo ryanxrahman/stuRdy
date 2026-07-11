@@ -7,9 +7,14 @@ import { saveStudySession } from "../dashboard/subject-actions";
 import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import Celebration from "@/components/firework-js/Celebration";
+import { usePathname } from "next/navigation";
+
 
 export default function Timer({ subjectId }: { subjectId: string }) {
     const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const subjectName = pathname.split("/").pop() || "Subject";
     const [isStopwatchSaving, setIsStopwatchSaving] = useState(false);
     const [isCountdownSaving, setIsCountdownSaving] = useState(false);
 
@@ -111,8 +116,6 @@ export default function Timer({ subjectId }: { subjectId: string }) {
 
     const countdownCompletedRef = useRef(false);
     const hasHandledAutoStartRef = useRef(false);
-    const stopwatchContainerRef = useRef<HTMLDivElement>(null);
-    const countdownContainerRef = useRef<HTMLDivElement>(null);
 
     const formatTime = (totalSeconds: number) => {
         const hrs = Math.floor(totalSeconds / 3600);
@@ -121,9 +124,6 @@ export default function Timer({ subjectId }: { subjectId: string }) {
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const toggleFullscreen = (containerRef: React.RefObject<HTMLDivElement | null>, isFullscreen: boolean, setFullscreen: (val: boolean) => void) => {
-        setFullscreen(!isFullscreen);
-    };
 
     const clearPersistedStopwatch = useCallback(() => {
         localStorage.removeItem(storageKeys.stopwatchStartTime);
@@ -223,20 +223,15 @@ export default function Timer({ subjectId }: { subjectId: string }) {
 
     useEffect(() => {
         if (isCountdownActive) {
-            document.title = `⏳ ${formatTime(countdownSeconds)}`;
+            document.title = `⏳ ${formatTime(countdownSeconds)} - ${subjectName}`;
             return;
         }
 
         if (isStopwatchActive) {
-            document.title = `⏱ ${formatTime(stopwatchSeconds)}`;
+            document.title = `⏱ ${formatTime(stopwatchSeconds)} - ${subjectName}`;
             return;
         }
-
-        document.title = "Study App";
-        return () => {
-            document.title = "Study App";
-        };
-    }, [countdownSeconds, isCountdownActive, isStopwatchActive, stopwatchSeconds]);
+    }, [countdownSeconds, isCountdownActive, isStopwatchActive, stopwatchSeconds, subjectName]);
 
     // Use a ref to always have the latest state for the unload/visibility handler
     const stateRef = useRef({
