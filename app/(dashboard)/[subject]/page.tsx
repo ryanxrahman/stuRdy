@@ -55,17 +55,19 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
 
   const sessions = JSON.parse(JSON.stringify(rawSessions));
 
-  // Aggregate sessions by date for study chart
-  const studyChartDataMap: Record<string, number> = {};
-  rawSessions.forEach((s) => {
-    const dateStr = new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    studyChartDataMap[dateStr] = (studyChartDataMap[dateStr] || 0) + (s.duration / 60);
-  });
+  const rawSubjects = await db.collection("subjects")
+    .find({ userId: session.userId })
+    .sort({ createdAt: -1 })
+    .toArray();
 
-  const studyChartData = Object.entries(studyChartDataMap).map(([date, minutes]) => ({
-    date,
-    minutes: Math.round(minutes)
-  }));
+  const subjects = JSON.parse(JSON.stringify(rawSubjects));
+
+  const rawAllSessions = await db.collection("sessions")
+    .find({ userId: session.userId })
+    .sort({ date: 1 })
+    .toArray();
+
+  const allSessions = JSON.parse(JSON.stringify(rawAllSessions));
 
   return (
     <div className="flex flex-col min-h-screen p-8 max-md:p-2 max-w-6xl mx-auto gap-12">
@@ -92,8 +94,15 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
 
         <section className="bg-base-200 p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
             <h2 className="text-2xl font-bold mb-2">Study Momentum</h2>
-            <p className="opacity-50 text-sm mb-6">Time investment per day</p>
-            <ProgressChart data={studyChartData} />
+            <p className="opacity-50 text-sm mb-6">Time investment per day, across all subjects</p>
+            <ProgressChart
+              activeSubjectId={subject._id.toString()}
+              sessions={allSessions}
+              subjects={subjects.map((sub: any) => ({
+                _id: String(sub._id),
+                name: String(sub.name || "Untitled"),
+              }))}
+            />
         </section>
 
         <section className="bg-base-200 p-10 rounded-[2.5rem] border border-base-300 shadow-sm">
