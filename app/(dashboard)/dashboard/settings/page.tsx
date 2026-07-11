@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import BtnPrimary from "@/components/btn/BtnPrimary";
+import { LockIcon } from "lucide-react";
 
 
 
@@ -63,27 +65,28 @@ export default  function SecuritySettingsPage() {
 
   return (
     <main>
-        <div>
-          <h1>Security Settings</h1>
-          <p>Manage your security settings here.</p>
+        <div className={`flex flex-col gap-5 bg-base-200 rounded-4xl border border-base-300 p-8 mt-20`}>
+            <div className="">
+              <h1 className="text-4xl max-md:text-2xl font-bold">Security Settings</h1>
+              <p>Manage your security settings here.</p>
+            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <h1 className="flex gap-2 items-center "><LockIcon size="15"/>Change Your Password here</h1>
+                <div className="flex flex-col">
+                    <label className="text-sm" htmlFor="current-password">Current Password</label>
+                    <input required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="input focus:input-success rounded-xl w-full " type="password" id="current-password" />
+                </div>
+                <div className="flex flex-col">
+                    <label className="text-sm" htmlFor="new-password">New Password</label>
+                    <input required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="input focus:input-success rounded-xl w-full" type="password" id="new-password" />
+                </div>
+                <div className="flex flex-col">
+                    <label className="text-sm" htmlFor="confirm-password">Confirm New Password</label>
+                    <input required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="input focus:input-success rounded-xl w-full" type="password" id="confirm-password" />
+                </div>
+                <BtnPrimary className="text-white" type="submit">Update Password</BtnPrimary>
+            </form>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <h1>Change Your Password here</h1>
-
-            <div>
-                <label htmlFor="current-password">Current Password</label>
-                <input required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="border" type="password" id="current-password" />
-            </div>
-            <div>
-                <label htmlFor="new-password">New Password</label>
-                <input required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="border" type="password" id="new-password" />
-            </div>
-            <div>
-                <label htmlFor="confirm-password">Confirm New Password</label>
-                <input required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="border" type="password" id="confirm-password" />
-            </div>
-            <button className="cursor-pointer border p-2" type="submit">Update Password</button>
-        </form>
     </main>
   );
 }
