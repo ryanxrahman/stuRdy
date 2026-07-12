@@ -15,6 +15,61 @@ import SubjectsAreaChart from "@/components/SubjectsAreaChart";
 import AddSubjectHeaderButton from "./AddSubjectHeaderButton";
 import StartStudyHeaderButton from "./StartStudyHeaderButton";
 import DashboardCalendar from "./DashboardCalendar";
+import ShareStudyButton from "../../../components/btn/ShareStudyButton";
+
+type ShareSubject = {
+  name: string;
+  hours: number;
+};
+
+type SharePeriod = {
+  label: string;
+  days: number;
+  totalHours: number;
+  subjects: ShareSubject[];
+};
+
+function buildSharePeriods(sessions: any[], subjects: any[]): SharePeriod[] {
+  const subjectNameById = new Map(subjects.map((subject) => [String(subject._id), String(subject.name || "Untitled")]));
+
+  const makePeriod = (days: number): SharePeriod => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - (days - 1));
+
+    const totalsBySubject = new Map<string, number>();
+    let totalSeconds = 0;
+
+    sessions.forEach((session) => {
+      const sessionDate = new Date(session.date);
+      if (sessionDate < start) return;
+
+      const duration = Number(session.duration || 0);
+      const subjectId = String(session.subjectId || "");
+      const subjectName = subjectNameById.get(subjectId);
+
+      totalSeconds += duration;
+
+      if (!subjectName) return;
+
+      totalsBySubject.set(subjectName, (totalsBySubject.get(subjectName) || 0) + duration);
+    });
+
+    const subjectsSummary = Array.from(totalsBySubject.entries())
+      .map(([name, seconds]) => ({ name, hours: seconds / 3600 }))
+      .sort((a, b) => b.hours - a.hours);
+
+    return {
+      label: days === 1 ? "Today" : `${days} Days`,
+      days,
+      totalHours: totalSeconds / 3600,
+      subjects: subjectsSummary,
+    };
+  };
+
+  return [makePeriod(1), makePeriod(7), makePeriod(30)];
+}
+
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -94,6 +149,8 @@ export default async function Dashboard() {
     subjectId: String(s.subjectId || ""),
   }));
 
+  const sharePeriods = buildSharePeriods(sessions, subjects);
+
   return (
     <div className="flex flex-col gap-10 p-8 max-md:p-2 max-w-6xl mx-auto pb-20 ">
       {/* Header */}
@@ -107,6 +164,7 @@ export default async function Dashboard() {
             }))}
           />
           <AddSubjectHeaderButton />
+          <ShareStudyButton periods={sharePeriods} />
         </div>
       </header>
 
