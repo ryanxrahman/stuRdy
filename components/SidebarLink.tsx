@@ -21,7 +21,7 @@ export default function SidebarLink({ href, children, className }: SidebarLinkPr
                 ${className} 
                 transition-all duration-200
                 ${isActive 
-                    ? 'bg-primary/10 text-primary font-bold' 
+                    ? 'bg-primary/10 text-primary font-bold border-2 border-primary' 
                     : 'text-base-content/60 hover:text-base-content hover:bg-base-content/5'}
             `}
         >

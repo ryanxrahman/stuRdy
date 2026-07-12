@@ -60,14 +60,6 @@ export default function Sidebar({ subjects = [], user, todayMinutes = 0 }: {
     }, [validSubjects]);
 
     const [isAddOpen, setIsAddOpen] = useState(false);
-    const rouletteSubjects = useMemo(
-        () =>
-            validSubjects.map((s) => ({
-                _id: s._id.toString(),
-                name: s.name,
-            })),
-        [validSubjects]
-    );
 
     const userEmail = typeof user?.email === "string" ? user.email : "Unknown user";
 
