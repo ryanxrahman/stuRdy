@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { useTransition } from "react";
 import { deleteSubject } from "@/app/(dashboard)/dashboard/subject-actions";
 
@@ -21,6 +22,7 @@ export default function DeleteSubjectButton({ subjectId, subjectName }: DeleteSu
     startTransition(async () => {
       const result = await deleteSubject(subjectId);
       if (result?.success) {
+        await toast.success(`Subject \"${subjectName}\" deleted successfully.`);
         router.push("/dashboard");
         return;
       }
